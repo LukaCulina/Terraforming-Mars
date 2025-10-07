@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController">
+    <MenuBar>
+        <Menu mnemonicParsing="false" text="Game">
+            <MenuItem mnemonicParsing="false" text="New" onAction="#startNewGame"/>
+             <MenuItem mnemonicParsing="false" text="Save" onAction="#saveGame"/>
+             <MenuItem mnemonicParsing="false" text="Load" onAction="#loadGame"/>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Documentation">
+            <MenuItem mnemonicParsing="false" text="Generate" onAction="#generateHtmlDocumentation"/>
+        </Menu>
+    </MenuBar>
+    <GridPane styleClass="game-background" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="SOMETIMES" />
+        </rowConstraints>
+        <BorderPane fx:id="gameBoardPane" GridPane.columnIndex="0">
+            <center>
+                <AnchorPane fx:id="hexBoardPane" BorderPane.alignment="CENTER" />
+            </center>
+            <bottom>
+                <GridPane fx:id="bottomGrid" styleClass="borderpane-vertical" BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="33.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="33.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="33.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
+                    </rowConstraints>
+
+                    <VBox alignment="TOP_CENTER" spacing="5" GridPane.columnIndex="0">
+                        <Label styleClass="project-milestone" text="Conversion" />
+                        <Button fx:id="convertHeatButton" styleClass="convert-button" text="Convert 8 Heat to Raise Temp" />
+                        <Button fx:id="convertPlantsButton" styleClass="convert-button" text="Convert 8 Plants to Greenery" />
+                    </VBox>
+
+                    <VBox alignment="CENTER" spacing="5" GridPane.columnIndex="1">
+                        <Label styleClass="project-milestone" text="Oceans Placed" />
+                        <Label fx:id="oceansLabel" styleClass="ocean-counter-label" text="0 / 9" />
+                    </VBox>
+
+                    <VBox fx:id="milestonesBox" alignment="TOP_CENTER" spacing="5" GridPane.columnIndex="2">
+                    </VBox>
+                </GridPane>
+            </bottom>
+            <top>
+                <StackPane styleClass="borderpane-vertical">
+                    <ProgressBar fx:id="oxygenProgressBar" prefHeight="40.0" progress="0.0" styleClass="oxygen-bar" />
+                    <Label fx:id="oxygenLabel" styleClass="meter-text" text="0%" />
+                </StackPane>
+            </top>
+            <right>
+                <StackPane fx:id="temperaturePane" styleClass="borderpane-horizontal">
+                    <Group>
+                        <ProgressBar fx:id="temperatureProgressBar" prefHeight="70.0" progress="0.0" rotate="-90" styleClass="temperature-bar" />
+                    </Group>
+                    <Label fx:id="temperatureLabel" styleClass="meter-text" text="-30°C" />
+                </StackPane>
+            </right>
+            <left>
+                <VBox fx:id="standardProjectsBox" alignment="CENTER" spacing="5.0" styleClass="borderpane-horizontal">
+                    <Label styleClass="project-milestone" text="Standard projects" />
+                    <padding>
+                        <Insets left="5.0" right="5.0" />
+                    </padding>
+                </VBox>
+            </left>
+        </BorderPane>
+
+        <VBox fx:id="playerInterface" alignment="CENTER" spacing="15.0" GridPane.columnIndex="1">
+            <GridPane styleClass="generation-phase">
+                <columnConstraints>
+                    <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                </rowConstraints>
+                <Label fx:id="generationLabel" styleClass="generation-phase-label" />
+                <Label fx:id="phaseLabel" styleClass="generation-phase-label" GridPane.columnIndex="1" />
+            </GridPane>
+            <HBox fx:id="playerListBar" alignment="CENTER" prefHeight="40.0" spacing="10.0" />
+
+            <VBox fx:id="currentPlayerBoardContainer" alignment="TOP_CENTER" VBox.vgrow="ALWAYS" />
+
+            <Label fx:id="lastMoveLabel" styleClass="last-move-label"/>
+            <Button fx:id="passTurnButton" prefHeight="40.0" styleClass="pass-button" text="Pass" />
+            <Button fx:id="cancelPlacementButton" styleClass="cancel-button" text="Cancel Placement" visible="false" />
+
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+    </GridPane>
+</VBox>

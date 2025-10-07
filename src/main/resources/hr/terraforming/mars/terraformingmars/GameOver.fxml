@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.GameOverController"
+      styleClass="choose-window" alignment="CENTER" spacing="20">
+
+    <Label text="GAME OVER" styleClass="main-title"/>
+    <Label fx:id="winnerLabel" styleClass="choose-label"/>
+
+    <GridPane fx:id="scoresGrid" hgap="20" vgap="10" alignment="CENTER">
+        <padding>
+            <Insets top="20" bottom="20"/>
+        </padding>
+    </GridPane>
+</VBox>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.TilePane?>
+
+<?import javafx.geometry.Insets?>
+<VBox styleClass="choose-window" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.ChooseCardsController"
+      spacing="15" alignment="CENTER">
+
+    <Label fx:id="chooseCardsLabel" styleClass="choose-label"/>
+
+        <TilePane fx:id="cardsTile" hgap="10" vgap="10" alignment="CENTER">
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+            </padding>
+        </TilePane>
+
+    <Label fx:id="remainingMCLabel" styleClass="remaining-button"/>
+
+    <Button text="Confirm" onAction="#confirmSelection" styleClass="confirm-button"/>
+
+</VBox>
