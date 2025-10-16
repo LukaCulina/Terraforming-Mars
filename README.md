@@ -6,10 +6,9 @@ The project also includes auto-generated documentation using Java’s Reflection
 
 It’s built with Java 17+, using Apache Maven for building and dependency management, while XML and serialization handle data storage.
 
-To run the game, make sure you have JDK 17 (or newer) and Maven installed. 
+To run the game, make sure you have JDK 17 (or newer) and Maven installed. Then simply clone the repository and launch it with:
 
-Then simply clone the repository and launch it with:
-
+```bash
 git clone [YOUR_REPOSITORY_URL]
 cd [YOUR_PROJECT_FOLDER]
 mvn clean javafx:run
