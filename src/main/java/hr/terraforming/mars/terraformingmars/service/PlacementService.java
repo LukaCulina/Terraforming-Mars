@@ -76,7 +76,6 @@ public record PlacementService(GameBoard gameBoard) {
     public void placeGreenery(Tile onTile, Player forPlayer) {
         onTile.setType(TileType.GREENERY);
         onTile.setOwner(forPlayer);
-        gameBoard.incrementGreeneryCount();
 
         if(gameBoard.increaseOxygen()) {
             forPlayer.increaseTR(1);
@@ -90,7 +89,6 @@ public record PlacementService(GameBoard gameBoard) {
     public void placeCity(Tile onTile, Player forPlayer) {
         onTile.setType(TileType.CITY);
         onTile.setOwner(forPlayer);
-        gameBoard.incrementCityCount();
         forPlayer.increaseProduction(ResourceType.MEGACREDITS, 1);
         gameBoard.notifyUI();
 

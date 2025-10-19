@@ -17,8 +17,6 @@ public class GameBoard implements Serializable {
     private int oxygenLevel;
     private int temperature;
     private int oceansPlaced;
-    private int greeneryCount;
-    private int cityCount;
     private final Map<Milestone, Player> claimedMilestones = new EnumMap<>(Milestone.class);
     public static final int MAX_MILESTONES = 3;
     private boolean isFinalGeneration = false;
@@ -47,8 +45,6 @@ public class GameBoard implements Serializable {
         this.oxygenLevel = 0;
         temperature = MIN_TEMPERATURE;
         this.oceansPlaced = 0;
-        this.greeneryCount = 0;
-        this.cityCount = 0;
         claimedMilestones.clear();
     }
 
@@ -85,8 +81,6 @@ public class GameBoard implements Serializable {
     }
 
     public void incrementOceansPlaced() { this.oceansPlaced++; }
-    public void incrementGreeneryCount() { this.greeneryCount++; }
-    public void incrementCityCount() { this.cityCount++; }
 
     public boolean isFinalGeneration() {
         return isFinalGeneration;
