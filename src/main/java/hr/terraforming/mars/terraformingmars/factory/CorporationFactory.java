@@ -112,4 +112,16 @@ public class CorporationFactory {
 
         return corporations;
     }
+
+    public static Corporation getCorporationByName(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+
+        return getAllCorporations().stream()
+                .filter(corp -> corp.name().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
+
 }

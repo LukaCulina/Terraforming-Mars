@@ -26,6 +26,6 @@
 
     <HBox alignment="CENTER" spacing="20">
         <Button fx:id="confirmButton" text="Confirm Sale" onAction="#confirmSale" styleClass="confirm-button"/>
-        <Button text="Cancel" onAction="#cancel" styleClass="cancel-sale"/>
+        <Button fx:id="cancelButton" text="Cancel" onAction="#cancel" styleClass="cancel-sale"/>
     </HBox>
 </VBox>

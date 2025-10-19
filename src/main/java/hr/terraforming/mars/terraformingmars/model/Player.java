@@ -113,7 +113,7 @@ public class Player implements Serializable {
             spendMC(finalCost);
             getHand().remove(card);
             getPlayed().add(card);
-            card.play(this, board, gameManager);
+            card.play(this, gameManager);
 
             if (corporation != null) {
                 String corpName = corporation.name();
@@ -182,5 +182,13 @@ public class Player implements Serializable {
     public int getFinalScore() {
         int cardPoints = getPlayed().stream().mapToInt(Card::getVictoryPoints).sum();
         return getTR() + getMilestonePoints() + getTilePoints() + cardPoints;
+    }
+
+    public void resetForNewGame() {
+        if (this.corporation != null) {
+            this.state.reset(this.corporation);
+        } else {
+            logger.error("Cannot reset player state, corporation is null for player {}.", this.name);
+        }
     }
 }

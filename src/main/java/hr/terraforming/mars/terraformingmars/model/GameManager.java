@@ -195,4 +195,37 @@ public class GameManager implements Serializable {
 
         return new ArrayList<>(players);
     }
+
+    public void resetForNewGame(GameBoard newBoard) {
+        this.board = newBoard;
+        for (Player p : this.players) {
+            p.setBoard(newBoard);
+        }
+
+        this.generation = 1;
+        this.currentPhase = GamePhase.ACTIONS;
+        this.currentPlayerIndex = 0;
+
+        this.actionsTakenThisTurn = 0;
+        this.passedPlayers.clear();
+
+        this.cardDraftPlayerIndex = 0;
+
+        this.remainingCorporations.clear();
+        this.remainingCorporations.addAll(CorporationFactory.getAllCorporations());
+
+        this.remainingCards.clear();
+        this.remainingCards.addAll(CardFactory.getAllCards());
+
+        logger.info("GameManager has been reset for a new game.");
+    }
+
+    public void setCurrentPlayerByName(String playerName) {
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getName().equals(playerName)) {
+                this.currentPlayerIndex = i;
+                return;
+            }
+        }
+    }
 }

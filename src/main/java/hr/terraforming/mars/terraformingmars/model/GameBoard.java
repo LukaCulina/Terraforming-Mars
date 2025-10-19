@@ -188,4 +188,11 @@ public class GameBoard implements Serializable {
     public List<Tile> getAdjacentTiles(Tile centerTile) {
         return HexGridHelper.getAdjacentTiles(centerTile, this.tiles);
     }
+
+    public Tile getTileAt(int row, int col) {
+        return tiles.stream()
+                .filter(t -> t.getRow() == row && t.getCol() == col)
+                .findFirst()
+                .orElse(null);
+    }
 }

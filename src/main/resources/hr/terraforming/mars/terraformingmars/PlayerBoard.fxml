@@ -69,7 +69,7 @@
         <FlowPane fx:id="tagsLegendPane" alignment="CENTER" hgap="15" vgap="5"/>
     </VBox>
 
-    <VBox spacing="5.0" VBox.vgrow="ALWAYS" styleClass="cards-container">
+    <VBox fx:id="handContainer" spacing="5.0" VBox.vgrow="ALWAYS" styleClass="cards-container">
         <VBox.margin>
             <Insets top="20" />
         </VBox.margin>

@@ -1,0 +1,17 @@
+package hr.terraforming.mars.terraformingmars.enums;
+
+public enum ActionType {
+    INITIAL_SETUP,
+    PLAY_CARD,
+    PLACE_TILE,
+    CLAIM_MILESTONE,
+    USE_STANDARD_PROJECT,
+    CONVERT_HEAT,
+    CONVERT_PLANTS,
+    SELL_PATENTS,
+    PASS_TURN,
+    RESEARCH_COMPLETE,
+    OPEN_CHOOSE_CARDS_MODAL,
+    OPEN_SELL_PATENTS_MODAL,
+    OPEN_FINAL_GREENERY_MODAL,
+}

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class HexBoardDrawer {
 
     private final AnchorPane hexBoardPane;
-    private final GameBoard gameBoard;
+    private GameBoard gameBoard;
     private final PlacementManager placementManager;
     private static final Logger logger = LoggerFactory.getLogger(HexBoardDrawer.class);
 
@@ -185,5 +185,9 @@ public class HexBoardDrawer {
                     ownerInfo
             );
         }
+    }
+
+    public void setGameBoard(GameBoard newBoard) {
+        this.gameBoard = newBoard;
     }
 }

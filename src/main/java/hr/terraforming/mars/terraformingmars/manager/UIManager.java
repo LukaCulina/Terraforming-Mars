@@ -19,9 +19,39 @@ import javafx.scene.layout.*;
 
 import java.util.Map;
 
-public record UIManager(GameBoard gameBoard, GameManager gameManager, ActionManager actionManager,
-                        HexBoardDrawer hexBoardDrawer, GlobalStatusComponents globalStatus,
-                        ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
+public class UIManager {
+
+    private GameBoard gameBoard;
+    private final HexBoardDrawer hexBoardDrawer;
+
+    private final GameManager gameManager;
+    private final ActionManager actionManager;
+    private final GlobalStatusComponents globalStatus;
+    private final ActionPanelComponents actionPanels;
+    private final PlayerControlComponents playerControls;
+
+    public UIManager(GameBoard gameBoard, GameManager gameManager, ActionManager actionManager,
+                     HexBoardDrawer hexBoardDrawer, GlobalStatusComponents globalStatus,
+                     ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
+        this.gameBoard = gameBoard;
+        this.gameManager = gameManager;
+        this.actionManager = actionManager;
+        this.hexBoardDrawer = hexBoardDrawer;
+        this.globalStatus = globalStatus;
+        this.actionPanels = actionPanels;
+        this.playerControls = playerControls;
+    }
+
+    public HexBoardDrawer getHexBoardDrawer() {
+        return hexBoardDrawer;
+    }
+
+    public void linkNewGameBoard(GameBoard newBoard) {
+        this.gameBoard = newBoard;
+        if (this.hexBoardDrawer != null) {
+            this.hexBoardDrawer.setGameBoard(newBoard);
+        }
+    }
 
     public void initializeUIComponents(TerraformingMarsController controller, BorderPane gameBoardPane, VBox playerInterface, GridPane bottomGrid, StackPane temperaturePane) {
         UIComponentBuilder componentBuilder = new UIComponentBuilder(controller, actionManager, gameManager);
@@ -48,12 +78,12 @@ public record UIManager(GameBoard gameBoard, GameManager gameManager, ActionMana
         actionPanels.milestonesBox().prefWidthProperty().bind(bottomGrid.widthProperty().multiply(0.40));
     }
 
-    public void updateGeneralUI(Player viewedPlayer) {
+    public void updateGeneralUI(Player viewedPlayer, boolean isPlacing) {
         updateGlobalParameters();
-        updateStandardProjectButtonsState();
-        updateMilestoneButtonsState();
+        updateStandardProjectButtonsState(isPlacing);
+        updateMilestoneButtonsState(isPlacing);
         updatePlayerButtonsHighlight(viewedPlayer);
-        updateConvertButtonsState();
+        updateConvertButtonsState(isPlacing);
         drawBoard();
     }
 
@@ -76,16 +106,13 @@ public record UIManager(GameBoard gameBoard, GameManager gameManager, ActionMana
         globalStatus.temperatureLabel().setText(String.format("%d°C", gameBoard.getTemperature()));
 
         if (globalStatus.oceansLabel() != null) {
-
             int oceans = gameBoard.getOceansPlaced();
             int maxOceans = GameBoard.MAX_OCEANS;
-
             globalStatus.oceansLabel().setText(String.format("%d / %d", oceans, maxOceans));
-
         }
     }
 
-    private void updateStandardProjectButtonsState() {
+    private void updateStandardProjectButtonsState(boolean isPlacing) {
         Player currentPlayer = gameManager.getCurrentPlayer();
         boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
         boolean canPerformAction = gameManager.getActionsTakenThisTurn() < 2;
@@ -95,18 +122,18 @@ public record UIManager(GameBoard gameBoard, GameManager gameManager, ActionMana
                 StandardProject project = (StandardProject) btn.getUserData();
                 if (project != null) {
                     boolean canAfford = currentPlayer.getMC() >= project.getCost();
+                    boolean disable = isPlacing || !canAfford || !isActionPhase || !canPerformAction;
                     if (project == StandardProject.AQUIFER) {
-                        btn.setDisable(!canAfford || !isActionPhase || !canPerformAction || !gameBoard.canPlaceOcean());
-                    } else {
-                        btn.setDisable(!canAfford || !isActionPhase || !canPerformAction);
+                        disable = disable || !gameBoard.canPlaceOcean();
                     }
+                    btn.setDisable(disable);
                 }
             }
         });
-        playerControls.passTurnButton().setDisable(!isActionPhase);
+        playerControls.passTurnButton().setDisable(isPlacing || !isActionPhase);
     }
 
-    private void updateMilestoneButtonsState() {
+    private void updateMilestoneButtonsState(boolean isPlacing) {
         Player currentPlayer = gameManager.getCurrentPlayer();
         boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
         Map<Milestone, Player> claimed = gameBoard.getClaimedMilestones();
@@ -123,7 +150,7 @@ public record UIManager(GameBoard gameBoard, GameManager gameManager, ActionMana
                     } else {
                         boolean canAfford = currentPlayer.getMC() >= 8;
                         boolean requirementMet = milestone.canClaim(currentPlayer);
-                        btn.setDisable(!isActionPhase || !canAfford || !requirementMet || claimed.size() >= GameBoard.MAX_MILESTONES);
+                        btn.setDisable(isPlacing || !isActionPhase || !canAfford || !requirementMet || claimed.size() >= GameBoard.MAX_MILESTONES);
                         btn.setText(milestone.getName());
                         btn.setStyle("");
                     }
@@ -149,7 +176,7 @@ public record UIManager(GameBoard gameBoard, GameManager gameManager, ActionMana
         }
     }
 
-    private void updateConvertButtonsState() {
+    private void updateConvertButtonsState(boolean isPlacing) {
         Player currentPlayer = gameManager.getCurrentPlayer();
         boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
         boolean canPerformAction = gameManager.getActionsTakenThisTurn() < 2;
@@ -160,13 +187,12 @@ public record UIManager(GameBoard gameBoard, GameManager gameManager, ActionMana
         if (convertHeatBtn != null) {
             boolean canAffordHeat = currentPlayer.resourceProperty(ResourceType.HEAT).get() >= 8;
             boolean isTemperatureMaxed = gameBoard.getTemperature() >= GameBoard.MAX_TEMPERATURE;
-
-            convertHeatBtn.setDisable(!isActionPhase || !canPerformAction || !canAffordHeat || isTemperatureMaxed);
+            convertHeatBtn.setDisable(isPlacing || !isActionPhase || !canPerformAction || !canAffordHeat || isTemperatureMaxed);
         }
 
         if (convertPlantsBtn != null) {
             boolean canAffordPlants = currentPlayer.resourceProperty(ResourceType.PLANTS).get() >= currentPlayer.getGreeneryCost();
-            convertPlantsBtn.setDisable(!isActionPhase || !canPerformAction || !canAffordPlants);
+            convertPlantsBtn.setDisable(isPlacing || !isActionPhase || !canPerformAction || !canAffordPlants);
         }
     }
 }

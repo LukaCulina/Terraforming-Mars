@@ -32,7 +32,7 @@ public class PlayerBoardController {
     @FXML private Label energyProductionLabel;
     @FXML private Label heatProductionLabel;
     @FXML private FlowPane tagsLegendPane;
-
+    @FXML private VBox handContainer;
     @FXML private TilePane cardsDisplayArea;
     @FXML private Button showHandButton;
     @FXML private Button showPlayedButton;
@@ -54,20 +54,20 @@ public class PlayerBoardController {
     private void updatePlayerInfo() {
         corporationLabel.setText("Corporation: " + (player.getCorporation() != null ? player.getCorporation().name() : "N/A"));
 
-        trLabel.setText("TR: " + player.getTR());
-        mcLabel.setText(String.valueOf(player.getMC()));
-        steelLabel.setText(String.valueOf(player.resourceProperty(ResourceType.STEEL).get()));
-        titaniumLabel.setText(String.valueOf(player.resourceProperty(ResourceType.TITANIUM).get()));
-        plantsLabel.setText(String.valueOf(player.resourceProperty(ResourceType.PLANTS).get()));
-        energyLabel.setText(String.valueOf(player.resourceProperty(ResourceType.ENERGY).get()));
-        heatLabel.setText(String.valueOf(player.resourceProperty(ResourceType.HEAT).get()));
+        trLabel.textProperty().bind(player.trProperty().asString("TR: %d"));
+        mcLabel.textProperty().bind(player.mcProperty().asString());
+        steelLabel.textProperty().bind(player.resourceProperty(ResourceType.STEEL).asString());
+        titaniumLabel.textProperty().bind(player.resourceProperty(ResourceType.TITANIUM).asString());
+        plantsLabel.textProperty().bind(player.resourceProperty(ResourceType.PLANTS).asString());
+        energyLabel.textProperty().bind(player.resourceProperty(ResourceType.ENERGY).asString());
+        heatLabel.textProperty().bind(player.resourceProperty(ResourceType.HEAT).asString());
 
-        mcProductionLabel.setText(String.valueOf(player.getProduction(ResourceType.MEGACREDITS)));
-        steelProductionLabel.setText(String.valueOf(player.getProduction(ResourceType.STEEL)));
-        titaniumProductionLabel.setText(String.valueOf(player.getProduction(ResourceType.TITANIUM)));
-        plantsProductionLabel.setText(String.valueOf(player.getProduction(ResourceType.PLANTS)));
-        energyProductionLabel.setText(String.valueOf(player.getProduction(ResourceType.ENERGY)));
-        heatProductionLabel.setText(String.valueOf(player.getProduction(ResourceType.HEAT)));
+        mcProductionLabel.textProperty().bind(player.productionProperty(ResourceType.MEGACREDITS).asString());
+        steelProductionLabel.textProperty().bind(player.productionProperty(ResourceType.STEEL).asString());
+        titaniumProductionLabel.textProperty().bind(player.productionProperty(ResourceType.TITANIUM).asString());
+        plantsProductionLabel.textProperty().bind(player.productionProperty(ResourceType.PLANTS).asString());
+        energyProductionLabel.textProperty().bind(player.productionProperty(ResourceType.ENERGY).asString());
+        heatProductionLabel.textProperty().bind(player.productionProperty(ResourceType.HEAT).asString());
     }
 
     @FXML
@@ -148,6 +148,12 @@ public class PlayerBoardController {
 
             tagEntry.getChildren().addAll(countLabel, tagNode, nameLabel);
             tagsLegendPane.getChildren().add(tagEntry);
+        }
+    }
+
+    public void setHandInteractionEnabled(boolean isEnabled) {
+        if (handContainer != null) {
+            handContainer.setDisable(!isEnabled);
         }
     }
 }

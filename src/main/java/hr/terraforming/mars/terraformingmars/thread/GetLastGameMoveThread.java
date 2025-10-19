@@ -20,15 +20,15 @@ public class GetLastGameMoveThread extends GameMoveThread implements Runnable {
         Platform.runLater(() -> {
             if (lastGameMove != null) {
                 StringBuilder sb = new StringBuilder("Last Move: ");
-                sb.append(lastGameMove.playerName()).append(" - ");
-                sb.append(lastGameMove.actionDescription());
-
-                if (lastGameMove.row() != null && lastGameMove.col() != null) {
-                    sb.append(" at coordinates (").append(lastGameMove.row()).append(", ").append(lastGameMove.col()).append(")");
+                sb.append(lastGameMove.getPlayerName()).append(" - ");
+                sb.append(lastGameMove.getActionType().toString());
+                if (lastGameMove.getDetails() != null && !lastGameMove.getDetails().isEmpty()) {
+                    sb.append(" (").append(lastGameMove.getDetails()).append(")");
                 }
-
-                sb.append(" at ").append(lastGameMove.timestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-
+                if (lastGameMove.getRow() != null) {
+                    sb.append(" at [").append(lastGameMove.getRow()).append(", ").append(lastGameMove.getCol()).append("]");
+                }
+                sb.append(" at ").append(lastGameMove.getTimestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 label.setText(sb.toString());
             } else {
                 label.setText("No moves recorded yet.");

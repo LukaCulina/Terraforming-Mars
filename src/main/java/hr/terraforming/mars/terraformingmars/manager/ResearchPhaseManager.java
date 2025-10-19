@@ -1,9 +1,11 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.ChooseCardsController;
-import hr.terraforming.mars.terraformingmars.enums.CardSelectionContext;
+import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
+import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import javafx.application.Platform;
@@ -14,13 +16,15 @@ import java.util.List;
 public class ResearchPhaseManager {
 
     private final GameManager gameManager;
-    private final Runnable onResearchComplete;
     private final Window ownerWindow;
+    private final Runnable onResearchComplete;
     private int researchPlayerIndex = 0;
+    private final TerraformingMarsController controller;
 
-    public ResearchPhaseManager(GameManager gameManager, Window ownerWindow, Runnable onResearchComplete) {
+    public ResearchPhaseManager(GameManager gameManager, Window ownerWindow, TerraformingMarsController controller,Runnable onResearchComplete) {
         this.gameManager = gameManager;
         this.ownerWindow = ownerWindow;
+        this.controller = controller;
         this.onResearchComplete = onResearchComplete;
     }
 
@@ -49,13 +53,24 @@ public class ResearchPhaseManager {
                 "Research Phase - " + currentPlayer.getName(),
                 0.7,
                 0.8,
-                (ChooseCardsController c) -> c.setup(currentPlayer, offer, CardSelectionContext.RESEARCH, this::finishForCurrentPlayer)
+                (ChooseCardsController c) -> c.setup(currentPlayer, offer, this::finishForCurrentPlayer)
         );
-
     }
 
     private void finishForCurrentPlayer(List<Card> boughtCards) {
         Player currentPlayer = gameManager.getPlayers().get(researchPlayerIndex);
+
+        if (!boughtCards.isEmpty()) {
+            String details = boughtCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
+            GameMove modalMove = new GameMove(
+                    currentPlayer.getName(),
+                    ActionType.OPEN_CHOOSE_CARDS_MODAL,
+                    details,
+                    java.time.LocalDateTime.now()
+            );
+            controller.getActionManager().recordAndSaveMove(modalMove);
+        }
+
         int cost = boughtCards.size() * 3;
         if (currentPlayer.spendMC(cost)) {
             currentPlayer.getHand().addAll(boughtCards);

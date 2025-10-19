@@ -5,6 +5,8 @@ import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
+import hr.terraforming.mars.terraformingmars.util.XmlUtils;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,16 +17,11 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
 
     private static final Logger logger = LoggerFactory.getLogger(ActionManager.class);
 
-    public void recordMove(String description) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        GameMove move = new GameMove(currentPlayer.getName(), description, LocalDateTime.now());
-        new Thread(new SaveNewGameMoveThread(move)).start();
-    }
+    public void recordAndSaveMove(GameMove move) {
+        XmlUtils.appendGameMove(move);
 
-    public void recordTileMove(String description, Tile tile) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        GameMove move = new GameMove(currentPlayer.getName(), description, LocalDateTime.now(), tile.getRow(), tile.getCol());
         new Thread(new SaveNewGameMoveThread(move)).start();
+        Platform.runLater(() -> controller.updateLastMoveLabel(move));
     }
 
     public void performAction() {
@@ -43,7 +40,9 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         if (gameManager.getCurrentPhase() != GamePhase.ACTIONS) return;
 
         if (gameManager.getActionsTakenThisTurn() < 2) {
-            recordMove("Passed the turn");
+            GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
+            recordAndSaveMove(move);
+
             logger.info("{} consciously passed the turn with {} actions taken.",
                     gameManager.getCurrentPlayer().getName(), gameManager.getActionsTakenThisTurn());
         } else {
@@ -69,12 +68,14 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
             return;
         }
 
+        GameMove move = new GameMove(currentPlayer.getName(), ActionType.PLAY_CARD, card.getName(), LocalDateTime.now());
+
         if (card.getTileToPlace() != null) {
-            placementManager.enterPlacementModeForCard(card);
+            placementManager.enterPlacementModeForCard(card, move);
         } else {
             currentPlayer.playCard(card, gameManager);
             performAction();
-            recordMove("Played card: " + card.getName());
+            recordAndSaveMove(move);
         }
     }
 
@@ -85,7 +86,9 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         if (gameBoard.claimMilestone(milestone, currentPlayer)) {
             currentPlayer.spendMC(MILESTONE_COST);
             performAction();
-            recordMove("Claimed milestone: " + milestone.getName());
+            GameMove move = new GameMove(currentPlayer.getName(), ActionType.CLAIM_MILESTONE, milestone.name(), LocalDateTime.now());
+            recordAndSaveMove(move);
+
         } else {
             logger.warn("Failed attempt by {} to claim milestone '{}'.", currentPlayer.getName(), milestone.getName());
         }
@@ -102,8 +105,10 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
             return;
         }
 
+        GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.USE_STANDARD_PROJECT, project.name(), LocalDateTime.now());
+
         if (project.requiresTilePlacement()) {
-            placementManager.enterPlacementModeForProject(project);
+            placementManager.enterPlacementModeForProject(project, move);
         } else {
             if (project == StandardProject.SELL_PATENTS) {
                 if (currentPlayer.getHand().isEmpty()) {
@@ -115,7 +120,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
                 currentPlayer.spendMC(finalCost);
                 project.execute(currentPlayer, gameBoard);
                 performAction();
-                recordMove("Used standard project: " + project.getName());
+                recordAndSaveMove(move);
             }
         }
     }
@@ -135,7 +140,8 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         currentPlayer.increaseTR(1);
 
         performAction();
-        recordMove("Converted 8 heat to raise temperature");
+        GameMove move = new GameMove(currentPlayer.getName(), ActionType.CONVERT_HEAT, "Raise temperature", LocalDateTime.now());
+        recordAndSaveMove(move);
     }
 
     public void handleConvertPlants() {
@@ -149,6 +155,13 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
 
         logger.info("{} is initiating greenery conversion.", currentPlayer.getName());
 
-        placementManager.enterPlacementModeForPlant();
+        GameMove convertPlantsMove = new GameMove(
+                currentPlayer.getName(),
+                ActionType.CONVERT_PLANTS,
+                "Convert " + requiredPlants + " plants to greenery",
+                LocalDateTime.now()
+        );
+
+        placementManager.enterPlacementModeForPlant(convertPlantsMove);
     }
 }

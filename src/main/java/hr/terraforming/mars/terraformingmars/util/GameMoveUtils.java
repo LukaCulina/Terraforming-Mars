@@ -24,7 +24,12 @@ public class GameMoveUtils {
         gameMoveList.add(newGameMove);
 
         File file = new File(GAME_MOVE_HISTORY_FILE_NAME);
-        file.getParentFile().mkdirs();
+        File parentDir = file.getParentFile();
+
+        if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+                logger.error("Failed to create directory: {}", parentDir.getAbsolutePath());
+                return;
+            }
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(gameMoveList);
@@ -41,6 +46,7 @@ public class GameMoveUtils {
         return gameMoveList.getLast();
     }
 
+    @SuppressWarnings("unchecked")
     private static List<GameMove> loadAllGameMoves() {
         File file = new File(GAME_MOVE_HISTORY_FILE_NAME);
         if (!file.exists()) {

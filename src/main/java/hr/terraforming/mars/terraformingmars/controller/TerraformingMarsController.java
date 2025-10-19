@@ -1,7 +1,10 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
+import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.thread.GetLastGameMoveThread;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
+import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import hr.terraforming.mars.terraformingmars.manager.*;
 import hr.terraforming.mars.terraformingmars.model.*;
@@ -23,7 +26,9 @@ import javafx.util.Duration;
 import org.slf4j.*;
 
 import java.io.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TerraformingMarsController {
 
@@ -59,9 +64,16 @@ public class TerraformingMarsController {
     private PlayerBoardController currentPlayerBoardController;
     private Player viewedPlayer = null;
     private final GameSaveLoadService saveLoadService = new GameSaveLoadService();
+    private ReplayManager replayManager;
 
     @FXML
-    private void initialize() { loadPlayerBoard(); }
+    private void initialize() {
+        loadPlayerBoard();
+    }
+
+    public GameManager getGameManager() { return gameManager; }
+    public GameBoard getGameBoard() { return gameBoard; }
+
 
     private void loadPlayerBoard() {
         try {
@@ -97,6 +109,7 @@ public class TerraformingMarsController {
         this.uiManager = new UIManager(this.gameBoard, this.gameManager, this.actionManager, hexBoardDrawer, statusComps, panelComps, controlComps);
         this.uiManager.initializeUIComponents(this, gameBoardPane, playerInterface, bottomGrid, temperaturePane);
         this.gameBoard.setOnGlobalParametersChanged(this::updateAllUI);
+        this.replayManager = new ReplayManager(this);
     }
 
     private void startMoveHistory() {
@@ -110,10 +123,20 @@ public class TerraformingMarsController {
     }
 
     public void updateAllUI() {
-        if (uiManager == null || gameManager == null) return;
-        uiManager.updateGeneralUI(viewedPlayer);
+        if (uiManager == null || gameManager == null || viewedPlayer == null) {
+            logger.warn("UI update skipped because a critical component is null.");
+            return;
+        }
+
+        boolean isPlacing = (placementManager != null && placementManager.isPlacementMode());
+        uiManager.updateGeneralUI(viewedPlayer, isPlacing);
+
         if (currentPlayerBoardController != null) {
             currentPlayerBoardController.setPlayer(viewedPlayer, this::handlePlayCard);
+        }
+
+        if (uiManager.getHexBoardDrawer() != null) {
+            uiManager.getHexBoardDrawer().drawBoard();
         }
     }
 
@@ -133,6 +156,7 @@ public class TerraformingMarsController {
     public void onFinalGreeneryPhaseComplete() {
         logger.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
         List<Player> rankedPlayers = gameManager.calculateFinalScores();
+
         Platform.runLater(() -> GameScreens.showGameOverScreen(rankedPlayers));
     }
 
@@ -142,18 +166,27 @@ public class TerraformingMarsController {
         }
     }
 
-    public void setPlacementUIVisible(boolean isVisible) {
-        passTurnButton.setDisable(isVisible);
-        convertHeatButton.setDisable(isVisible);
-        convertPlantsButton.setDisable(isVisible);
-        standardProjectsBox.setDisable(isVisible);
-        milestonesBox.setDisable(isVisible);
-        cancelPlacementButton.setVisible(isVisible);
-    }
-
     public void openSellPatentsWindow() {
-        Runnable onSaleCompleteAction = () -> {
-            actionManager.recordMove(gameManager.getCurrentPlayer().getName() + " sold patents");
+        Consumer<List<Card>> onSaleCompleteAction = soldCards -> {
+
+            String details = soldCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
+            GameMove showModal = new GameMove(
+                    gameManager.getCurrentPlayer().getName(),
+                    ActionType.OPEN_SELL_PATENTS_MODAL,
+                    details,
+                    java.time.LocalDateTime.now()
+            );
+            actionManager.recordAndSaveMove(showModal);
+
+            GameMove move = new GameMove(
+                    gameManager.getCurrentPlayer().getName(),
+                    ActionType.SELL_PATENTS,
+                    "Sold " + soldCards.size() + " card(s)",
+                    java.time.LocalDateTime.now()
+            );
+
+            actionManager.recordAndSaveMove(move);
+
             actionManager.performAction();
         };
 
@@ -166,6 +199,10 @@ public class TerraformingMarsController {
         );
     }
 
+    public ActionManager getActionManager() {
+        return actionManager;
+    }
+
     public void setViewedPlayer(Player player) {
         this.viewedPlayer = player;
     }
@@ -174,8 +211,27 @@ public class TerraformingMarsController {
         updateAllUI();
     }
 
+    public void setGameControlsEnabled(boolean isEnabled) {
+
+        if (passTurnButton != null) passTurnButton.setDisable(!isEnabled);
+        if (convertHeatButton != null) convertHeatButton.setDisable(!isEnabled);
+        if (convertPlantsButton != null) convertPlantsButton.setDisable(!isEnabled);
+
+        if (standardProjectsBox != null) standardProjectsBox.setDisable(!isEnabled);
+        if (milestonesBox != null) milestonesBox.setDisable(!isEnabled);
+
+        if (currentPlayerBoardController != null) {
+            currentPlayerBoardController.setHandInteractionEnabled(isEnabled);
+        }
+
+        if (cancelPlacementButton != null) {
+            cancelPlacementButton.setVisible(!isEnabled);
+        }
+    }
+
     public void startNewGame() {
         GameMoveUtils.deleteMoveHistoryFile();
+        XmlUtils.clearGameMoves();
         GameScreens.showChoosePlayersScreen();
     }
 
@@ -196,4 +252,39 @@ public class TerraformingMarsController {
     }
 
     public void generateHtmlDocumentation() { DocumentationUtils.generateDocumentation(); }
+
+    @FXML
+    private void replayGame() {
+        replayManager.startReplay();
+    }
+
+    public void prepareForReplay() {
+        gameManager.getPlayers().forEach(Player::resetForNewGame);
+
+        GameBoard newReplayBoard = new GameBoard();
+
+        newReplayBoard.setOnGlobalParametersChanged(this::updateAllUI);
+
+        this.gameBoard = newReplayBoard;
+        this.gameManager.resetForNewGame(newReplayBoard);
+        this.uiManager.linkNewGameBoard(newReplayBoard);
+
+        this.viewedPlayer = this.gameManager.getCurrentPlayer();
+        updateAllUI();
+    }
+
+    public void updateLastMoveLabel(GameMove lastGameMove) {
+        if (lastGameMove != null) {
+            StringBuilder sb = new StringBuilder("Last Move: ");
+            sb.append(lastGameMove.getPlayerName()).append(" - ");
+            sb.append(lastGameMove.getActionType()).append(" (").append(lastGameMove.getDetails()).append(")");
+            if (lastGameMove.getRow() != null) {
+                sb.append(" at (").append(lastGameMove.getRow()).append(", ").append(lastGameMove.getCol()).append(")");
+            }
+            sb.append(" at ").append(lastGameMove.getTimestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            lastMoveLabel.setText(sb.toString());
+        } else {
+            lastMoveLabel.setText("No moves recorded yet.");
+        }
+    }
 }

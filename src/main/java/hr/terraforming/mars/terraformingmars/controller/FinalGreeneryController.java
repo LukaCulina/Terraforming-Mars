@@ -1,12 +1,16 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
+import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +30,8 @@ public class FinalGreeneryController {
     private Label greeneryCostLabel;
     @FXML
     private Button convertButton;
+    @FXML
+    private Button finishButton;
 
     private List<Player> players;
     private int currentPlayerIndex = 0;
@@ -48,6 +54,16 @@ public class FinalGreeneryController {
         }
 
         Player currentPlayer = players.get(currentPlayerIndex);
+
+        String details = currentPlayer.getName() + "," + currentPlayer.resourceProperty(ResourceType.PLANTS).get() + "," + currentPlayer.getGreeneryCost();
+        GameMove showModal = new GameMove(
+                "System",
+                ActionType.OPEN_FINAL_GREENERY_MODAL,
+                details,
+                java.time.LocalDateTime.now()
+        );
+        mainController.getActionManager().recordAndSaveMove(showModal);
+
         infoLabel.setText("Player " + (currentPlayerIndex + 1) + "/" + players.size());
         playerNameLabel.setText(currentPlayer.getName());
         updateUI();
@@ -89,6 +105,25 @@ public class FinalGreeneryController {
     }
 
     private void closeWindow() {
-        stage.close();
+        if (playerNameLabel != null && playerNameLabel.getScene() != null) {
+            Stage windowToClose = (Stage) playerNameLabel.getScene().getWindow();
+            if (windowToClose != null) {
+                windowToClose.close();
+            }
+        }
+    }
+
+    public void replayShowFinalGreenery(String playerName, int plants, int cost) {
+        infoLabel.setText("Replay: Final Greenery Conversion");
+        playerNameLabel.setText(playerName);
+        plantsLabel.setText("Plants: " + plants);
+        greeneryCostLabel.setText("Cost: " + cost);
+
+        convertButton.setVisible(false);
+        finishButton.setVisible(false);
+
+        PauseTransition autoClose = new PauseTransition(Duration.seconds(2));
+        autoClose.setOnFinished(_ -> closeWindow());
+        autoClose.play();
     }
 }

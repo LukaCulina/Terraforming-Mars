@@ -23,7 +23,7 @@
 
     <HBox alignment="CENTER" spacing="30" styleClass="action-button-container">
         <Button fx:id="convertButton" text="Place a Greenery Tile" onAction="#handleConvertGreenery" styleClass="confirm-button" prefWidth="200"/>
-        <Button text="Finish Conversion" onAction="#handleFinish" styleClass="player-button" id="button-2" prefWidth="200"/>
+        <Button fx:id="finishButton" text="Finish Conversion" onAction="#handleFinish" styleClass="player-button" id="button-2" prefWidth="200"/>
     </HBox>
 
 </VBox>

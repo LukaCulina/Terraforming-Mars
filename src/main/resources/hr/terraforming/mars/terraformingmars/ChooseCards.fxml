@@ -20,6 +20,6 @@
 
     <Label fx:id="remainingMCLabel" styleClass="remaining-button"/>
 
-    <Button text="Confirm" onAction="#confirmSelection" styleClass="confirm-button"/>
+    <Button fx:id="confirmButton" text="Confirm" onAction="#confirmSelection" styleClass="confirm-button"/>
 
 </VBox>

@@ -108,4 +108,28 @@ public class PlayerState implements Serializable {
 
         return Math.max(0, currentCost);
     }
+
+    public void reset(Corporation corporation) {
+        this.tr.set(20);
+        this.mc.set(corporation.startingMC());
+        this.tilePoints.set(0);
+
+        for (IntegerProperty resourceProp : resources.values()) {
+            resourceProp.set(0);
+        }
+
+        for (IntegerProperty productionProp : production.values()) {
+            productionProp.set(0);
+        }
+
+        if (corporation.startingProduction() != null) {
+            corporation.startingProduction().forEach((resourceType, amount) ->
+                productionProperty(resourceType).set(amount)
+            );
+        }
+
+        this.hand.clear();
+        this.played.clear();
+        this.claimedMilestones.clear();
+    }
 }

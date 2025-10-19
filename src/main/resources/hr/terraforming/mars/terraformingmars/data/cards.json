@@ -1,0 +1,630 @@
+[
+  {
+    "name": "Research Lab",
+    "cost": 11,
+    "tags": ["SCIENCE", "BUILDING"],
+    "description": "Draw 2 cards immediately.",
+    "victoryPoints": 1,
+    "effects": [
+      {
+        "type": "drawCards",
+        "amount": 2
+      }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "AI Central",
+    "cost": 18,
+    "tags": ["SCIENCE", "BUILDING"],
+    "description": "Gain 1 MC for each science tag you have.",
+    "victoryPoints": 1,
+    "effects": [
+      {
+        "type": "gainMcPerTag",
+        "tag": "SCIENCE",
+        "multiplier": 1
+      }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Advanced Alloys",
+    "cost": 9,
+    "tags": ["SCIENCE"],
+    "description": "Gain 3 steel and 3 titanium immediately.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "addResource", "resource": "STEEL", "amount": 3 },
+      { "type": "addResource", "resource": "TITANIUM", "amount": 3 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Medical Lab",
+    "cost": 13,
+    "tags": ["SCIENCE", "BUILDING"],
+    "description": "Gain 2 MC for each Earth tag you have.",
+    "victoryPoints": 1,
+    "effects": [
+      {
+        "type": "gainMcPerTag",
+        "tag": "EARTH",
+        "multiplier": 2
+      }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Power Plant",
+    "cost": 4,
+    "tags": ["BUILDING", "ENERGY"],
+    "description": "Increase your energy production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Steelworks",
+    "cost": 7,
+    "tags": ["BUILDING"],
+    "description": "Increase your steel production by 1 and energy production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "STEEL", "amount": 1 },
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Ore Processor",
+    "cost": 13,
+    "tags": ["BUILDING"],
+    "description": "Requirement: Energy production >= 1. Effect: Decrease energy production by 1, increase steel production by 2.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": -1 },
+      { "type": "increaseProduction", "resource": "STEEL", "amount": 2 }
+    ],
+    "requirements": [
+      { "type": "minProduction", "resource": "ENERGY", "amount": 1 }
+    ]
+  },
+  {
+    "name": "Fusion Power",
+    "cost": 14,
+    "tags": ["SCIENCE", "ENERGY"],
+    "description": "Requirement: You have at least 2 science tags. Effect: Increase energy production by 3.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 3 }
+    ],
+    "requirements": [
+      { "type": "minTags", "tag": "SCIENCE", "amount": 2 }
+    ]
+  },
+  {
+    "name": "Industrial Center",
+    "cost": 4,
+    "tags": ["BUILDING"],
+    "description": "Increase your steel production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "STEEL", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Asteroid Mining",
+    "cost": 30,
+    "tags": ["SPACE", "JOVIAN"],
+    "description": "Increase your titanium production by 2.",
+    "victoryPoints": 2,
+    "effects": [
+      { "type": "increaseProduction", "resource": "TITANIUM", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Space Elevator",
+    "cost": 27,
+    "tags": ["SPACE", "BUILDING"],
+    "description": "Gain 15 MC immediately and increase your titanium production by 1.",
+    "victoryPoints": 2,
+    "effects": [
+      { "type": "addResource", "resource": "MEGACREDITS", "amount": 15 },
+      { "type": "increaseProduction", "resource": "TITANIUM", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Ganymede Colony",
+    "cost": 20,
+    "tags": ["SPACE", "JOVIAN"],
+    "description": "Increase your MC production by 2.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Callisto Penal Mines",
+    "cost": 24,
+    "tags": ["SPACE", "JOVIAN"],
+    "description": "Increase your MC production by 3.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 3 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Io Mining Industries",
+    "cost": 41,
+    "tags": ["SPACE", "JOVIAN"],
+    "description": "Increase MC production by 1 for each Jovian tag you have.",
+    "victoryPoints": 2,
+    "effects": [
+      { "type": "increaseProductionPerTag", "resource": "MEGACREDITS", "tag": "JOVIAN", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Deimos Down",
+    "cost": 31,
+    "tags": ["SPACE"],
+    "description": "Increase temperature by 1 step and gain 4 steel immediately.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseTemperature", "amount": 1 },
+      { "type": "addResource", "resource": "STEEL", "amount": 4 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Great Dam",
+    "cost": 12,
+    "tags": ["BUILDING", "ENERGY"],
+    "description": "Requirement: At least 4 oceans placed. Effect: Increase energy production by 2.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 2 }
+    ],
+    "requirements": [
+      { "type": "minOceans", "amount": 4 }
+    ]
+  },
+  {
+    "name": "Kelp Farming",
+    "cost": 18,
+    "tags": ["PLANT"],
+    "description": "Increase plant production by 2 and MC production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "PLANTS", "amount": 2 },
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Nitrogen-Rich Asteroid",
+    "cost": 23,
+    "tags": ["SPACE"],
+    "description": "Increase your TR by 2 and plant production by 2.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseTR", "amount": 2 },
+      { "type": "increaseProduction", "resource": "PLANTS", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Sabotage",
+    "cost": 1,
+    "tags": [],
+    "description": "Gain 5 MC.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "addResource", "resource": "MEGACREDITS", "amount": 5 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Hackers",
+    "cost": 4,
+    "tags": [],
+    "description": "Gain 2 MC for each opponent in the game.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "gainMcPerOpponent", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Investment Loan",
+    "cost": 3,
+    "tags": ["EARTH"],
+    "description": "Gain 10 MC, but decrease your MC production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "addResource", "resource": "MEGACREDITS", "amount": 10 },
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": -1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Media Group",
+    "cost": 6,
+    "tags": ["EARTH"],
+    "description": "Gain 1 MC for every two Earth tags you have (including this one).",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "gainMcPerTag", "tag": "EARTH", "multiplier": 0.5, "includeSelf": true }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Business Network",
+    "cost": 4,
+    "tags": ["EARTH"],
+    "description": "Increase your MC production by 1 and draw 1 card.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 1 },
+      { "type": "drawCards", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Windmill",
+    "cost": 6,
+    "tags": ["ENERGY", "BUILDING"],
+    "description": "Requirement: Oxygen at 4% or more. Effect: Increase your energy production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 1 }
+    ],
+    "requirements": [
+      { "type": "minOxygen", "amount": 4 }
+    ]
+  },
+  {
+    "name": "Robotics Factory",
+    "cost": 6,
+    "tags": ["BUILDING", "SCIENCE"],
+    "description": "Increase your steel production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "STEEL", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Greenhouse",
+    "cost": 6,
+    "tags": ["PLANT", "BUILDING"],
+    "description": "Increase your Heat production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "HEAT", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Lichen",
+    "cost": 5,
+    "tags": ["PLANT"],
+    "description": "Increase your titanium production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "TITANIUM", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Microbe Cultivation",
+    "cost": 7,
+    "tags": ["PLANT", "SCIENCE"],
+    "description": "Increase your plant production by 2.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "PLANTS", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Experimental Plant",
+    "cost": 4,
+    "tags": ["PLANT", "SCIENCE"],
+    "description": "Increase your plant production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "PLANTS", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Forest Expansion",
+    "cost": 13,
+    "tags": ["PLANT", "EARTH"],
+    "description": "Increase your plant production by 1 and MC production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "PLANTS", "amount": 1 },
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Heating",
+    "cost": 6,
+    "tags": ["ENERGY"],
+    "description": "Increase your heat production by 2.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "HEAT", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Asteroid",
+    "cost": 14,
+    "tags": ["SPACE"],
+    "description": "Increase temperature by 1 step (you gain 1 TR).",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseTemperature", "amount": 1 },
+      { "type": "increaseTR", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Terraforming Hub",
+    "cost": 13,
+    "tags": ["BUILDING", "SCIENCE"],
+    "description": "Increase your MC production by 5.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 5 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Research",
+    "cost": 11,
+    "tags": ["SCIENCE"],
+    "description": "Draw 2 cards.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "drawCards", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Patents",
+    "cost": 3,
+    "tags": ["SCIENCE"],
+    "description": "Draw 1 card.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "drawCards", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Terraforming Contract",
+    "cost": 0,
+    "tags": ["EARTH"],
+    "description": "Increase your MC production by 2.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Ecology Center",
+    "cost": 11,
+    "tags": ["PLANT", "BUILDING", "SCIENCE"],
+    "description": "Increase your plant production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "PLANTS", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "University",
+    "cost": 8,
+    "tags": ["BUILDING", "SCIENCE"],
+    "description": "Increase your MC production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Jovian Outpost",
+    "cost": 15,
+    "tags": ["JOVIAN", "SPACE"],
+    "description": "Increase your MC production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Earth Office",
+    "cost": 1,
+    "tags": ["EARTH"],
+    "description": "Increase your MC production by 1 for each Earth tag you have.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProductionPerTag", "resource": "MEGACREDITS", "tag": "EARTH", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Orbital Construction",
+    "cost": 15,
+    "tags": ["SPACE", "BUILDING"],
+    "description": "Increase your steel production by 1 and titanium production by 1.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "increaseProduction", "resource": "STEEL", "amount": 1 },
+      { "type": "increaseProduction", "resource": "TITANIUM", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Symbiotic Fungus",
+    "cost": 4,
+    "tags": ["PLANT"],
+    "description": "Requirement: You must have a Plant tag. Effect: Gain 1 plant.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "addResource", "resource": "PLANTS", "amount": 1 }
+    ],
+    "requirements": [
+      { "type": "minTags", "tag": "PLANT", "amount": 1 }
+    ]
+  },
+  {
+    "name": "Nuclear Power",
+    "cost": 10,
+    "tags": ["ENERGY", "EARTH"],
+    "description": "Decrease your MC production 2 steps and increase your energy production 3 steps.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": -2 },
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 3 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Mangrove",
+    "cost": 12,
+    "tags": ["PLANT"],
+    "description": "Place a greenery tile and gain 3 plants.",
+    "victoryPoints": 0,
+    "tileToPlace": "GREENERY",
+    "effects": [
+      { "type": "addResource", "resource": "PLANTS", "amount": 3 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Giant Ice Asteroid",
+    "cost": 36,
+    "tags": ["SPACE"],
+    "description": "Increase temperature by 1 step and place 1 ocean tile.",
+    "victoryPoints": 0,
+    "tileToPlace": "OCEAN",
+    "effects": [
+      { "type": "increaseTemperature", "amount": 1 },
+      { "type": "increaseTR", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Aquifer Placement",
+    "cost": 18,
+    "tags": ["SPACE"],
+    "description": "Place 1 ocean tile. You get 2 MC.",
+    "victoryPoints": 0,
+    "tileToPlace": "OCEAN",
+    "effects": [
+      { "type": "canPlaceOcean" },
+      { "type": "addResource", "resource": "MEGACREDITS", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Strip Mine",
+    "cost": 11,
+    "tags": ["BUILDING"],
+    "description": "Requirement: Oxygen <= 5%. Increase steel production by 2, but decrease your energy production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "STEEL", "amount": 2 },
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": -1 }
+    ],
+    "requirements": [
+      { "type": "maxOxygen", "amount": 5 }
+    ]
+  },
+  {
+    "name": "Lagrange Observatory",
+    "cost": 9,
+    "tags": ["SCIENCE", "SPACE"],
+    "description": "Draw 1 card. Gain 1 VP.",
+    "victoryPoints": 1,
+    "effects": [
+      { "type": "drawCards", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Aquired Company",
+    "cost": 10,
+    "tags": ["EARTH"],
+    "description": "Increase your MC production by 3.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "MEGACREDITS", "amount": 3 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Geothermal Power",
+    "cost": 11,
+    "tags": ["ENERGY", "BUILDING"],
+    "description": "Increase your energy production by 2.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 2 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Solar Wind Power",
+    "cost": 11,
+    "tags": ["SCIENCE", "ENERGY"],
+    "description": "Increase your TR by 1 and your energy production by 1.",
+    "victoryPoints": 0,
+    "effects": [
+      { "type": "increaseTR", "amount": 1 },
+      { "type": "increaseProduction", "resource": "ENERGY", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Ice Cap Melting",
+    "cost": 5,
+    "tags": [],
+    "description": "Increase temperature 1 step. Place 1 ocean tile.",
+    "victoryPoints": 0,
+    "tileToPlace": "OCEAN",
+    "effects": [
+      { "type": "increaseTemperature", "amount": 1 }
+    ],
+    "requirements": []
+  },
+  {
+    "name": "Methane from Titan",
+    "cost": 28,
+    "tags": ["SPACE", "JOVIAN"],
+    "description": "Increase your heat production by 2 and your plant production by 2.",
+    "victoryPoints": 2,
+    "effects": [
+      { "type": "increaseProduction", "resource": "HEAT", "amount": 2 },
+      { "type": "increaseProduction", "resource": "PLANTS", "amount": 2 }
+    ],
+    "requirements": []
+  }
+]
