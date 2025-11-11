@@ -5,26 +5,23 @@ import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public record GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
-
-    private static final Logger logger = LoggerFactory.getLogger(GameFlowManager.class);
-
+    
     public void handleEndOfActionPhase() {
-        logger.info("All players have passed. Starting Production Phase.");
+        log.info("All players have passed. Starting Production Phase.");
 
         gameManager.doProduction();
 
         controller.updateAllUI();
 
         if (gameBoard.isFinalGeneration()) {
-            logger.info("This was the last generation. Starting final greenery conversion phase.");
+            log.info("This was the last generation. Starting final greenery conversion phase.");
 
             GameScreens.startFinalGreeneryPhase(
                     gameManager.getPlayers(),
@@ -36,7 +33,7 @@ public record GameFlowManager(TerraformingMarsController controller, GameManager
     }
 
     private void startNewGeneration() {
-        logger.info("Production phase is over. Starting a new generation.");
+        log.info("Production phase is over. Starting a new generation.");
 
         gameManager.startNewGeneration();
         controller.setViewedPlayer(gameManager.getCurrentPlayer());
@@ -54,7 +51,7 @@ public record GameFlowManager(TerraformingMarsController controller, GameManager
     private void onResearchComplete() {
         createAndSaveResearchPhaseSnapshot(gameManager);
 
-        logger.info("Research phase complete. Starting Action Phase.");
+        log.info("Research phase complete. Starting Action Phase.");
 
         gameManager.beginActionPhase();
         controller.updateAllUI();
@@ -78,6 +75,6 @@ public record GameFlowManager(TerraformingMarsController controller, GameManager
         );
 
         XmlUtils.appendGameMove(researchMove);
-        logger.debug("RESEARCH_PHASE_COMPLETE snapshot saved to XML.");
+        log.debug("RESEARCH_PHASE_COMPLETE snapshot saved to XML.");
     }
 }

@@ -12,6 +12,7 @@ import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.model.effects.Effect; // Potrebno kreirati
 import hr.terraforming.mars.terraformingmars.model.effects.EffectInterpreter; // Potrebno kreirati
 import hr.terraforming.mars.terraformingmars.model.requirements.RequirementInterpreter;
+import lombok.Setter;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,13 +23,10 @@ import java.util.function.BiPredicate;
 public class CardFactory {
 
     private static final Map<String, Card> cardRegistry = new HashMap<>();
+    @Setter
     private static ResourceConfig config;
 
     private CardFactory() {}
-
-    public static void setConfig(ResourceConfig resourceConfig) {
-        config = resourceConfig;
-    }
 
     public static void loadAllCards() {
         if (!cardRegistry.isEmpty()) {

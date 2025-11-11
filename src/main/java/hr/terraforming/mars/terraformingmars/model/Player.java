@@ -6,21 +6,24 @@ import hr.terraforming.mars.terraformingmars.enums.TagType;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class Player implements Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(Player.class);
-
+    @Getter
     private final String name;
+    @Getter
     private final int playerNumber;
+    @Getter
     private Corporation corporation;
     private final PlayerState state;
+    @Setter
     private transient GameBoard board;
 
     private static final List<Color> PLAYER_COLORS = List.of(
@@ -34,12 +37,7 @@ public class Player implements Serializable {
         this.state = new PlayerState();
     }
 
-    public String getName() { return name; }
-    public Corporation getCorporation() { return corporation; }
-    public int getPlayerNumber() { return playerNumber; }
     public Color getPlayerColor() { return PLAYER_COLORS.get((playerNumber - 1) % PLAYER_COLORS.size()); }
-
-    public void setBoard(GameBoard board) { this.board = board; }
 
     public void setCorporation(Corporation corporation) {
         this.corporation = corporation;
@@ -96,11 +94,11 @@ public class Player implements Serializable {
         }
         int finalCost = state.getCardCost(card, this.corporation);
         if (getMC() < finalCost) {
-            logger.warn("Cannot play '{}': Insufficient MC (needs {}, has {}).", card.getName(), finalCost, getMC());
+            log.warn("Cannot play '{}': Insufficient MC (needs {}, has {}).", card.getName(), finalCost, getMC());
             return false;
         }
         if (!card.getRequirement().test(this, this.board)) {
-            logger.warn("Cannot play '{}': Requirements not met.", card.getName());
+            log.warn("Cannot play '{}': Requirements not met.", card.getName());
             return false;
         }
         return true;
@@ -124,7 +122,7 @@ public class Player implements Serializable {
                 }
             }
 
-            logger.info("{} played the card: {}", this.name, card.getName());
+            log.info("{} played the card: {}", this.name, card.getName());
         }
     }
 
@@ -137,7 +135,7 @@ public class Player implements Serializable {
         if (resourceProperty(ResourceType.PLANTS).get() >= cost) {
             resourceProperty(ResourceType.PLANTS).set(resourceProperty(ResourceType.PLANTS).get() - cost);
         } else {
-            logger.warn("{} failed to place greenery: insufficient plants (has {}, needs {}).",
+            log.warn("{} failed to place greenery: insufficient plants (has {}, needs {}).",
                     this.name, resourceProperty(ResourceType.PLANTS).get(), cost);
         }
     }
@@ -174,7 +172,7 @@ public class Player implements Serializable {
         int totalTilePoints = (int) (greeneryPoints + cityPoints);
         state.tilePointsProperty().set(totalTilePoints);
 
-        logger.info("{} scored {} points from tiles.", this.name, totalTilePoints);
+        log.info("{} scored {} points from tiles.", this.name, totalTilePoints);
     }
 
     public int getTilePoints() { return state.tilePointsProperty().get(); }
@@ -188,7 +186,7 @@ public class Player implements Serializable {
         if (this.corporation != null) {
             this.state.reset(this.corporation);
         } else {
-            logger.error("Cannot reset player state, corporation is null for player {}.", this.name);
+            log.error("Cannot reset player state, corporation is null for player {}.", this.name);
         }
     }
 }

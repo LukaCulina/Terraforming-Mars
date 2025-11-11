@@ -8,20 +8,20 @@ import hr.terraforming.mars.terraformingmars.enums.TileType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import javafx.application.Platform;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 
+@Slf4j
 public class PlacementManager {
     private GameMove moveInProgress;
-    private static final Logger logger = LoggerFactory.getLogger(PlacementManager.class);
 
     private final TerraformingMarsController mainController;
     private final GameBoard gameBoard;
     private final GameManager gameManager;
     private ActionManager actionManager;
 
+    @Getter
     private boolean isPlacementMode = false;
     private boolean isFinalGreeneryMode = false;
     private boolean isPlantConversionMode = false;
@@ -30,6 +30,7 @@ public class PlacementManager {
 
     private StandardProject projectToPlace = null;
     private Card cardToPlace = null;
+    @Getter
     private TileType tileTypeToPlace = null;
 
     public PlacementManager(TerraformingMarsController mainController, GameManager gameManager, GameBoard gameBoard) {
@@ -47,7 +48,7 @@ public class PlacementManager {
         this.isPlantConversionMode = true;
         this.isPlacementMode = true;
         this.moveInProgress = move;
-        logger.info("Entering placement mode for Plant Conversion.");
+        log.info("Entering placement mode for Plant Conversion.");
         mainController.drawBoard();
         mainController.setGameControlsEnabled(false);
     }
@@ -57,7 +58,7 @@ public class PlacementManager {
         this.tileTypeToPlace = project.getTileType();
         this.moveInProgress = move;
         this.isPlacementMode = true;
-        logger.info("Entering placement mode for project: {}", project.getName());
+        log.info("Entering placement mode for project: {}", project.getName());
         mainController.drawBoard();
         mainController.setGameControlsEnabled(false);
 
@@ -69,7 +70,7 @@ public class PlacementManager {
         this.moveInProgress = move;
         this.isPlacementMode = true;
 
-        logger.info("Entering placement mode for card: {}", card.getName());
+        log.info("Entering placement mode for card: {}", card.getName());
         mainController.drawBoard();
         mainController.setGameControlsEnabled(false);
     }
@@ -81,7 +82,7 @@ public class PlacementManager {
         this.finalGreeneryPlayer = player;
         this.onPlacementCompleteCallback = onCompleteCallback;
 
-        logger.info("Entering placement mode for FINAL GREENERY for player: {}", player.getName());
+        log.info("Entering placement mode for FINAL GREENERY for player: {}", player.getName());
         mainController.drawBoard();
         mainController.setGameControlsEnabled(false);
     }
@@ -91,7 +92,7 @@ public class PlacementManager {
 
         Player placementOwner = isFinalGreeneryMode ? this.finalGreeneryPlayer : currentPlayer;
         if (placementOwner == null) {
-            logger.error("Placement failed: No player defined for tile placement. This should not happen.");
+            log.error("Placement failed: No player defined for tile placement. This should not happen.");
 
             cancelPlacement();
             return;
@@ -132,7 +133,7 @@ public class PlacementManager {
     }
 
     public void cancelPlacement() {
-        logger.info("Placement canceled by user.");
+        log.info("Placement canceled by user.");
 
         if (onPlacementCompleteCallback != null) {
             Platform.runLater(onPlacementCompleteCallback);
@@ -160,9 +161,9 @@ public class PlacementManager {
         if (owner.resourceProperty(ResourceType.PLANTS).get() >= cost) {
             owner.spendPlantsForGreenery();
             gameBoard.placeGreenery(tile, owner);
-            logger.info("{} placed a final greenery tile.", owner.getName());
+            log.info("{} placed a final greenery tile.", owner.getName());
         } else {
-            logger.warn("{} does not have enough plants for final greenery conversion (has {}, needs {}).",
+            log.warn("{} does not have enough plants for final greenery conversion (has {}, needs {}).",
                     owner.getName(), owner.resourceProperty(ResourceType.PLANTS).get(), cost);
         }
     }
@@ -172,7 +173,7 @@ public class PlacementManager {
             case OCEAN: gameBoard.placeOcean(tile, owner); break;
             case GREENERY: gameBoard.placeGreenery(tile, owner); break;
             case CITY: gameBoard.placeCity(tile, owner); break;
-            default: logger.error("Trying to place an unexpected tile type: {}.", tileTypeToPlace); return;
+            default: log.error("Trying to place an unexpected tile type: {}.", tileTypeToPlace); return;
 
         }
         if (cardToPlace != null) {
@@ -198,15 +199,7 @@ public class PlacementManager {
         this.onPlacementCompleteCallback = null;
     }
 
-    public boolean isPlacementMode() {
-        return isPlacementMode;
-    }
-
     public Player getPlacementOwner() {
         return isFinalGreeneryMode ? finalGreeneryPlayer : gameManager.getCurrentPlayer();
-    }
-
-    public TileType getTileTypeToPlace() {
-        return tileTypeToPlace;
     }
 }

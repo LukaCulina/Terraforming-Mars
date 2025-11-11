@@ -14,15 +14,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 public class ChooseCorporationController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ChooseCorporationController.class);
 
     @FXML
     private HBox corporationButtonsContainer;
@@ -103,14 +100,14 @@ public class ChooseCorporationController {
         selectBtn.getStyleClass().add("select-button");
 
         selectBtn.setOnAction(_ -> {
-            logger.info("Player selected corporation '{}' via button click.", corp.name());
+            log.info("Player selected corporation '{}' via button click.", corp.name());
             selectCorporation(corp);
         });
 
         VBox.setVgrow(contentWrapper, Priority.ALWAYS);
 
         card.setOnMouseClicked(_ -> {
-            logger.info("Player selected corporation '{}' via card click.", corp.name());
+            log.info("Player selected corporation '{}' via card click.", corp.name());
             selectCorporation(corp);
         });
 

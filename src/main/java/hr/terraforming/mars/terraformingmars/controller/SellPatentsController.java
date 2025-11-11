@@ -18,12 +18,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SellPatentsController {
-
-    private static final Logger logger = LoggerFactory.getLogger(SellPatentsController.class);
 
     @FXML private TilePane cardsForSalePane;
     @FXML private Label infoLabel;
@@ -77,7 +75,7 @@ public class SellPatentsController {
 
             player.addMC(cardsSoldCount);
 
-            logger.info("{} sold {} patent(s) for {} MC.", player.getName(), selectedCards.size(), selectedCards.size());
+            log.info("{} sold {} patent(s) for {} MC.", player.getName(), selectedCards.size(), selectedCards.size());
             if (onSaleComplete != null) {
                 onSaleComplete.accept(new ArrayList<>(selectedCards));
             }

@@ -129,7 +129,8 @@ package hr.terraforming.mars.terraformingmars.model;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
-import hr.terraforming.mars.terraformingmars.model.effects.Effect; // Važno: Novi import
+import hr.terraforming.mars.terraformingmars.model.effects.Effect;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -139,6 +140,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+@Getter
 public class Card implements Serializable {
 
     private final String name;
@@ -211,15 +213,6 @@ public class Card implements Serializable {
             return new Card(this);
         }
     }
-
-    public BiPredicate<Player, GameBoard> getRequirement() { return requirement; }
-    public String getName() { return name; }
-    public int getCost() { return cost; }
-    public String getDescription() { return description; }
-    public List<TagType> getTags() { return tags; }
-    public TileType getTileToPlace() { return tileToPlace; }
-    public int getVictoryPoints() { return victoryPoints; }
-    public List<Effect> getEffects() { return effects; } // <<-- NOVI GETTER
 
     public void play(Player player, GameManager gameManager) {
         if (effects != null) {

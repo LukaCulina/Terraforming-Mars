@@ -11,14 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
+@Slf4j
 public class FinalGreeneryController {
-
-    private static final Logger logger = LoggerFactory.getLogger(FinalGreeneryController.class);
 
     @FXML
     private Label infoLabel;
@@ -98,7 +95,7 @@ public class FinalGreeneryController {
 
     @FXML
     private void handleFinish() {
-        logger.info("{} has finished their greenery conversion.", players.get(currentPlayerIndex).getName());
+        log.info("{} has finished their greenery conversion.", players.get(currentPlayerIndex).getName());
 
         currentPlayerIndex++;
         showCurrentPlayer();

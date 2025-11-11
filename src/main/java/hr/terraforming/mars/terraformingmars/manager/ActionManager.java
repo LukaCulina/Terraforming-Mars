@@ -7,16 +7,14 @@ import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.application.Platform;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 public record ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
                             PlacementManager placementManager, GameFlowManager gameFlowManager) {
-
-    private static final Logger logger = LoggerFactory.getLogger(ActionManager.class);
-
+    
     public void recordAndSaveMove(GameMove move) {
         XmlUtils.appendGameMove(move);
 
@@ -30,7 +28,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         controller.updateAllUI();
 
         if (gameManager.getActionsTakenThisTurn() >= 2) {
-            logger.info("Player has taken 2 actions. Automatically passing turn.");
+            log.info("Player has taken 2 actions. Automatically passing turn.");
 
             handlePassTurn();
         }
@@ -43,10 +41,10 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
             GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
             recordAndSaveMove(move);
 
-            logger.info("{} consciously passed the turn with {} actions taken.",
+            log.info("{} consciously passed the turn with {} actions taken.",
                     gameManager.getCurrentPlayer().getName(), gameManager.getActionsTakenThisTurn());
         } else {
-            logger.info("Turn for {} ended automatically after 2 actions.",
+            log.info("Turn for {} ended automatically after 2 actions.",
                     gameManager.getCurrentPlayer().getName());
         }
 
@@ -63,7 +61,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
     public void handlePlayCard(Card card) {
         Player currentPlayer = gameManager.getCurrentPlayer();
         if (!currentPlayer.canPlayCard(card)) {
-            logger.warn("Player {} cannot play card '{}'. Requirements not met or insufficient funds.",
+            log.warn("Player {} cannot play card '{}'. Requirements not met or insufficient funds.",
                     currentPlayer.getName(), card.getName());
             return;
         }
@@ -90,7 +88,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
             recordAndSaveMove(move);
 
         } else {
-            logger.warn("Failed attempt by {} to claim milestone '{}'.", currentPlayer.getName(), milestone.getName());
+            log.warn("Failed attempt by {} to claim milestone '{}'.", currentPlayer.getName(), milestone.getName());
         }
     }
 
@@ -100,7 +98,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         int finalCost = CostService.getFinalProjectCost(project, currentPlayer);
 
         if (currentPlayer.getMC() < finalCost) {
-            logger.warn("{} failed to use standard project '{}': insufficient MC (has {}, needs {}).",
+            log.warn("{} failed to use standard project '{}': insufficient MC (has {}, needs {}).",
                     currentPlayer.getName(), project.getName(), currentPlayer.getMC(), project.getCost());
             return;
         }
@@ -112,7 +110,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         } else {
             if (project == StandardProject.SELL_PATENTS) {
                 if (currentPlayer.getHand().isEmpty()) {
-                    logger.warn("{} tried to sell patents but has no cards in hand.", currentPlayer.getName());
+                    log.warn("{} tried to sell patents but has no cards in hand.", currentPlayer.getName());
                     return;
                 }
                 controller.openSellPatentsWindow();
@@ -129,11 +127,11 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         Player currentPlayer = gameManager.getCurrentPlayer();
 
         if (currentPlayer.resourceProperty(ResourceType.HEAT).get() < 8) {
-            logger.warn("{} failed to convert heat: insufficient resources.", currentPlayer.getName());
+            log.warn("{} failed to convert heat: insufficient resources.", currentPlayer.getName());
             return;
         }
 
-        logger.info("{} is converting 8 heat.", currentPlayer.getName());
+        log.info("{} is converting 8 heat.", currentPlayer.getName());
 
         currentPlayer.resourceProperty(ResourceType.HEAT).set(currentPlayer.resourceProperty(ResourceType.HEAT).get() - 8);
         gameBoard.increaseTemperature();
@@ -149,11 +147,11 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         int requiredPlants = currentPlayer.getGreeneryCost();
 
         if (currentPlayer.resourceProperty(ResourceType.PLANTS).get() < requiredPlants) {
-            logger.warn("{} failed to convert plants: insufficient resources.", currentPlayer.getName());
+            log.warn("{} failed to convert plants: insufficient resources.", currentPlayer.getName());
             return;
         }
 
-        logger.info("{} is initiating greenery conversion.", currentPlayer.getName());
+        log.info("{} is initiating greenery conversion.", currentPlayer.getName());
 
         GameMove convertPlantsMove = new GameMove(
                 currentPlayer.getName(),

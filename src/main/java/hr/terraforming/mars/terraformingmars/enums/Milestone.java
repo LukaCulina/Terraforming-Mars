@@ -1,6 +1,8 @@
 package hr.terraforming.mars.terraformingmars.enums;
 
 import hr.terraforming.mars.terraformingmars.model.Player;
+import lombok.Getter;
+
 import java.util.function.Predicate;
 
 public enum Milestone {
@@ -20,7 +22,9 @@ public enum Milestone {
     PLANNER("Planner", "Have at least 16 cards in your hand.",
             player -> player.getHand().size() >= 16);
 
+    @Getter
     private final String name;
+    @Getter
     private final String description;
     private final Predicate<Player> requirement;
 
@@ -28,14 +32,6 @@ public enum Milestone {
         this.name = name;
         this.description = description;
         this.requirement = requirement;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public boolean canClaim(Player player) {

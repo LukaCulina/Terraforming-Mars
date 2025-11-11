@@ -4,6 +4,8 @@ import hr.terraforming.mars.terraformingmars.enums.Milestone;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
 import hr.terraforming.mars.terraformingmars.service.PlacementService;
 import hr.terraforming.mars.terraformingmars.util.HexGridHelper;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +16,15 @@ public class GameBoard implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(GameBoard.class);
 
+    @Getter
     private int oxygenLevel;
+    @Getter
     private int temperature;
+    @Getter
     private int oceansPlaced;
     private final Map<Milestone, Player> claimedMilestones = new EnumMap<>(Milestone.class);
     public static final int MAX_MILESTONES = 3;
+    @Getter
     private boolean isFinalGeneration = false;
 
     public static final int MAX_OXYGEN = 14;
@@ -26,9 +32,11 @@ public class GameBoard implements Serializable {
     public static final int MIN_TEMPERATURE = -30;
     public static final int MAX_OCEANS = 9;
 
+    @Setter
     private transient Runnable onGlobalParametersChanged;
     private transient PlacementService placementService;
 
+    @Getter
     private final List<Tile> tiles = new ArrayList<>();
     private static final int[][] OCEAN_POSITIONS = {
             {0, 1}, {0, 3}, {0, 4},
@@ -82,10 +90,6 @@ public class GameBoard implements Serializable {
 
     public void incrementOceansPlaced() { this.oceansPlaced++; }
 
-    public boolean isFinalGeneration() {
-        return isFinalGeneration;
-    }
-
     private void checkEndGameTrigger() {
         if (isFinalGeneration) return;
 
@@ -112,11 +116,8 @@ public class GameBoard implements Serializable {
         return false;
     }
 
-    public List<Tile> getTiles() { return tiles; }
-
     public int[] getHexesInRow() { return HexGridHelper.getHexesInRow(); }
 
-    public int getOxygenLevel() { return oxygenLevel; }
     public boolean increaseOxygen() {
         if (getOxygenLevel() < MAX_OXYGEN) {
             oxygenLevel++;
@@ -127,7 +128,6 @@ public class GameBoard implements Serializable {
         return false;
     }
 
-    public int getTemperature() { return temperature; }
     public boolean increaseTemperature() {
         if (temperature < MAX_TEMPERATURE) {
             temperature += 2;
@@ -141,16 +141,10 @@ public class GameBoard implements Serializable {
         return false;
     }
 
-    public int getOceansPlaced() { return oceansPlaced; }
-
     public void notifyUI() {
         if (onGlobalParametersChanged != null) {
             onGlobalParametersChanged.run();
         }
-    }
-
-    public void setOnGlobalParametersChanged(Runnable callback) {
-        this.onGlobalParametersChanged = callback;
     }
 
     public boolean claimMilestone(Milestone milestone, Player player) {

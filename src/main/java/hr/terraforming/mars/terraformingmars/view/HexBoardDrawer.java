@@ -13,16 +13,16 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class HexBoardDrawer {
 
     private final AnchorPane hexBoardPane;
+    @Setter
     private GameBoard gameBoard;
     private final PlacementManager placementManager;
-    private static final Logger logger = LoggerFactory.getLogger(HexBoardDrawer.class);
-
     private static final double HEX_SPACING = 0.85;
     private double hexRadius = 0;
 
@@ -166,7 +166,7 @@ public class HexBoardDrawer {
         StackPane pane = (StackPane) event.getSource();
         Tile clickedTile = (Tile) pane.getUserData();
         if (clickedTile == null) {
-            logger.warn("Hex click detected on a node with no Tile data.");
+            log.warn("Hex click detected on a node with no Tile data.");
             return;
         }
 
@@ -178,16 +178,12 @@ public class HexBoardDrawer {
         } else {
             String ownerInfo = clickedTile.getOwner() != null ? ", Owner: " + clickedTile.getOwner().getName() : "";
 
-            logger.info("Tile info requested for ({}, {}). Type: {}{}.",
+            log.info("Tile info requested for ({}, {}). Type: {}{}.",
                     clickedTile.getRow(),
                     clickedTile.getCol(),
                     clickedTile.getType(),
                     ownerInfo
             );
         }
-    }
-
-    public void setGameBoard(GameBoard newBoard) {
-        this.gameBoard = newBoard;
     }
 }

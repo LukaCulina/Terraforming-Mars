@@ -2,6 +2,8 @@ package hr.terraforming.mars.terraformingmars.enums;
 
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.Player;
+import lombok.Getter;
+
 import java.util.function.BiConsumer;
 
 public enum StandardProject {
@@ -28,11 +30,16 @@ public enum StandardProject {
     CITY("City", "🏙","Place a city tile and increase MC production by 1.", 25, TileType.CITY, (_, _) -> {
     });
 
+    @Getter
     private final String name;
+    @Getter
     private final String icon;
+    @Getter
     private final String description;
+    @Getter
     private final int cost;
     private final BiConsumer<Player, GameBoard> action;
+    @Getter
     private final TileType tileType;
 
     StandardProject(String name,  String icon, String description, int cost, TileType tileType, BiConsumer<Player, GameBoard> action) {
@@ -44,20 +51,11 @@ public enum StandardProject {
         this.action = action;
     }
 
-    public String getName() { return name; }
-    public int getCost() { return cost; }
-    public String getDescription() { return description; }
-    public String getIcon() { return icon; }
-
     public void execute(Player player, GameBoard board) {
         action.accept(player, board);
     }
 
     public boolean requiresTilePlacement() {
         return this.tileType != null;
-    }
-
-    public TileType getTileType() {
-        return this.tileType;
     }
 }

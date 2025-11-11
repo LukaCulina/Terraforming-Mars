@@ -20,6 +20,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Window;
 import javafx.util.Duration;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.*;
 
 import java.io.*;
@@ -27,9 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Slf4j
 public class TerraformingMarsController {
-
-    private static final Logger logger = LoggerFactory.getLogger(TerraformingMarsController.class);
 
     @FXML private AnchorPane hexBoardPane;
     @FXML private BorderPane gameBoardPane;
@@ -55,10 +57,14 @@ public class TerraformingMarsController {
 
     private PlacementManager placementManager;
     private UIManager uiManager;
+    @Getter
     private ActionManager actionManager;
+    @Getter
     private GameManager gameManager;
+    @Getter
     private GameBoard gameBoard;
     private PlayerBoardController currentPlayerBoardController;
+    @Setter
     private Player viewedPlayer = null;
     private final SaveLoadService saveLoadService = new SaveLoadService();
     private ReplayManager replayManager;
@@ -68,10 +74,6 @@ public class TerraformingMarsController {
         loadPlayerBoard();
     }
 
-    public GameManager getGameManager() { return gameManager; }
-    public GameBoard getGameBoard() { return gameBoard; }
-
-
     private void loadPlayerBoard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/hr/terraforming/mars/terraformingmars/PlayerBoard.fxml"));
@@ -79,7 +81,7 @@ public class TerraformingMarsController {
             currentPlayerBoardController = loader.getController();
             currentPlayerBoardContainer.getChildren().setAll(boardNode);
         } catch (IOException e) {
-            logger.error("FATAL: Could not load PlayerBoard.fxml. The application cannot start correctly.", e);
+            log.error("FATAL: Could not load PlayerBoard.fxml. The application cannot start correctly.", e);
         }
     }
 
@@ -121,7 +123,7 @@ public class TerraformingMarsController {
 
     public void updateAllUI() {
         if (uiManager == null || gameManager == null || viewedPlayer == null) {
-            logger.warn("UI update skipped because a critical component is null.");
+            log.warn("UI update skipped because a critical component is null.");
             return;
         }
 
@@ -151,7 +153,7 @@ public class TerraformingMarsController {
     }
 
     public void onFinalGreeneryPhaseComplete() {
-        logger.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
+        log.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
         List<Player> rankedPlayers = gameManager.calculateFinalScores();
 
         Platform.runLater(() -> GameScreens.showGameOverScreen(rankedPlayers));
@@ -194,14 +196,6 @@ public class TerraformingMarsController {
                 0.5, 0.7,
                 (SellPatentsController c) -> c.initData(gameManager.getCurrentPlayer(), onSaleCompleteAction)
         );
-    }
-
-    public ActionManager getActionManager() {
-        return actionManager;
-    }
-
-    public void setViewedPlayer(Player player) {
-        this.viewedPlayer = player;
     }
 
     public void drawBoard() {

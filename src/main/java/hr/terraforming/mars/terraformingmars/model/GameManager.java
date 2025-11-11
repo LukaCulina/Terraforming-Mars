@@ -11,20 +11,22 @@ import java.util.List;
 
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class GameManager implements Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(GameManager.class);
-
+    
     private final List<Player> players;
     private int currentPlayerIndex = 0;
+    @Getter
     private GamePhase currentPhase;
+    @Getter
     private int generation = 1;
     private final List<Player> passedPlayers = new ArrayList<>();
     private transient GameBoard board;
     private int cardDraftPlayerIndex = 0;
+    @Getter
     private int actionsTakenThisTurn = 0;
     private final List<Corporation> remainingCorporations;
     private final List<Card> remainingCards;
@@ -54,7 +56,7 @@ public class GameManager implements Serializable {
 
     public boolean assignCorporationAndAdvance(Corporation chosenCorp) {
         getCurrentPlayer().setCorporation(chosenCorp);
-        logger.info("Player {} chose corporation: {}", getCurrentPlayer().getName(), chosenCorp.name());
+        log.info("Player {} chose corporation: {}", getCurrentPlayer().getName(), chosenCorp.name());
 
         this.currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
@@ -78,7 +80,7 @@ public class GameManager implements Serializable {
 
     public List<Card> drawCards(int count) {
         if (remainingCards.isEmpty()) {
-            logger.warn("There are no more cards in the draw pile.");
+            log.warn("There are no more cards in the draw pile.");
             return new ArrayList<>();
         }
 
@@ -90,12 +92,8 @@ public class GameManager implements Serializable {
 
         this.remainingCards.removeAll(drawnCards);
 
-        logger.info("Drawn {} cards. Cards remaining in deck: {}.", drawnCards.size(), this.remainingCards.size());
+        log.info("Drawn {} cards. Cards remaining in deck: {}.", drawnCards.size(), this.remainingCards.size());
         return drawnCards;
-    }
-
-    public int getActionsTakenThisTurn() {
-        return actionsTakenThisTurn;
     }
 
     public void incrementActionsTaken() {
@@ -113,7 +111,7 @@ public class GameManager implements Serializable {
         this.passedPlayers.clear();
         resetActionsTaken();
 
-        logger.info("Starting Generation {}. Phase: {}", generation, currentPhase);
+        log.info("Starting Generation {}. Phase: {}", generation, currentPhase);
     }
 
     private void nextPlayer() {
@@ -129,7 +127,7 @@ public class GameManager implements Serializable {
         if (!passedPlayers.contains(p)) {
             passedPlayers.add(p);
 
-            logger.info("{} has passed.", p.getName());
+            log.info("{} has passed.", p.getName());
         }
         resetActionsTaken();
         if (passedPlayers.size() >= players.size()) {
@@ -141,7 +139,7 @@ public class GameManager implements Serializable {
     }
 
     public void doProduction() {
-        logger.info("Production Phase Started");
+        log.info("Production Phase Started");
 
         for (Player p : players) {
             int income = p.getTR() + p.productionProperty(ResourceType.MEGACREDITS).get();
@@ -155,10 +153,10 @@ public class GameManager implements Serializable {
                     p.addResource(type, amount.get());
                 }
             });
-            logger.info("Player {} energy set to 0. Current value is: {}",
+            log.info("Player {} energy set to 0. Current value is: {}",
                     p.getName(), p.resourceProperty(ResourceType.ENERGY).get());
         }
-        logger.info("Production Finished");
+        log.info("Production Finished");
     }
 
     public void startNewGeneration() {
@@ -166,27 +164,26 @@ public class GameManager implements Serializable {
         currentPhase = GamePhase.RESEARCH;
         currentPlayerIndex = 0;
         passedPlayers.clear();
-        logger.info("Generation {} begins. Current Phase: {}", generation, currentPhase);
+        log.info("Generation {} begins. Current Phase: {}", generation, currentPhase);
     }
 
     public void beginActionPhase() {
         this.currentPhase = GamePhase.ACTIONS;
-        logger.info("Phase: {}", this.currentPhase);
+        log.info("Phase: {}", this.currentPhase);
     }
 
     public Player getCurrentPlayer() { return players.get(currentPlayerIndex); }
-    public GamePhase getCurrentPhase() { return currentPhase; }
-    public int getGeneration() { return generation; }
+
     public List<Player> getPlayers() { return Collections.unmodifiableList(players); }
     public GameBoard getGameBoard() {
         return board;
     }
 
     public List<Player> calculateFinalScores() {
-        logger.info(" FINAL SCORING");
+        log.info(" FINAL SCORING");
         for (Player p : players) {
             p.calculateTilePoints();
-            logger.info("{} - Final Score: {}", p.getName(), p.getFinalScore());
+            log.info("{} - Final Score: {}", p.getName(), p.getFinalScore());
 
         }
 
@@ -217,7 +214,7 @@ public class GameManager implements Serializable {
         this.remainingCards.clear();
         this.remainingCards.addAll(CardFactory.getAllCards());
 
-        logger.info("GameManager has been reset for a new game.");
+        log.info("GameManager has been reset for a new game.");
     }
 
     public void setCurrentPlayerByName(String playerName) {

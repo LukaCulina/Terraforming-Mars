@@ -2,10 +2,14 @@ package hr.terraforming.mars.terraformingmars.model;
 
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 public class GameMove implements Serializable {
     private String playerName;
     private ActionType actionType;
@@ -34,18 +38,4 @@ public class GameMove implements Serializable {
 
     public GameMove() {}
 
-    public String getPlayerName() { return playerName; }
-    public void setPlayerName(String playerName) { this.playerName = playerName; }
-    public ActionType getActionType() { return actionType; }
-    public void setActionType(ActionType actionType) { this.actionType = actionType; }
-    public String getDetails() { return details; }
-    public void setDetails(String details) { this.details = details; }
-    public Integer getRow() { return row; }
-    public void setRow(Integer row) { this.row = row; }
-    public Integer getCol() { return col; }
-    public void setCol(Integer col) { this.col = col; }
-    public TileType getTileType() { return tileType; }
-    public void setTileType(TileType tileType) { this.tileType = tileType; }
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

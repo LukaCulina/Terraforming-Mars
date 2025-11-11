@@ -2,9 +2,7 @@ package hr.terraforming.mars.terraformingmars.util;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,10 +18,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public final class DocumentationUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(DocumentationUtils.class);
-
+    
     private static final String DOC_FOLDER = "documentation";
     private static final String DOC_FILE = DOC_FOLDER + "/project-documentation.html";
     private static final String UL_START = "<ul>";
@@ -72,7 +69,7 @@ public final class DocumentationUtils {
                                 Class<?> clazz = Class.forName(fqcn);
                                 appendClassDocumentation(docBuilder, clazz);
                             } catch (ClassNotFoundException e) {
-                                logger.error("Could not find class for path: {}", path, e);
+                                log.error("Could not find class for path: {}", path, e);
                             }
                         });
             }
@@ -81,7 +78,7 @@ public final class DocumentationUtils {
             showAlertDialog(AlertType.INFORMATION, "Success", "Documentation generated successfully!");
         } catch (IOException e) {
             showAlertDialog(AlertType.ERROR, "Error", "Failed to generate documentation: " + e.getMessage());
-            logger.error("Failed to generate documentation.", e);
+            log.error("Failed to generate documentation.", e);
         }
     }
 

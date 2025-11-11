@@ -1,11 +1,31 @@
 package hr.terraforming.mars.terraformingmars.chat;
 
+import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
+import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
+import lombok.extern.slf4j.Slf4j;
+
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
+@Slf4j
 public class ChatServer {
 
-    public static final int RMI_PORT = 1099;
     private static final int RANDOM_PORT_HINT = 0;
 
     public static void main(String[] args) {
+        try {
+            Registry registry = LocateRegistry.createRegistry(ConfigurationReader.getIntegerValue(
+                    ConfigurationKey.RMI_PORT));
+            ChatService chatRemoteService = new ChatServiceImpl();
+            ChatService skeleton = (ChatService) UnicastRemoteObject.exportObject(chatRemoteService,
+                    RANDOM_PORT_HINT);
+            registry.rebind(ChatService.REMOTE_OBJECT_NAME, skeleton);
+            log.info("Service method called using @Slf4j");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
     }
 }

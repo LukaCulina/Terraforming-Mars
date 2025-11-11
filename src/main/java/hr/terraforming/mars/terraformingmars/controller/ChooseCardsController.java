@@ -14,18 +14,15 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+@Slf4j
 public class ChooseCardsController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ChooseCardsController.class);
 
     @FXML private TilePane cardsTile;
     @FXML private Label remainingMCLabel;
@@ -72,7 +69,7 @@ public class ChooseCardsController {
                 selectedCards.add(card);
                 cardNode.getStyleClass().add(SELECTED_CARD_STYLE);
             } else {
-                logger.warn("Player {} failed to select card '{}': not enough MC (has {}, needs {}).",
+                log.warn("Player {} failed to select card '{}': not enough MC (has {}, needs {}).",
                         player.getName(), card.getName(), player.getMC(), potentialCost);
             }
         }

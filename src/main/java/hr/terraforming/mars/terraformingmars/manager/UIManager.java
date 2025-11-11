@@ -16,12 +16,14 @@ import hr.terraforming.mars.terraformingmars.view.components.PlayerControlCompon
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
+import lombok.Getter;
 
 import java.util.Map;
 
 public class UIManager {
 
     private GameBoard gameBoard;
+    @Getter
     private final HexBoardDrawer hexBoardDrawer;
 
     private final GameManager gameManager;
@@ -40,10 +42,6 @@ public class UIManager {
         this.globalStatus = globalStatus;
         this.actionPanels = actionPanels;
         this.playerControls = playerControls;
-    }
-
-    public HexBoardDrawer getHexBoardDrawer() {
-        return hexBoardDrawer;
     }
 
     public void linkNewGameBoard(GameBoard newBoard) {

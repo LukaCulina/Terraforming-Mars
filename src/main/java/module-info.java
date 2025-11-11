@@ -6,6 +6,7 @@ module hr.terraforming.mars.terraformingmars {
     requires com.google.gson;
     requires java.rmi;
     requires java.naming;
+    requires static lombok;
 
     opens hr.terraforming.mars.terraformingmars to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars;
@@ -28,4 +29,6 @@ module hr.terraforming.mars.terraformingmars {
     exports hr.terraforming.mars.terraformingmars.model.effects;
     exports hr.terraforming.mars.terraformingmars.replay;
     opens hr.terraforming.mars.terraformingmars.replay to javafx.fxml;
+    exports hr.terraforming.mars.terraformingmars.jndi;
+    opens hr.terraforming.mars.terraformingmars.jndi to javafx.fxml;
 }

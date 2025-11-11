@@ -8,24 +8,19 @@ import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 
+@Slf4j
 public class GameScreens {
 
     private GameScreens() { throw new IllegalStateException("Utility class"); }
 
-    private static final Logger logger = LoggerFactory.getLogger(GameScreens.class);
-
+    @Setter
     private static Stage mainStage;
-
-    public static void setMainStage(Stage stage) {
-        mainStage = stage;
-    }
 
     public static void showChoosePlayersScreen() {
         ScreenLoader.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
@@ -112,10 +107,10 @@ public class GameScreens {
             );
 
             XmlUtils.appendGameMove(initialMove);
-            logger.debug("INITIAL_SETUP move successfully saved to XML!");
+            log.debug("INITIAL_SETUP move successfully saved to XML!");
 
         } catch (Exception e) {
-            logger.error("Fatal error occurred during initial state saving.");
+            log.error("Fatal error occurred during initial state saving.");
             new Alert(Alert.AlertType.ERROR, "Error saving initial state for replay. See console for details.\n\n" + e.getMessage()).showAndWait();
         }
     }
