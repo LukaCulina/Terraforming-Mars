@@ -3,14 +3,11 @@ package hr.terraforming.mars.terraformingmars.controller;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.thread.GetLastGameMoveThread;
-import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
-import hr.terraforming.mars.terraformingmars.util.XmlUtils;
+import hr.terraforming.mars.terraformingmars.util.*;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import hr.terraforming.mars.terraformingmars.manager.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.GameSaveLoadService;
-import hr.terraforming.mars.terraformingmars.util.DocumentationUtils;
-import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import hr.terraforming.mars.terraformingmars.view.components.ActionPanelComponents;
 import hr.terraforming.mars.terraformingmars.view.components.GlobalStatusComponents;
@@ -248,6 +245,7 @@ public class TerraformingMarsController {
             initializeComponents();
             this.viewedPlayer = this.gameManager.getCurrentPlayer();
             updateAllUI();
+            DialogUtils.showSuccessDialog("The game has been successfully loaded!");
         }
     }
 

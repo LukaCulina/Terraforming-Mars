@@ -3,6 +3,7 @@ package hr.terraforming.mars.terraformingmars.service;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameState;
+import hr.terraforming.mars.terraformingmars.util.DialogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class GameSaveLoadService {
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(gameState);
+            DialogUtils.showSuccessDialog("The game has been successfully saved!");
             logger.info("Game state saved to {}", file.getAbsolutePath());
         } catch (IOException e) {
             logger.error("Failed to save game state to {}", file.getAbsolutePath(), e);
