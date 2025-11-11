@@ -5,6 +5,7 @@ module hr.terraforming.mars.terraformingmars {
     requires org.slf4j;
     requires com.google.gson;
     requires java.rmi;
+    requires java.naming;
 
     opens hr.terraforming.mars.terraformingmars to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars;
