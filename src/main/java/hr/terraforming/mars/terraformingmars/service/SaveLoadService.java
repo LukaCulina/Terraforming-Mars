@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public class GameSaveLoadService {
+public class SaveLoadService {
 
-    private static final Logger logger = LoggerFactory.getLogger(GameSaveLoadService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SaveLoadService.class);
     public static final String SAVE_GAME_FILE_NAME = "saveGame/gameSave.dat";
 
-    public GameSaveLoadService() {
+    public SaveLoadService() {
         // No-op
     }
 

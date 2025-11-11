@@ -7,7 +7,7 @@ import hr.terraforming.mars.terraformingmars.util.*;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import hr.terraforming.mars.terraformingmars.manager.*;
 import hr.terraforming.mars.terraformingmars.model.*;
-import hr.terraforming.mars.terraformingmars.service.GameSaveLoadService;
+import hr.terraforming.mars.terraformingmars.service.SaveLoadService;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import hr.terraforming.mars.terraformingmars.view.components.ActionPanelComponents;
 import hr.terraforming.mars.terraformingmars.view.components.GlobalStatusComponents;
@@ -60,7 +60,7 @@ public class TerraformingMarsController {
     private GameBoard gameBoard;
     private PlayerBoardController currentPlayerBoardController;
     private Player viewedPlayer = null;
-    private final GameSaveLoadService saveLoadService = new GameSaveLoadService();
+    private final SaveLoadService saveLoadService = new SaveLoadService();
     private ReplayManager replayManager;
 
     @FXML
