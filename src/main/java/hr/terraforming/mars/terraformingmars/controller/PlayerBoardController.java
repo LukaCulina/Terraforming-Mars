@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
+import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
@@ -42,9 +43,9 @@ public class PlayerBoardController {
 
     private boolean isShowingHand = true;
 
-    public void setPlayer(Player player, Consumer<Card> cardPlayHandler) {
+    public void setPlayer(Player player, ActionManager actionManager) {
         this.player = player;
-        this.cardPlayHandler = cardPlayHandler;
+        this.cardPlayHandler = actionManager::handlePlayCard;
         if (player == null) return;
 
         updatePlayerInfo();

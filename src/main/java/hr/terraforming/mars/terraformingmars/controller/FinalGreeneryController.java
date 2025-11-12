@@ -1,7 +1,6 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
-import hr.terraforming.mars.terraformingmars.manager.PlacementManager;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
@@ -32,7 +31,6 @@ public class FinalGreeneryController {
     private Button convertButton;
     @FXML
     private Button finishButton;
-    private PlacementManager placementManager;
     private GameManager gameManager;
     private List<Player> players;
     private int currentPlayerIndex = 0;
@@ -89,17 +87,11 @@ public class FinalGreeneryController {
         convertButton.setDisable(plants < cost);
     }
 
-    public void enterPlacementModeForFinalGreenery(Player player, Runnable onCompleteCallback) {
-        if (placementManager != null) {
-            placementManager.enterPlacementModeForFinalGreenery(player, onCompleteCallback);
-        }
-    }
-
     @FXML
     private void handleConvertGreenery() {
         Player currentPlayer = players.get(currentPlayerIndex);
 
-        enterPlacementModeForFinalGreenery(currentPlayer, () -> {
+        mainController.enterPlacementModeForFinalGreenery(currentPlayer, () -> {
             if (this.stage != null) {
                 this.stage.show();
                 updateUI();
