@@ -1,13 +1,18 @@
 package hr.terraforming.mars.terraformingmars.model;
 
 import hr.terraforming.mars.terraformingmars.enums.TileType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
+@Getter
 public class Tile implements Serializable {
     private final int row;
     private final int col;
+    @Setter
     private TileType type;
+    @Setter
     private Player owner;
 
     public Tile(int row, int col, TileType type, Player owner) {
@@ -16,11 +21,4 @@ public class Tile implements Serializable {
         this.type = type;
         this.owner = owner;
     }
-
-    public int getRow() { return row; }
-    public int getCol() { return col; }
-    public TileType getType() { return type; }
-    public void setType(TileType type) { this.type = type; }
-    public Player getOwner() { return owner; }
-    public void setOwner(Player owner) { this.owner = owner; }
 }

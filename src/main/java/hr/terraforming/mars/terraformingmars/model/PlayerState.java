@@ -5,6 +5,7 @@ import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -26,8 +27,11 @@ public class PlayerState implements Serializable {
     private transient Map<ResourceType, IntegerProperty> resources;
     private transient Map<ResourceType, IntegerProperty> production;
 
+    @Getter
     private final List<Milestone> claimedMilestones = new ArrayList<>();
+    @Getter
     private final List<Card> hand = new ArrayList<>();
+    @Getter
     private final List<Card> played = new ArrayList<>();
 
     public PlayerState() {
@@ -72,9 +76,7 @@ public class PlayerState implements Serializable {
     public IntegerProperty trProperty() { return tr; }
     public IntegerProperty resourceProperty(ResourceType type) { return resources.get(type); }
     public IntegerProperty productionProperty(ResourceType type) { return production.get(type); }
-    public List<Milestone> getClaimedMilestones() { return claimedMilestones; }
-    public List<Card> getHand() { return hand; }
-    public List<Card> getPlayed() { return played; }
+
     public Map<ResourceType, IntegerProperty> getProductionMap() {
         return Collections.unmodifiableMap(production);
     }

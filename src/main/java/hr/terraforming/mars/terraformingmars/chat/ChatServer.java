@@ -24,8 +24,7 @@ public class ChatServer {
             registry.rebind(ChatService.REMOTE_OBJECT_NAME, skeleton);
             log.info("Service method called using @Slf4j");
         } catch (RemoteException e) {
-            e.printStackTrace();
+            log.error("RemoteException occurred while starting RMI registry and binding ChatService", e);
         }
-
     }
 }

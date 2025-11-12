@@ -7,16 +7,13 @@ import hr.terraforming.mars.terraformingmars.model.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ChoosePlayersController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ChoosePlayersController.class);
-
 
     @FXML
     private void selectPlayers(ActionEvent event) {
@@ -26,7 +23,7 @@ public class ChoosePlayersController {
         try {
             numberOfPlayers = Integer.parseInt(btn.getText());
 
-            logger.info("Number of players selected: {}", numberOfPlayers);
+            log.info("Number of players selected: {}", numberOfPlayers);
 
             List<Player> players = new ArrayList<>();
             for (int i = 1; i <= numberOfPlayers; i++) {
@@ -40,7 +37,7 @@ public class ChoosePlayersController {
 
 
         } catch (NumberFormatException e) {
-            logger.error("Failed to parse number of players from button text: '{}'", btn.getText(), e);
+            log.error("Failed to parse number of players from button text: '{}'", btn.getText(), e);
         }
     }
 }
