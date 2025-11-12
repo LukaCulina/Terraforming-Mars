@@ -24,7 +24,7 @@ public record GameFlowManager(TerraformingMarsController controller, GameManager
             log.info("This was the last generation. Starting final greenery conversion phase.");
 
             GameScreens.startFinalGreeneryPhase(
-                    gameManager.getPlayers(),
+                    gameManager,
                     controller
             );
         } else {

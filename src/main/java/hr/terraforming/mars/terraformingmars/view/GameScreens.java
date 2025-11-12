@@ -73,9 +73,9 @@ public class GameScreens {
         mainStage.setTitle("Terraforming Mars");
     }
 
-    public static void startFinalGreeneryPhase(List<Player> players, TerraformingMarsController mainController) {
+    public static void startFinalGreeneryPhase(GameManager gameManager, TerraformingMarsController mainController) {
         ScreenLoader.showAsModal(mainStage, "FinalGreeneryScreen.fxml", "Final Greenery Conversion",
-                0.4, 0.5, (FinalGreeneryController c) -> c.setup(players, mainController));
+                0.4, 0.5, (FinalGreeneryController c) -> c.setup(gameManager, mainController));
     }
 
     public static void showGameOverScreen(List<Player> rankedPlayers) {

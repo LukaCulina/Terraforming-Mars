@@ -24,7 +24,6 @@ import org.slf4j.*;
 
 import java.io.*;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Slf4j
 public class TerraformingMarsController {
@@ -147,19 +146,6 @@ public class TerraformingMarsController {
 
     private void handlePlayCard(Card card) {
         actionManager.handlePlayCard(card);
-    }
-
-    public void onFinalGreeneryPhaseComplete() {
-        log.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
-        List<Player> rankedPlayers = gameManager.calculateFinalScores();
-
-        Platform.runLater(() -> GameScreens.showGameOverScreen(rankedPlayers));
-    }
-
-    public void enterPlacementModeForFinalGreenery(Player player, Runnable onCompleteCallback) {
-        if (placementManager != null) {
-            placementManager.enterPlacementModeForFinalGreenery(player, onCompleteCallback);
-        }
     }
 
     public void drawBoard() {

@@ -1,9 +1,12 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.manager.PlacementManager;
+import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
+import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -29,23 +32,32 @@ public class FinalGreeneryController {
     private Button convertButton;
     @FXML
     private Button finishButton;
-
+    private PlacementManager placementManager;
+    private GameManager gameManager;
     private List<Player> players;
     private int currentPlayerIndex = 0;
     private TerraformingMarsController mainController;
     private Stage stage;
 
-    public void setup(List<Player> players, TerraformingMarsController mainController) {
-        this.players = players;
+    public void setup(GameManager gameManager, TerraformingMarsController mainController) {
+        this.players = gameManager.getPlayers();
         this.mainController = mainController;
+        this.gameManager = gameManager;
         this.currentPlayerIndex = 0;
         Platform.runLater(() -> this.stage = (Stage) convertButton.getScene().getWindow());
         showCurrentPlayer();
     }
 
+    public void onFinalGreeneryPhaseComplete() {
+        log.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
+        List<Player> rankedPlayers = gameManager.calculateFinalScores();
+
+        Platform.runLater(() -> GameScreens.showGameOverScreen(rankedPlayers));
+    }
+
     private void showCurrentPlayer() {
         if (currentPlayerIndex >= players.size()) {
-            mainController.onFinalGreeneryPhaseComplete();
+            onFinalGreeneryPhaseComplete();
             closeWindow();
             return;
         }
@@ -77,11 +89,17 @@ public class FinalGreeneryController {
         convertButton.setDisable(plants < cost);
     }
 
+    public void enterPlacementModeForFinalGreenery(Player player, Runnable onCompleteCallback) {
+        if (placementManager != null) {
+            placementManager.enterPlacementModeForFinalGreenery(player, onCompleteCallback);
+        }
+    }
+
     @FXML
     private void handleConvertGreenery() {
         Player currentPlayer = players.get(currentPlayerIndex);
 
-        mainController.enterPlacementModeForFinalGreenery(currentPlayer, () -> {
+        enterPlacementModeForFinalGreenery(currentPlayer, () -> {
             if (this.stage != null) {
                 this.stage.show();
                 updateUI();
