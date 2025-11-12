@@ -9,8 +9,8 @@ public class ChatServiceImpl implements ChatService{
     private final List<String> chatMessageHistory = new ArrayList<>();
 
     @Override
-    public void sendChatMessage(String ChatMessage) throws RemoteException {
-        chatMessageHistory.add(ChatMessage);
+    public void sendChatMessage(String chatMessage) throws RemoteException {
+        chatMessageHistory.add(chatMessage);
     }
 
     @Override

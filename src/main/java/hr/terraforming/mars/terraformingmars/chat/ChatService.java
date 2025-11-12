@@ -8,7 +8,7 @@ public interface ChatService extends Remote {
 
     String REMOTE_OBJECT_NAME = "hr.tvz.rmi.service";
 
-    void sendChatMessage(String ChatMessage) throws RemoteException;
+    void sendChatMessage(String chatMessage) throws RemoteException;
 
     List<String> returnChatHistory() throws RemoteException;
 }
