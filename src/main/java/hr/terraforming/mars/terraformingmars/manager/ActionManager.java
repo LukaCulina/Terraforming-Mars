@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 @Slf4j
 public record ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
-                            PlacementManager placementManager, GameFlowManager gameFlowManager) {
+                            GameFlowManager gameFlowManager) {
     
     public void recordAndSaveMove(GameMove move) {
         XmlUtils.appendGameMove(move);
@@ -34,7 +34,6 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
 
         if (gameManager.getActionsTakenThisTurn() >= 2) {
             log.info("Player has taken 2 actions. Automatically passing turn.");
-
             handlePassTurn();
         }
     }
@@ -74,7 +73,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         GameMove move = new GameMove(currentPlayer.getName(), ActionType.PLAY_CARD, card.getName(), LocalDateTime.now());
 
         if (card.getTileToPlace() != null) {
-            placementManager.enterPlacementModeForCard(card, move);
+            controller.getPlacementCoordinator().enterPlacementModeForCard(card, move);
         } else {
             currentPlayer.playCard(card, gameManager);
             performAction();
@@ -111,7 +110,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.USE_STANDARD_PROJECT, project.name(), LocalDateTime.now());
 
         if (project.requiresTilePlacement()) {
-            placementManager.enterPlacementModeForProject(project, move);
+            controller.getPlacementCoordinator().enterPlacementModeForProject(project, move);
         } else {
             if (project == StandardProject.SELL_PATENTS) {
                 if (currentPlayer.getHand().isEmpty()) {
@@ -165,7 +164,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
                 LocalDateTime.now()
         );
 
-        placementManager.enterPlacementModeForPlant(convertPlantsMove);
+        controller.getPlacementCoordinator().enterPlacementModeForPlant(convertPlantsMove);
     }
 
     public void openSellPatentsWindow() {

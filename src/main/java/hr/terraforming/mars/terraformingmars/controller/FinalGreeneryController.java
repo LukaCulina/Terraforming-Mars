@@ -91,7 +91,7 @@ public class FinalGreeneryController {
     private void handleConvertGreenery() {
         Player currentPlayer = players.get(currentPlayerIndex);
 
-        mainController.enterPlacementModeForFinalGreenery(currentPlayer, () -> {
+        mainController.getPlacementCoordinator().enterPlacementModeForFinalGreenery(currentPlayer, () -> {
             if (this.stage != null) {
                 this.stage.show();
                 updateUI();

@@ -20,7 +20,6 @@
     import lombok.Getter;
     import lombok.Setter;
     import lombok.extern.slf4j.Slf4j;
-    import org.slf4j.*;
 
     import java.io.*;
     import java.time.format.DateTimeFormatter;
@@ -63,6 +62,8 @@
         @Getter
         private GameBoard gameBoard;
         private PlayerBoardController currentPlayerBoardController;
+        @Getter
+        private PlacementCoordinator placementCoordinator;
         @Setter
         private Player viewedPlayer = null;
         private final SaveLoadService saveLoadService = new SaveLoadService();
@@ -95,11 +96,11 @@
             startMoveHistory();
         }
 
-        private void initializeComponents() {
-            this.placementManager = new PlacementManager(this, this.gameManager, this.gameBoard);
+        public void initializeComponents() {
             GameFlowManager gameFlowManager = new GameFlowManager(this, this.gameManager, this.gameBoard);
-            this.actionManager = new ActionManager(this, this.gameManager, this.gameBoard, this.placementManager, gameFlowManager);
-            this.placementManager.setActionHandler(this.actionManager);
+            this.actionManager = new ActionManager(this, this.gameManager, this.gameBoard, gameFlowManager);
+            this.placementManager = new PlacementManager(this, this.gameManager, this.gameBoard, this.actionManager);
+            this.placementCoordinator = new PlacementCoordinator(this.placementManager);
             cancelPlacementButton.setOnAction(_ -> placementManager.cancelPlacement());
             HexBoardDrawer hexBoardDrawer = new HexBoardDrawer(hexBoardPane, this.gameBoard, this.placementManager);
             GlobalStatusComponents statusComps = new GlobalStatusComponents(oxygenProgressBar, oxygenLabel, temperatureProgressBar, temperatureLabel, oceansLabel, generationLabel, phaseLabel);
@@ -139,12 +140,6 @@
         public void showPlayerBoard(Player player) {
             this.viewedPlayer = player;
             updateAllUI();
-        }
-
-        public void enterPlacementModeForFinalGreenery(Player player, Runnable onCompleteCallback) {
-            if (placementManager != null) {
-                placementManager.enterPlacementModeForFinalGreenery(player, onCompleteCallback);
-            }
         }
 
         public Window getSceneWindow() {

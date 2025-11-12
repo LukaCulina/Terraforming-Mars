@@ -19,7 +19,7 @@ public class PlacementManager {
     private final TerraformingMarsController mainController;
     private final GameBoard gameBoard;
     private final GameManager gameManager;
-    private ActionManager actionManager;
+    private final ActionManager actionManager;
 
     @Getter
     private boolean isPlacementMode = false;
@@ -33,13 +33,10 @@ public class PlacementManager {
     @Getter
     private TileType tileTypeToPlace = null;
 
-    public PlacementManager(TerraformingMarsController mainController, GameManager gameManager, GameBoard gameBoard) {
+    public PlacementManager(TerraformingMarsController mainController, GameManager gameManager, GameBoard gameBoard,ActionManager actionManager) {
         this.mainController = mainController;
         this.gameManager = gameManager;
         this.gameBoard = gameBoard;
-    }
-
-    public void setActionHandler(ActionManager actionManager) {
         this.actionManager = actionManager;
     }
 
