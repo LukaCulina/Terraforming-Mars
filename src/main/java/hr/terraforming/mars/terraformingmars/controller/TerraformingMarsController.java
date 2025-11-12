@@ -24,6 +24,7 @@
 
     import java.io.*;
     import java.time.format.DateTimeFormatter;
+    import java.util.List;
 
     @Slf4j
     public class TerraformingMarsController {
@@ -156,12 +157,16 @@
 
         public void setGameControlsEnabled(boolean isEnabled) {
 
-            if (passTurnButton != null) passTurnButton.setDisable(!isEnabled);
-            if (convertHeatButton != null) convertHeatButton.setDisable(!isEnabled);
-            if (convertPlantsButton != null) convertPlantsButton.setDisable(!isEnabled);
+            List<Node> nodesToToggle = List.of(
+                    passTurnButton, convertHeatButton, convertPlantsButton,
+                    standardProjectsBox, milestonesBox
+            );
 
-            if (standardProjectsBox != null) standardProjectsBox.setDisable(!isEnabled);
-            if (milestonesBox != null) milestonesBox.setDisable(!isEnabled);
+            nodesToToggle.forEach(node -> {
+                if (node != null) {
+                    node.setDisable(!isEnabled);
+                }
+            });
 
             if (currentPlayerBoardController != null) {
                 currentPlayerBoardController.setHandInteractionEnabled(isEnabled);
