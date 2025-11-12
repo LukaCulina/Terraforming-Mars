@@ -2,7 +2,6 @@ package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
-import hr.terraforming.mars.terraformingmars.thread.GetLastGameMoveThread;
 import hr.terraforming.mars.terraformingmars.util.*;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import hr.terraforming.mars.terraformingmars.manager.*;
@@ -19,7 +18,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Window;
-import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +66,7 @@ public class TerraformingMarsController {
     private Player viewedPlayer = null;
     private final SaveLoadService saveLoadService = new SaveLoadService();
     private ReplayManager replayManager;
+    private Timeline moveHistoryTimeline;
 
     @FXML
     private void initialize() {
@@ -111,14 +110,11 @@ public class TerraformingMarsController {
         this.replayManager = new ReplayManager(this);
     }
 
-    private void startMoveHistory() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(4), _ -> {
-            if (lastMoveLabel != null && lastMoveLabel.getScene() != null) {
-                Platform.runLater(new GetLastGameMoveThread(lastMoveLabel));
-            }
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
+    public void startMoveHistory() {
+        if (moveHistoryTimeline == null) {
+            moveHistoryTimeline = GameMoveUtils.createLastMoveTimeline(lastMoveLabel);
+            moveHistoryTimeline.play();
+        }
     }
 
     public void updateAllUI() {

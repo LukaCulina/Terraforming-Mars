@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Label;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public class GetLastGameMoveThread extends GameMoveThread implements Runnable {
     private final Label label;
@@ -15,23 +16,22 @@ public class GetLastGameMoveThread extends GameMoveThread implements Runnable {
 
     @Override
     public void run() {
-        GameMove lastGameMove = getLastGameMoveFromFile();
+        Optional<GameMove> lastGameMove = getLastGameMoveFromFile();
 
         Platform.runLater(() -> {
-            if (lastGameMove != null) {
+            if (lastGameMove.isPresent()) {
+                GameMove move = lastGameMove.get();
                 StringBuilder sb = new StringBuilder("Last Move: ");
-                sb.append(lastGameMove.getPlayerName()).append(" - ");
-                sb.append(lastGameMove.getActionType().toString());
-                if (lastGameMove.getDetails() != null && !lastGameMove.getDetails().isEmpty()) {
-                    sb.append(" (").append(lastGameMove.getDetails()).append(")");
+                sb.append(move.getPlayerName()).append(" - ");
+                sb.append(move.getActionType().toString());
+                if (move.getDetails() != null && !move.getDetails().isEmpty()) {
+                    sb.append(" (").append(move.getDetails()).append(")");
                 }
-                if (lastGameMove.getRow() != null) {
-                    sb.append(" at [").append(lastGameMove.getRow()).append(", ").append(lastGameMove.getCol()).append("]");
+                if (move.getRow() != null) {
+                    sb.append(" at [").append(move.getRow()).append(", ").append(move.getCol()).append("]");
                 }
-                sb.append(" at ").append(lastGameMove.getTimestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                sb.append(" at ").append(move.getTimestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 label.setText(sb.toString());
-            } else {
-                label.setText("No moves recorded yet.");
             }
         });
     }

@@ -1,6 +1,12 @@
 package hr.terraforming.mars.terraformingmars.util;
 
 import hr.terraforming.mars.terraformingmars.model.GameMove;
+import hr.terraforming.mars.terraformingmars.thread.GetLastGameMoveThread;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.scene.control.Label;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +14,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GameMoveUtils {
 
@@ -38,12 +45,12 @@ public class GameMoveUtils {
         }
     }
 
-    public static GameMove getLastGameMove() {
+    public static Optional<GameMove> getLastGameMove() {
         List<GameMove> gameMoveList = loadAllGameMoves();
         if (gameMoveList.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
-        return gameMoveList.getLast();
+        return Optional.of(gameMoveList.getLast());
     }
 
     @SuppressWarnings("unchecked")
@@ -72,4 +79,16 @@ public class GameMoveUtils {
             }
         }
     }
+
+    public static Timeline createLastMoveTimeline(Label lastMoveLabel) {
+        Timeline theLastMoveTimeline = new Timeline(new KeyFrame(Duration.seconds(3), _ -> {
+            GetLastGameMoveThread thread = new GetLastGameMoveThread(lastMoveLabel);
+            Thread t = new Thread(thread);
+            t.setDaemon(true);
+            t.start();
+        }));
+        theLastMoveTimeline.setCycleCount(Animation.INDEFINITE);
+        return theLastMoveTimeline;
+    }
+
 }
