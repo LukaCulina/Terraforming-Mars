@@ -1,6 +1,5 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
-import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.util.*;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
@@ -26,11 +25,11 @@ import org.slf4j.*;
 import java.io.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Slf4j
 public class TerraformingMarsController {
 
+    @Getter
     @FXML private AnchorPane hexBoardPane;
     @FXML private BorderPane gameBoardPane;
     @FXML private StackPane temperaturePane;
@@ -54,11 +53,13 @@ public class TerraformingMarsController {
     @FXML private Label lastMoveLabel;
 
     private PlacementManager placementManager;
+    @Getter
     private UIManager uiManager;
     @Getter
     private ActionManager actionManager;
     @Getter
     private GameManager gameManager;
+    @Setter
     @Getter
     private GameBoard gameBoard;
     private PlayerBoardController currentPlayerBoardController;
@@ -161,39 +162,6 @@ public class TerraformingMarsController {
         }
     }
 
-    public void openSellPatentsWindow() {
-        Consumer<List<Card>> onSaleCompleteAction = soldCards -> {
-
-            String details = soldCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
-            GameMove showModal = new GameMove(
-                    gameManager.getCurrentPlayer().getName(),
-                    ActionType.OPEN_SELL_PATENTS_MODAL,
-                    details,
-                    java.time.LocalDateTime.now()
-            );
-            actionManager.recordAndSaveMove(showModal);
-
-            GameMove move = new GameMove(
-                    gameManager.getCurrentPlayer().getName(),
-                    ActionType.SELL_PATENTS,
-                    "Sold " + soldCards.size() + " card(s)",
-                    java.time.LocalDateTime.now()
-            );
-
-            actionManager.recordAndSaveMove(move);
-
-            actionManager.performAction();
-        };
-
-        ScreenLoader.showAsModal(
-                hexBoardPane.getScene().getWindow(),
-                "SellPatents.fxml",
-                "Sell Patents",
-                0.5, 0.7,
-                (SellPatentsController c) -> c.initData(gameManager.getCurrentPlayer(), onSaleCompleteAction)
-        );
-    }
-
     public void drawBoard() {
         updateAllUI();
     }
@@ -244,21 +212,6 @@ public class TerraformingMarsController {
     @FXML
     private void replayGame() {
         replayManager.startReplay();
-    }
-
-    public void prepareForReplay() {
-        gameManager.getPlayers().forEach(Player::resetForNewGame);
-
-        GameBoard newReplayBoard = new GameBoard();
-
-        newReplayBoard.setOnGlobalParametersChanged(this::updateAllUI);
-
-        this.gameBoard = newReplayBoard;
-        this.gameManager.resetForNewGame(newReplayBoard);
-        this.uiManager.linkNewGameBoard(newReplayBoard);
-
-        this.viewedPlayer = this.gameManager.getCurrentPlayer();
-        updateAllUI();
     }
 
     public void updateLastMoveLabel(GameMove lastGameMove) {

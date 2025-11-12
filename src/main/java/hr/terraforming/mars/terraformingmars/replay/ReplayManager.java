@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.replay;
 
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import javafx.animation.KeyFrame;
@@ -24,6 +25,21 @@ public class ReplayManager {
         this.actionHandler = new ReplayActionHandler(controller, loader);
     }
 
+    public void prepareForReplay() {
+        controller.getGameManager().getPlayers().forEach(Player::resetForNewGame);
+
+        GameBoard newReplayBoard = new GameBoard();
+        newReplayBoard.setOnGlobalParametersChanged(controller::updateAllUI);
+
+        controller.setGameBoard(newReplayBoard);
+        controller.getGameManager().resetForNewGame(newReplayBoard);
+        controller.getUiManager().linkNewGameBoard(newReplayBoard);
+
+        controller.setViewedPlayer(controller.getGameManager().getCurrentPlayer());
+        controller.updateAllUI();
+    }
+
+
     public void startReplay() {
         if (replayTimeline != null) {
             replayTimeline.stop();
@@ -35,7 +51,7 @@ public class ReplayManager {
             return;
         }
 
-        controller.prepareForReplay();
+        prepareForReplay();
         loader.setupInitialState(movesToReplay, controller.getGameManager());
         controller.updateAllUI();
 

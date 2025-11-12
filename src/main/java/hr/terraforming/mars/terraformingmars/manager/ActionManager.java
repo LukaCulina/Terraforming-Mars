@@ -1,15 +1,20 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
+import hr.terraforming.mars.terraformingmars.controller.SellPatentsController;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
+import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.application.Platform;
+import javafx.stage.Window;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.function.Consumer;
 
 @Slf4j
 public record ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
@@ -113,7 +118,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
                     log.warn("{} tried to sell patents but has no cards in hand.", currentPlayer.getName());
                     return;
                 }
-                controller.openSellPatentsWindow();
+                openSellPatentsWindow();
             } else {
                 currentPlayer.spendMC(finalCost);
                 project.execute(currentPlayer, gameBoard);
@@ -161,5 +166,40 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         );
 
         placementManager.enterPlacementModeForPlant(convertPlantsMove);
+    }
+
+    public void openSellPatentsWindow() {
+        Consumer<List<Card>> onSaleCompleteAction = soldCards -> {
+
+            String details = soldCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
+            GameMove showModal = new GameMove(
+                    gameManager.getCurrentPlayer().getName(),
+                    ActionType.OPEN_SELL_PATENTS_MODAL,
+                    details,
+                    java.time.LocalDateTime.now()
+            );
+            recordAndSaveMove(showModal);
+
+            GameMove move = new GameMove(
+                    gameManager.getCurrentPlayer().getName(),
+                    ActionType.SELL_PATENTS,
+                    "Sold " + soldCards.size() + " card(s)",
+                    java.time.LocalDateTime.now()
+            );
+
+            recordAndSaveMove(move);
+
+            performAction();
+        };
+
+        Window owner = controller.getHexBoardPane().getScene().getWindow();
+
+        ScreenLoader.showAsModal(
+                owner,
+                "SellPatents.fxml",
+                "Sell Patents",
+                0.5, 0.7,
+                (SellPatentsController c) -> c.initData(gameManager.getCurrentPlayer(), onSaleCompleteAction)
+        );
     }
 }
