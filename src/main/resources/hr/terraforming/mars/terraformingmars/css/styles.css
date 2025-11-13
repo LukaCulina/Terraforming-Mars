@@ -468,12 +468,50 @@
     -fx-cursor: hand;
 }
 
+/* Scrollbar */
 .transparent-scroll-pane {
     -fx-background-color: transparent;
 }
 
 .transparent-scroll-pane > .viewport {
     -fx-background-color: transparent;
+}
+
+.transparent-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 15px;
+}
+
+.transparent-scroll-pane .scroll-bar .increment-button,
+.transparent-scroll-pane .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.transparent-scroll-pane .scroll-bar .increment-arrow,
+.transparent-scroll-pane .scroll-bar .decrement-arrow {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
+
+.transparent-scroll-pane .scroll-bar .track {
+    -fx-background-color: rgba(0, 0, 0, 0.15);
+    -fx-background-radius: 7px;
+}
+
+.transparent-scroll-pane .scroll-bar .thumb {
+    -fx-background-color: rgba(150, 100, 60, 0.6);
+    -fx-background-radius: 7px;
+}
+
+.transparent-scroll-pane .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(150, 100, 60, 0.9);
 }
 
 .cancel-sale {
