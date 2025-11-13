@@ -27,6 +27,9 @@ public class TerraformingMarsApplication extends Application {
 
         stage.setTitle("Terraforming Mars");
 
+        stage.setMinWidth(750);
+        stage.setMinHeight(600);
+
         stage.setMaximized(true);
         stage.setResizable(true);
         stage.setHeight(Screen.getPrimary().getVisualBounds().getHeight());
