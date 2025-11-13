@@ -206,9 +206,15 @@
     -fx-font-weight: bold;
     -fx-font-size: 20;
 }
+.start-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 40;
+}
 
-.confirm-button {
-    -fx-background-color: #28a745;
+.confirm-button, .start-button
+{
+    -fx-background-color: #FFA500;
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;

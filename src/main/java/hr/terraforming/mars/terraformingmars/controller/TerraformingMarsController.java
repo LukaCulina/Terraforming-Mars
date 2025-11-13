@@ -191,7 +191,7 @@
                 initializeComponents();
                 this.viewedPlayer = this.gameManager.getCurrentPlayer();
                 updateAllUI();
-                DialogUtils.showSuccessDialog("The game has been successfully loaded!");
+                DialogUtils.showDialog("The game has been successfully loaded!");
             }
         }
 

@@ -4,11 +4,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.TilePane?>
-
 <?import javafx.geometry.Insets?>
-<VBox styleClass="choose-window" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="hr.terraforming.mars.terraformingmars.controller.ChooseCardsController"
-      spacing="15" alignment="CENTER">
+      styleClass="choose-window" alignment="CENTER" spacing="15">
 
     <Label fx:id="chooseCardsLabel" styleClass="choose-label"/>
 

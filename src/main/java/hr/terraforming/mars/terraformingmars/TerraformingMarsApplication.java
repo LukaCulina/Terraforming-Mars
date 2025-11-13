@@ -36,7 +36,9 @@ public class TerraformingMarsApplication extends Application {
 
         GameScreens.setMainStage(stage);
 
-        GameScreens.showChoosePlayersScreen();
+        //GameScreens.showChoosePlayersScreen();
+
+        GameScreens.showStartMenu();
 
         stage.show();
     }

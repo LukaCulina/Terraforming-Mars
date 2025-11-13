@@ -8,9 +8,9 @@ public class DialogUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static void showSuccessDialog(String message) {
+    public static void showDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("The action was successful!");
+        //alert.setTitle("The action was successful!");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

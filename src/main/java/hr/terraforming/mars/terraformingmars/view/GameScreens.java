@@ -22,6 +22,17 @@ public class GameScreens {
     @Setter
     private static Stage mainStage;
 
+    public static void showStartMenu() {
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "StartMenu.fxml",
+                "Terraforming Mars - Main Menu",
+                (StartMenuController _) -> {}
+        );
+
+        log.info("Main Menu displayed.");
+    }
+
     public static void showChoosePlayersScreen() {
         ScreenLoader.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
     }
@@ -71,6 +82,19 @@ public class GameScreens {
 
         mainStage.setScene(mainGameScene);
         mainStage.setTitle("Terraforming Mars");
+    }
+
+    public static void showGameScreen(GameState gameState) {
+        var result = ScreenLoader.loadFxml("GameScreen.fxml");
+        TerraformingMarsController mainController = (TerraformingMarsController) result.controller();
+        Scene mainGameScene = ScreenLoader.createScene(result.root());
+
+        mainController.setupGame(gameState);
+
+        mainStage.setScene(mainGameScene);
+        mainStage.setTitle("Terraforming Mars - Loaded Game");
+
+        log.info("Loaded game displayed on main screen.");
     }
 
     public static void startFinalGreeneryPhase(GameManager gameManager, TerraformingMarsController mainController) {

@@ -34,7 +34,7 @@ public class SaveLoadService {
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(gameState);
-            DialogUtils.showSuccessDialog("The game has been successfully saved!");
+            DialogUtils.showDialog("The game has been successfully saved!");
             logger.info("Game state saved to {}", file.getAbsolutePath());
         } catch (IOException e) {
             logger.error("Failed to save game state to {}", file.getAbsolutePath(), e);
