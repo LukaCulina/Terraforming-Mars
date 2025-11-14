@@ -16,6 +16,7 @@
     import javafx.scene.Node;
     import javafx.scene.control.*;
     import javafx.scene.layout.*;
+    import javafx.stage.Stage;
     import javafx.stage.Window;
     import lombok.Getter;
     import lombok.Setter;
@@ -92,6 +93,37 @@
             initializeComponents();
             this.gameManager.startGame();
             this.viewedPlayer = this.gameManager.getCurrentPlayer();
+            Platform.runLater(() -> {
+                Stage stage = (Stage) hexBoardPane.getScene().getWindow();
+                log.info("=== STAGE DIMENSIONS ===");
+                log.info("Stage height: {}", stage.getHeight());
+                log.info("Stage minHeight: {}", stage.getMinHeight());
+                log.info("Scene height: {}", hexBoardPane.getScene().getHeight());
+                log.info("Screen height: {}", javafx.stage.Screen.getPrimary().getBounds().getHeight());
+                log.info("gameBoardPane height: {}", gameBoardPane.getHeight());
+                log.info("hexBoardPane height: {}", hexBoardPane.getHeight());
+                log.info("bottomGrid height: {}", bottomGrid.getHeight());
+            });
+            Platform.runLater(() -> {
+                log.info("=== FXML HARDCODED HEIGHTS ===");
+                log.info("hexBoardPane - pref: {}, min: {}, max: {}",
+                        hexBoardPane.getPrefHeight(), hexBoardPane.getMinHeight(), hexBoardPane.getMaxHeight());
+                log.info("gameBoardPane - pref: {}, min: {}, max: {}",
+                        gameBoardPane.getPrefHeight(), gameBoardPane.getMinHeight(), gameBoardPane.getMaxHeight());
+                log.info("bottomGrid - pref: {}, min: {}, max: {}",
+                        bottomGrid.getPrefHeight(), bottomGrid.getMinHeight(), bottomGrid.getMaxHeight());
+                log.info("temperaturePane - pref: {}, min: {}, max: {}",
+                        temperaturePane.getPrefHeight(), temperaturePane.getMinHeight(), temperaturePane.getMaxHeight());
+                log.info("standardProjectsBox - pref: {}, min: {}, max: {}",
+                        standardProjectsBox.getPrefHeight(), standardProjectsBox.getMinHeight(), standardProjectsBox.getMaxHeight());
+                log.info("playerInterface - pref: {}, min: {}, max: {}",
+                        playerInterface.getPrefHeight(), playerInterface.getMinHeight(), playerInterface.getMaxHeight());
+            });
+            Platform.runLater(() -> gameBoardPane.maxHeightProperty().bind(
+                    hexBoardPane.getScene().heightProperty()
+                            .subtract(28)
+                            .multiply(1)
+            ));
             Platform.runLater(this::updateAllUI);
             startMoveHistory();
         }
@@ -108,8 +140,25 @@
             PlayerControlComponents controlComps = new PlayerControlComponents(playerListBar, passTurnButton, convertHeatButton, convertPlantsButton);
             this.uiManager = new UIManager(this.gameBoard, this.gameManager, this.actionManager, hexBoardDrawer, statusComps, panelComps, controlComps);
             this.uiManager.initializeUIComponents(this, gameBoardPane, playerInterface, bottomGrid, temperaturePane);
+
+            setupBoardResizeListener(hexBoardDrawer);
+
             this.gameBoard.setOnGlobalParametersChanged(this::updateAllUI);
             this.replayManager = new ReplayManager(this);
+        }
+
+        private void setupBoardResizeListener(HexBoardDrawer hexBoardDrawer) {
+            hexBoardPane.widthProperty().addListener((_, oldVal, newVal) -> {
+                if (Math.abs(newVal.doubleValue() - oldVal.doubleValue()) > 10) {
+                    hexBoardDrawer.drawBoard();
+                }
+            });
+
+            hexBoardPane.heightProperty().addListener((_, oldVal, newVal) -> {
+                if (Math.abs(newVal.doubleValue() - oldVal.doubleValue()) > 10) {
+                    hexBoardDrawer.drawBoard();
+                }
+            });
         }
 
         public void startMoveHistory() {

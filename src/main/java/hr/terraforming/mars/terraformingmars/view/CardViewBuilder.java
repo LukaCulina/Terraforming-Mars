@@ -20,7 +20,7 @@ public final class CardViewBuilder {
     public static VBox createCardNode(Card card) {
         VBox cardBox = new VBox(5);
         cardBox.setAlignment(Pos.TOP_CENTER);
-        cardBox.setPrefSize(200, 245);
+        cardBox.setPrefSize(180, 220);
         cardBox.getStyleClass().add("card-view");
 
         Label costLabel = new Label(card.getCost() + " MC");

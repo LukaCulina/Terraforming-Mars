@@ -37,9 +37,9 @@
         <rowConstraints>
             <RowConstraints vgrow="SOMETIMES" />
         </rowConstraints>
-        <BorderPane fx:id="gameBoardPane" GridPane.columnIndex="0">
+        <BorderPane fx:id="gameBoardPane" GridPane.columnIndex="0" GridPane.valignment="TOP">
             <center>
-                <AnchorPane fx:id="hexBoardPane" BorderPane.alignment="CENTER" />
+                <AnchorPane fx:id="hexBoardPane" BorderPane.alignment="CENTER"/>
             </center>
             <bottom>
                 <GridPane fx:id="bottomGrid" styleClass="borderpane-vertical" BorderPane.alignment="CENTER">

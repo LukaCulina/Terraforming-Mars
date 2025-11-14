@@ -275,7 +275,7 @@
 }
 
 .generation-phase-label {
-    -fx-font-size: 26px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }
