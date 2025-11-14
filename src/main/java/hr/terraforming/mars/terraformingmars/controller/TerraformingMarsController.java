@@ -1,11 +1,11 @@
     package hr.terraforming.mars.terraformingmars.controller;
 
     import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
+    import hr.terraforming.mars.terraformingmars.service.GameStateService;
     import hr.terraforming.mars.terraformingmars.util.*;
     import hr.terraforming.mars.terraformingmars.view.GameScreens;
     import hr.terraforming.mars.terraformingmars.manager.*;
     import hr.terraforming.mars.terraformingmars.model.*;
-    import hr.terraforming.mars.terraformingmars.service.SaveLoadService;
     import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
     import hr.terraforming.mars.terraformingmars.view.components.ActionPanelComponents;
     import hr.terraforming.mars.terraformingmars.view.components.GlobalStatusComponents;
@@ -58,7 +58,7 @@
         @Getter
         private ActionManager actionManager;
         @Getter
-        private GameManager gameManager;
+        GameManager gameManager;
         @Setter
         @Getter
         private GameBoard gameBoard;
@@ -67,7 +67,7 @@
         private PlacementCoordinator placementCoordinator;
         @Setter
         private Player viewedPlayer = null;
-        private final SaveLoadService saveLoadService = new SaveLoadService();
+        private final GameStateService gameStateService = new GameStateService();
         private ReplayManager replayManager;
         private Timeline moveHistoryTimeline;
 
@@ -222,17 +222,16 @@
         }
 
         public void startNewGame() {
-            GameMoveUtils.deleteMoveHistoryFile();
-            XmlUtils.clearGameMoves();
+            gameStateService.clearGameData();
             GameScreens.showChoosePlayersScreen();
         }
 
         public void saveGame() {
-            saveLoadService.saveGame(gameManager, gameBoard);
+            gameStateService.saveGame(gameManager, gameBoard);
         }
 
         public void loadGame() {
-            GameState loadedState = saveLoadService.loadGame();
+            GameState loadedState = gameStateService.loadGame();
             if (loadedState != null) {
                 this.gameManager = loadedState.gameManager();
                 this.gameBoard = loadedState.gameBoard();

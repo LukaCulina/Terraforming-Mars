@@ -8,6 +8,7 @@ import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
@@ -17,8 +18,11 @@ import java.util.function.Consumer;
 @Slf4j
 public class GameScreens {
 
-    private GameScreens() { throw new IllegalStateException("Utility class"); }
+    private GameScreens() {
+        throw new IllegalStateException("Utility class");
+    }
 
+    @Getter
     @Setter
     private static Stage mainStage;
 
@@ -82,19 +86,6 @@ public class GameScreens {
 
         mainStage.setScene(mainGameScene);
         mainStage.setTitle("Terraforming Mars");
-    }
-
-    public static void showGameScreen(GameState gameState) {
-        var result = ScreenLoader.loadFxml("GameScreen.fxml");
-        TerraformingMarsController mainController = (TerraformingMarsController) result.controller();
-        Scene mainGameScene = ScreenLoader.createScene(result.root());
-
-        mainController.setupGame(gameState);
-
-        mainStage.setScene(mainGameScene);
-        mainStage.setTitle("Terraforming Mars - Loaded Game");
-
-        log.info("Loaded game displayed on main screen.");
     }
 
     public static void startFinalGreeneryPhase(GameManager gameManager, TerraformingMarsController mainController) {

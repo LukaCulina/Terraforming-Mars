@@ -108,7 +108,7 @@
             <VBox fx:id="currentPlayerBoardContainer" alignment="TOP_CENTER" VBox.vgrow="ALWAYS" />
 
             <Label fx:id="lastMoveLabel" styleClass="last-move-label"/>
-            <Button fx:id="passTurnButton" prefHeight="40.0" styleClass="pass-button" text="Pass" />
+            <Button fx:id="passTurnButton" prefHeight="40.0" styleClass="pass-button" text="Pass Turn" />
             <Button fx:id="cancelPlacementButton" styleClass="cancel-button" text="Cancel Placement" visible="false" />
 
             <padding>

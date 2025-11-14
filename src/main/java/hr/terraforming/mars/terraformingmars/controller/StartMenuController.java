@@ -1,32 +1,46 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.model.GameState;
-import hr.terraforming.mars.terraformingmars.service.SaveLoadService;
+import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;
+import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class StartMenuController {
-    private final SaveLoadService saveLoadService = new SaveLoadService();
-    private final TerraformingMarsController terraformingMarsController= new TerraformingMarsController();
+    private final GameStateService gameStateService = new GameStateService();
 
     @FXML
     private void onStartNewGame() {
         log.info("Starting new game...");
-        //GameScreens.showChoosePlayersScreen();
-        terraformingMarsController.startNewGame();
+        gameStateService.clearGameData();
+        GameScreens.showChoosePlayersScreen();
     }
 
     @FXML
     private void onLoadGame() {
         log.info("Loading saved game...");
-        GameState loadedState = saveLoadService.loadGame();
+        GameState loadedState = gameStateService.loadGame();
 
         if (loadedState != null) {
-            GameScreens.showGameScreen(loadedState);
+            var result = ScreenLoader.loadFxml("GameScreen.fxml");
+            TerraformingMarsController controller = (TerraformingMarsController) result.controller();
+            Scene mainGameScene = ScreenLoader.createScene(result.root());
+
+            controller.gameManager = loadedState.gameManager();
+            controller.setGameBoard(loadedState.gameBoard());
+            controller.getGameManager().relink(controller.getGameBoard());
+            controller.initializeComponents();
+            controller.setViewedPlayer(controller.getGameManager().getCurrentPlayer());
+            controller.updateAllUI();
+
+            GameScreens.getMainStage().setScene(mainGameScene);
+            GameScreens.getMainStage().setTitle("Terraforming Mars - Loaded Game");
+
             Platform.runLater(() ->
                     DialogUtils.showDialog("Game loaded successfully!")
             );

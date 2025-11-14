@@ -4,18 +4,25 @@ import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;
+import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
+import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public class SaveLoadService {
+public class GameStateService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SaveLoadService.class);
+    private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
     public static final String SAVE_GAME_FILE_NAME = "saveGame/gameSave.dat";
 
-    public SaveLoadService() {
+    public GameStateService() {
         // No-op
+    }
+
+    public void clearGameData() {
+        GameMoveUtils.deleteMoveHistoryFile();
+        XmlUtils.clearGameMoves();
     }
 
     public void saveGame(GameManager gameManager, GameBoard gameBoard) {

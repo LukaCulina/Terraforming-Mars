@@ -6,7 +6,6 @@
 /* Choosing corporation */
 .corporation-card {
     -fx-background-color: #2E3A47;
-    -fx-border-color: #FFA500;
     -fx-border-width: 2px;
     -fx-border-radius: 12px;
     -fx-background-radius: 12px;
@@ -18,8 +17,8 @@
 
 .corporation-card:hover {
     -fx-border-color: #FFD700;
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 .corporation-name {
@@ -59,8 +58,8 @@
 
 .select-button:hover {
     -fx-background-color: #34d058;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* Choosing cards */
@@ -227,8 +226,8 @@
 
 .confirm-button:hover {
     -fx-background-color: #34d058;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* ProgressBars */
@@ -380,11 +379,7 @@
     -fx-text-fill: white;
     -fx-background-color: #8B4513;
     -fx-padding: 5px 15px;
-    -fx-border-radius: 10px;
     -fx-background-radius: 10px;
-    -fx-border-color: black;
-    -fx-border-width: 2px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 5, 0, 0, 2);
 }
 
 .header-label {
@@ -411,9 +406,6 @@
     -fx-min-height: 20px;
     -fx-max-height: 20px;
     -fx-background-radius: 4px;
-    -fx-border-color: #1a2026;
-    -fx-border-width: 1px;
-    -fx-border-radius: 4px;
 }
 
 .tag-science {
@@ -467,6 +459,7 @@
 
 .cancel-button {
     -fx-background-color: #e74c3c;
+    -fx-background-radius: 10;
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
@@ -522,6 +515,7 @@
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-cursor: hand;
 }
 
 /* FinalGreenery */
