@@ -12,10 +12,10 @@
     <VBox spacing="15" alignment="CENTER" maxWidth="300">
         <Button text="Start New Game"
                 onAction="#onStartNewGame"
-                styleClass="start-button"/>
+                styleClass="confirm-button"/>
 
         <Button text="Load Saved Game"
                 onAction="#onLoadGame"
-                styleClass="start-button"/>
+                styleClass="confirm-button"/>
     </VBox>
 </VBox>

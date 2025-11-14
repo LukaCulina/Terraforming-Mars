@@ -8,7 +8,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="hr.terraforming.mars.terraformingmars.controller.PlayerBoardController"
-      alignment="TOP_CENTER" spacing="10.0">
+      fx:id="playerBoard" alignment="TOP_CENTER" spacing="10.0">
 
     <HBox alignment="CENTER" prefHeight="40.0">
         <Label fx:id="corporationLabel" styleClass="meter-text" />

@@ -6,11 +6,14 @@ import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.function.Consumer;
 
 public class PlayerBoardController {
 
+    @FXML private VBox playerBoard;
     @FXML private Label corporationLabel;
     @FXML private Label trLabel;
     @FXML private Label mcLabel;
@@ -37,11 +41,45 @@ public class PlayerBoardController {
     @FXML private TilePane cardsDisplayArea;
     @FXML private Button showHandButton;
     @FXML private Button showPlayedButton;
-
     private Player player;
     private Consumer<Card> cardPlayHandler;
-
     private boolean isShowingHand = true;
+    private final PauseTransition resizePause = new PauseTransition(Duration.millis(150));
+
+    @FXML
+    public void initialize() {
+        playerBoard.sceneProperty().addListener((_, _, newScene) -> {
+            if (newScene != null) {
+                newScene.windowProperty().addListener((_, _, newW) -> {
+                    if (newW instanceof Stage stage) {
+                        stage.widthProperty().addListener((_, _, _) -> scheduleUpdate());
+                        stage.heightProperty().addListener((_, _, _) -> scheduleUpdate());
+                        stage.fullScreenProperty().addListener((_, _, _) -> scheduleUpdate());
+                    }
+                });
+            }
+        });
+    }
+    private void scheduleUpdate() {
+        resizePause.stop();
+        resizePause.setOnFinished(_ -> updateFontSizes());
+        resizePause.playFromStart();
+    }
+
+    private void updateFontSizes() {
+        if (playerBoard.getWidth() == 0 || playerBoard.getHeight() == 0) return;
+        double base = Math.min(playerBoard.getWidth(), playerBoard.getHeight());
+
+        setFont(".meter-text", base * 0.035);
+        setFont(".resource-text", base * 0.03);
+        setFont(".tag-text-label", base * 0.025);
+    }
+
+    private void setFont(String styleClass, double size) {
+        playerBoard.lookupAll(styleClass).forEach(node ->
+                node.setStyle(String.format("-fx-font-size: %.2fpx;", size))
+        );
+    }
 
     public void setPlayer(Player player, ActionManager actionManager) {
         this.player = player;
