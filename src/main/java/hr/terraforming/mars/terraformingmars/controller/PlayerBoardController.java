@@ -60,6 +60,7 @@ public class PlayerBoardController {
             }
         });
     }
+
     private void scheduleUpdate() {
         resizePause.stop();
         resizePause.setOnFinished(_ -> updateFontSizes());

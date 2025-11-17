@@ -5,14 +5,11 @@ import hr.terraforming.mars.terraformingmars.enums.TileType;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.model.Tile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
+@Slf4j
 public record PlacementService(GameBoard gameBoard) {
-
-    private static final Logger logger = LoggerFactory.getLogger(PlacementService.class);
 
     public boolean isValidPlacement(TileType placementType, Tile tile, Player player) {
         if (tile.getOwner() != null || tile.getType() != TileType.LAND) {
@@ -69,7 +66,7 @@ public record PlacementService(GameBoard gameBoard) {
             forPlayer.increaseTR(1);
             gameBoard.notifyUI();
 
-            logger.info("Ocean placed by {}. Total oceans: {}", forPlayer.getName(), gameBoard.getOceansPlaced());
+            log.info("Ocean placed by {}. Total oceans: {}", forPlayer.getName(), gameBoard.getOceansPlaced());
         }
     }
 
@@ -83,7 +80,7 @@ public record PlacementService(GameBoard gameBoard) {
 
         gameBoard.notifyUI();
 
-        logger.info("Greenery placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
+        log.info("Greenery placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
     }
 
     public void placeCity(Tile onTile, Player forPlayer) {
@@ -92,6 +89,6 @@ public record PlacementService(GameBoard gameBoard) {
         forPlayer.increaseProduction(ResourceType.MEGACREDITS, 1);
         gameBoard.notifyUI();
 
-        logger.info("City placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
+        log.info("City placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
     }
 }

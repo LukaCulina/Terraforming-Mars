@@ -46,16 +46,15 @@ public final class CardViewBuilder {
 
         cardBox.getChildren().addAll(costLabel, nameLabel, tagBox, descriptionWrapper);
 
-        if (card.getVictoryPoints() > 0) {
-            Label vpLabel = new Label(String.valueOf(card.getVictoryPoints()));
-            vpLabel.getStyleClass().add("vp-label");
+        Label vpLabel = new Label(String.valueOf(card.getVictoryPoints()));
+        vpLabel.getStyleClass().add("vp-label");
 
-            StackPane vpContainer = new StackPane(vpLabel);
-            vpContainer.setAlignment(Pos.BOTTOM_RIGHT);
-            vpContainer.setPadding(new Insets(0, 10, 10, 0));
+        StackPane vpContainer = new StackPane(vpLabel);
+        vpContainer.setAlignment(Pos.BOTTOM_RIGHT);
+        vpContainer.setPadding(new Insets(0, 3, 3, 0));
+        vpContainer.setVisible(card.getVictoryPoints() > 0);
 
-            cardBox.getChildren().add(vpContainer);
-        }
+        cardBox.getChildren().add(vpContainer);
 
         return cardBox;
     }

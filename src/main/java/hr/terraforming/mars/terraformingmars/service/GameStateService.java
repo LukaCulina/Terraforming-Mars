@@ -6,19 +6,13 @@ import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 
+@Slf4j
 public class GameStateService {
 
-    private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
     public static final String SAVE_GAME_FILE_NAME = "saveGame/gameSave.dat";
-
-    public GameStateService() {
-        // No-op
-    }
 
     public void clearGameData() {
         GameMoveUtils.deleteMoveHistoryFile();
@@ -32,9 +26,9 @@ public class GameStateService {
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {
             if (parentDir.mkdirs()) {
-                logger.info("Created directory: {}", parentDir.getAbsolutePath());
+                log.info("Created directory: {}", parentDir.getAbsolutePath());
             } else {
-                logger.error("Failed to create directory: {}", parentDir.getAbsolutePath());
+                log.error("Failed to create directory: {}", parentDir.getAbsolutePath());
                 return;
             }
         }
@@ -42,9 +36,9 @@ public class GameStateService {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(gameState);
             DialogUtils.showDialog("The game has been successfully saved!");
-            logger.info("Game state saved to {}", file.getAbsolutePath());
+            log.info("Game state saved to {}", file.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Failed to save game state to {}", file.getAbsolutePath(), e);
+            log.error("Failed to save game state to {}", file.getAbsolutePath(), e);
         }
     }
 
@@ -54,13 +48,13 @@ public class GameStateService {
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 GameState loadedState = (GameState) ois.readObject();
-                logger.info("Game state loaded from {}", file.getAbsolutePath());
+                log.info("Game state loaded from {}", file.getAbsolutePath());
                 return loadedState;
             } catch (IOException | ClassNotFoundException e) {
-                logger.error("Failed to load game state from {}", file.getAbsolutePath(), e);
+                log.error("Failed to load game state from {}", file.getAbsolutePath(), e);
             }
         } else {
-            logger.warn("Save file not found at: {}", file.getAbsolutePath());
+            log.warn("Save file not found at: {}", file.getAbsolutePath());
         }
         return null;
     }
