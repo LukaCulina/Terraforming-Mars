@@ -1,10 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
-import hr.terraforming.mars.terraformingmars.enums.ActionType;
-import hr.terraforming.mars.terraformingmars.enums.ResourceType;
-import hr.terraforming.mars.terraformingmars.enums.StandardProject;
-import hr.terraforming.mars.terraformingmars.enums.TileType;
+import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import javafx.application.Platform;
@@ -21,17 +18,14 @@ public class PlacementManager {
     private final GameManager gameManager;
     private final ActionManager actionManager;
 
-    @Getter
-    private boolean isPlacementMode = false;
-    private boolean isFinalGreeneryMode = false;
-    private boolean isPlantConversionMode = false;
-    private Player finalGreeneryPlayer = null;
-    private Runnable onPlacementCompleteCallback = null;
+    private PlacementMode placementMode = PlacementMode.NONE;
 
     private StandardProject projectToPlace = null;
     private Card cardToPlace = null;
     @Getter
     private TileType tileTypeToPlace = null;
+    private Player finalGreeneryPlayer = null;
+    private Runnable onPlacementCompleteCallback = null;
 
     public PlacementManager(TerraformingMarsController mainController, GameManager gameManager, GameBoard gameBoard,ActionManager actionManager) {
         this.mainController = mainController;
@@ -40,92 +34,88 @@ public class PlacementManager {
         this.actionManager = actionManager;
     }
 
+    public boolean isPlacementMode() {
+        return placementMode != PlacementMode.NONE;
+    }
+
     public void enterPlacementModeForPlant(GameMove move) {
-        this.tileTypeToPlace = TileType.GREENERY;
-        this.isPlantConversionMode = true;
-        this.isPlacementMode = true;
-        this.moveInProgress = move;
-        log.info("Entering placement mode for Plant Conversion.");
-        mainController.drawBoard();
-        mainController.setGameControlsEnabled(false);
+        enterPlacementMode(PlacementMode.PLANT_CONVERSION, TileType.GREENERY, move, null, null, null, null);
     }
 
     public void enterPlacementModeForProject(StandardProject project, GameMove move) {
-        this.projectToPlace = project;
-        this.tileTypeToPlace = project.getTileType();
-        this.moveInProgress = move;
-        this.isPlacementMode = true;
-        log.info("Entering placement mode for project: {}", project.getName());
-        mainController.drawBoard();
-        mainController.setGameControlsEnabled(false);
-
+        enterPlacementMode(PlacementMode.STANDARD_PROJECT, project.getTileType(), move, null, project, null, null);
     }
 
     public void enterPlacementModeForCard(Card card, GameMove move) {
-        this.cardToPlace = card;
-        this.tileTypeToPlace = card.getTileToPlace();
-        this.moveInProgress = move;
-        this.isPlacementMode = true;
-
-        log.info("Entering placement mode for card: {}", card.getName());
-        mainController.drawBoard();
-        mainController.setGameControlsEnabled(false);
+        enterPlacementMode(PlacementMode.CARD, card.getTileToPlace(), move, card, null, null, null);
     }
 
-    public void enterPlacementModeForFinalGreenery(Player player, Runnable onCompleteCallback) {
-        this.isFinalGreeneryMode = true;
-        this.isPlacementMode = true;
-        this.tileTypeToPlace = TileType.GREENERY;
-        this.finalGreeneryPlayer = player;
-        this.onPlacementCompleteCallback = onCompleteCallback;
+    public void enterPlacementModeForFinalGreenery(Player player, Runnable callback) {
+        enterPlacementMode(PlacementMode.FINAL_GREENERY, TileType.GREENERY, null, null, null, player, callback);
+    }
 
-        log.info("Entering placement mode for FINAL GREENERY for player: {}", player.getName());
+    private void enterPlacementMode(PlacementMode mode, TileType tileType, GameMove move,
+                                    Card card, StandardProject project, Player player, Runnable callback) {
+        this.placementMode = mode;
+        this.tileTypeToPlace = tileType;
+        this.moveInProgress = move;
+        this.cardToPlace = card;
+        this.projectToPlace = project;
+        this.finalGreeneryPlayer = player;
+        this.onPlacementCompleteCallback = callback;
+
+        log.info("Entering placement mode: {}", mode);
         mainController.drawBoard();
         mainController.setGameControlsEnabled(false);
     }
 
     public void executePlacement(Tile selectedTile) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
+        Player placementOwner = getPlacementOwner();
 
-        Player placementOwner = isFinalGreeneryMode ? this.finalGreeneryPlayer : currentPlayer;
         if (placementOwner == null) {
             log.error("Placement failed: No player defined for tile placement. This should not happen.");
 
             cancelPlacement();
             return;
         }
+
+        recordMoves(selectedTile, placementOwner);
+
+        performPlacement(selectedTile, placementOwner);
+
+        finishPlacement();
+
+        if (placementMode != PlacementMode.FINAL_GREENERY) {
+            actionManager.performAction();
+        } else {
+            mainController.updateAllUI();
+        }
+    }
+
+    private void recordMoves(Tile tile, Player owner) {
         if (moveInProgress != null) {
             actionManager.recordAndSaveMove(moveInProgress);
         }
 
         GameMove placeTileMove = new GameMove(
-                placementOwner.getName(),
+                owner.getName(),
                 ActionType.PLACE_TILE,
                 "Placed " + tileTypeToPlace.name(),
                 LocalDateTime.now()
         );
-
-        placeTileMove.setRow(selectedTile.getRow());
-        placeTileMove.setCol(selectedTile.getCol());
+        placeTileMove.setRow(tile.getRow());
+        placeTileMove.setCol(tile.getCol());
         placeTileMove.setTileType(tileTypeToPlace);
+
         actionManager.recordAndSaveMove(placeTileMove);
-        if (isFinalGreeneryMode) {
-            handleFinalGreeneryPlacement(selectedTile, placementOwner);
-        }
-        else if (isPlantConversionMode) {
-            gameBoard.placeGreenery(selectedTile, placementOwner);
-            placementOwner.spendPlantsForGreenery();
-        }
-        else {
-            handleStandardPlacement(selectedTile, placementOwner);
-        }
+    }
 
-        finishPlacement();
-
-        if (!isFinalGreeneryMode) {
-            actionManager.performAction();
-        } else {
-            mainController.updateAllUI();
+    private void performPlacement(Tile tile, Player owner) {
+        switch (placementMode) {
+            case FINAL_GREENERY -> handleFinalGreeneryPlacement(tile, owner);
+            case PLANT_CONVERSION -> handlePlantConversion(tile, owner);
+            case STANDARD_PROJECT, CARD -> handleStandardPlacement(tile, owner);
+            default -> log.error("Unknown placement mode: {}", placementMode);
         }
     }
 
@@ -142,7 +132,7 @@ public class PlacementManager {
     }
 
     private void finishPlacement() {
-        boolean wasFinalGreenery = this.isFinalGreeneryMode;
+        boolean wasFinalGreenery = (placementMode == PlacementMode.FINAL_GREENERY);
 
         resetPlacementState();
         mainController.setGameControlsEnabled(true);
@@ -165,6 +155,11 @@ public class PlacementManager {
         }
     }
 
+    private void handlePlantConversion(Tile tile, Player owner) {
+        gameBoard.placeGreenery(tile, owner);
+        owner.spendPlantsForGreenery();
+    }
+
     private void handleStandardPlacement(Tile tile, Player owner) {
         switch (tileTypeToPlace) {
             case OCEAN: gameBoard.placeOcean(tile, owner); break;
@@ -181,21 +176,22 @@ public class PlacementManager {
     }
 
     private void resetPlacementState() {
-        this.isPlacementMode = false;
+        this.placementMode = PlacementMode.NONE;
         this.projectToPlace = null;
         this.cardToPlace = null;
         this.tileTypeToPlace = null;
-        this.isPlantConversionMode = false;
+        this.moveInProgress = null;
     }
 
     private void resetAllState() {
         resetPlacementState();
-        this.isFinalGreeneryMode = false;
         this.finalGreeneryPlayer = null;
         this.onPlacementCompleteCallback = null;
     }
 
     public Player getPlacementOwner() {
-        return isFinalGreeneryMode ? finalGreeneryPlayer : gameManager.getCurrentPlayer();
+        return (placementMode == PlacementMode.FINAL_GREENERY)
+                ? finalGreeneryPlayer
+                : gameManager.getCurrentPlayer();
     }
 }

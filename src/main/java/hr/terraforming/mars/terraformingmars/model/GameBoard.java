@@ -35,14 +35,14 @@ public class GameBoard implements Serializable {
 
     @Getter
     private final List<Tile> tiles = new ArrayList<>();
-    private static final int[][] OCEAN_POSITIONS = {
-            {0, 1}, {0, 3}, {0, 4},
-            {1, 5},
-            {3, 7},
-            {4, 3}, {4, 4}, {4, 5},
-            {5, 5}, {5, 6}, {5, 7},
-            {8, 4}
-    };
+    private static final Set<String> OCEAN_COORDINATES = Set.of(
+            "0,1", "0,3", "0,4",
+            "1,5",
+            "3,7",
+            "4,3", "4,4", "4,5",
+            "5,5", "5,6", "5,7",
+            "8,4"
+    );
 
     public GameBoard() {
         this.placementService = new PlacementService(this);
@@ -106,12 +106,7 @@ public class GameBoard implements Serializable {
     }
 
     public boolean isOceanCoordinate(int row, int col) {
-        for (int[] pos : OCEAN_POSITIONS) {
-            if (pos[0] == row && pos[1] == col) {
-                return true;
-            }
-        }
-        return false;
+        return OCEAN_COORDINATES.contains(row + "," + col);
     }
 
     public int[] getHexesInRow() { return HexGridHelper.getHexesInRow(); }
@@ -127,16 +122,14 @@ public class GameBoard implements Serializable {
     }
 
     public boolean increaseTemperature() {
-        if (temperature < MAX_TEMPERATURE) {
-            temperature += 2;
-            if (temperature > MAX_TEMPERATURE) {
-                temperature = MAX_TEMPERATURE;
-            }
-            notifyUI();
-            checkEndGameTrigger();
-            return true;
+        if (temperature >= MAX_TEMPERATURE) {
+            return false;
         }
-        return false;
+
+        temperature = Math.min(temperature + 2, MAX_TEMPERATURE);
+        notifyUI();
+        checkEndGameTrigger();
+        return true;
     }
 
     public void notifyUI() {

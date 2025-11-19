@@ -56,9 +56,13 @@ public class XmlUtils {
             try {
                 return db.parse(xmlFile);
             } catch (SAXException _) {
-                // File is corrupted, create a new document with a root element.
+                return createNewDocument(db);
             }
         }
+        return createNewDocument(db);
+    }
+
+    private static Document createNewDocument(DocumentBuilder db) {
         Document doc = db.newDocument();
         Element root = doc.createElement("GameMoves");
         doc.appendChild(root);

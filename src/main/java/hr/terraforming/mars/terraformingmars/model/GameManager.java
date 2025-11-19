@@ -1,14 +1,13 @@
 package hr.terraforming.mars.terraformingmars.model;
 
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
-import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
+import hr.terraforming.mars.terraformingmars.util.GamePhaseUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -134,24 +133,7 @@ public class GameManager implements Serializable {
     }
 
     public void doProduction() {
-        log.info("Production Phase Started");
-
-        for (Player p : players) {
-            int income = p.getTR() + p.productionProperty(ResourceType.MEGACREDITS).get();
-            p.addMC(income);
-            int energy = p.resourceProperty(ResourceType.ENERGY).get();
-            p.addResource(ResourceType.HEAT, energy);
-            p.resourceProperty(ResourceType.ENERGY).set(0);
-
-            p.getProductionMap().forEach((type, amount) -> {
-                if (type != ResourceType.MEGACREDITS) {
-                    p.addResource(type, amount.get());
-                }
-            });
-            log.info("Player {} energy set to 0. Current value is: {}",
-                    p.getName(), p.resourceProperty(ResourceType.ENERGY).get());
-        }
-        log.info("Production Finished");
+        GamePhaseUtils.executeProduction(players);
     }
 
     public void startNewGeneration() {
@@ -176,16 +158,7 @@ public class GameManager implements Serializable {
     }
 
     public List<Player> calculateFinalScores() {
-        log.info(" FINAL SCORING");
-        players.forEach(p -> {
-            p.calculateTilePoints();
-            log.info("{} - Final Score: {}", p.getName(), p.getFinalScore());
-        });
-
-        players.sort(Comparator.comparingInt(Player::getFinalScore).reversed()
-                .thenComparing(Player::getMC, Comparator.reverseOrder()));
-
-        return new ArrayList<>(players);
+        return GamePhaseUtils.calculateFinalScores(players);
     }
 
     public void resetForNewGame(GameBoard newBoard) {

@@ -18,7 +18,6 @@ import javafx.stage.Window;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -31,6 +30,9 @@ public class ScreenLoader {
     private static ResourceConfig config;
 
     public record FxmlResult<T>(Parent root, T controller) {}
+
+    private static final int LOADING_PANE_SIZE = 100;
+    private static final int TRANSITION_DURATION = 200;
 
     public static void setConfig(ResourceConfig resourceConfig) {
         if (config != null) {
@@ -61,8 +63,14 @@ public class ScreenLoader {
     public static Scene createScene(Parent root) {
         ensureConfigured();
         Scene scene = new Scene(root);
-        String cssUrl = Objects.requireNonNull(ScreenLoader.class.getResource(config.cssPath())).toExternalForm();
-        scene.getStylesheets().add(cssUrl);
+
+        var css = ScreenLoader.class.getResource(config.cssPath());
+
+        if (css == null) {
+            throw new IllegalStateException("CSS file not found: " + config.cssPath());
+        }
+
+        scene.getStylesheets().add(css.toExternalForm());
         return scene;
     }
 
@@ -84,21 +92,8 @@ public class ScreenLoader {
             double heightPercentage,
             Consumer<T> controllerAction) {
 
-        Stage loadingStage = new Stage();
-        ProgressIndicator progressIndicator = new ProgressIndicator();
-        VBox loadingPane = new VBox(progressIndicator);
-        loadingPane.setAlignment(Pos.CENTER);
-        loadingPane.getStyleClass().add("loading-pane");
-
-        Scene loadingScene = new Scene(loadingPane, 100, 100);
-        loadingScene.setFill(null);
-        loadingStage.setScene(loadingScene);
-        loadingStage.initOwner(owner);
-        loadingStage.initModality(Modality.APPLICATION_MODAL);
-        loadingStage.setResizable(false);
-        loadingStage.setTitle("Loading...");
-
-        PauseTransition delay = new PauseTransition(Duration.millis(200));
+        Stage loadingStage = createLoadingStage(owner);
+        PauseTransition delay = new PauseTransition(Duration.millis(TRANSITION_DURATION));
         delay.setOnFinished(_ -> loadingStage.show());
 
         Task<FxmlResult<T>> loadTask = new Task<>() {
@@ -140,5 +135,24 @@ public class ScreenLoader {
 
         delay.play();
         new Thread(loadTask).start();
+    }
+
+    private static Stage createLoadingStage(Window owner) {
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        VBox loadingPane = new VBox(progressIndicator);
+        loadingPane.setAlignment(Pos.CENTER);
+        loadingPane.getStyleClass().add("loading-pane");
+
+        Scene loadingScene = new Scene(loadingPane, LOADING_PANE_SIZE, LOADING_PANE_SIZE);
+        loadingScene.setFill(null);
+
+        Stage stage = new Stage();
+        stage.setScene(loadingScene);
+        stage.initOwner(owner);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.setTitle("Loading...");
+
+        return stage;
     }
 }

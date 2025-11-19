@@ -1,18 +1,22 @@
 package hr.terraforming.mars.terraformingmars.util;
 
+import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.model.Card;
+import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
+import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.thread.GetLastGameMoveThread;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Slf4j
 public class GameMoveUtils {
@@ -86,5 +90,36 @@ public class GameMoveUtils {
         }));
         theLastMoveTimeline.setCycleCount(Animation.INDEFINITE);
         return theLastMoveTimeline;
+    }
+
+    public static void saveInitialSetupMove(GameManager gameManager) {
+        try {
+            Map<String, Object> setupData = new HashMap<>();
+            for (Player player : gameManager.getPlayers()) {
+                Map<String, Object> playerData = new HashMap<>();
+
+                playerData.put("corporation",
+                        player.getCorporation() != null ? player.getCorporation().name() : "N/A");
+
+                playerData.put("hand", player.getHand().stream().map(Card::getName).toList());
+                setupData.put(player.getName(), playerData);
+            }
+
+            String jsonDetails = new com.google.gson.Gson().toJson(setupData);
+
+            GameMove initialMove = new GameMove(
+                    "System",
+                    ActionType.INITIAL_SETUP,
+                    jsonDetails,
+                    LocalDateTime.now()
+            );
+
+            XmlUtils.appendGameMove(initialMove);
+            log.debug("INITIAL_SETUP move successfully saved to XML!");
+
+        } catch (Exception e) {
+            log.error("Fatal error occurred during initial state saving.");
+            new Alert(Alert.AlertType.ERROR, "Error saving initial state for replay. See console for details.\n\n" + e.getMessage()).showAndWait();
+        }
     }
 }
