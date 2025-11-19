@@ -6,15 +6,12 @@ import hr.terraforming.mars.terraformingmars.service.PlacementService;
 import hr.terraforming.mars.terraformingmars.util.HexGridHelper;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.util.*;
 
+@Slf4j
 public class GameBoard implements Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(GameBoard.class);
 
     @Getter
     private int oxygenLevel;
@@ -88,7 +85,9 @@ public class GameBoard implements Serializable {
         placementService.placeCity(onTile, forPlayer);
     }
 
-    public void incrementOceansPlaced() { this.oceansPlaced++; }
+    public void incrementOceansPlaced() {
+        this.oceansPlaced++;
+    }
 
     private void checkEndGameTrigger() {
         if (isFinalGeneration) return;
@@ -98,8 +97,7 @@ public class GameBoard implements Serializable {
                 getOceansPlaced() >= MAX_OCEANS) {
 
             this.isFinalGeneration = true;
-
-            logger.info("GAME END TRIGGERED!: All global parameters are at maximum. The game will end after this generation.");
+            log.info("GAME END TRIGGERED!: All global parameters are at maximum. The game will end after this generation.");
         }
     }
 
@@ -149,23 +147,23 @@ public class GameBoard implements Serializable {
 
     public boolean claimMilestone(Milestone milestone, Player player) {
         if (claimedMilestones.size() >= MAX_MILESTONES) {
-            logger.warn("Cannot claim milestone: maximum number of milestones ({}) has been reached.", MAX_MILESTONES);
+            log.warn("Cannot claim milestone: maximum number of milestones ({}) has been reached.", MAX_MILESTONES);
             return false;
         }
 
         if (claimedMilestones.containsKey(milestone)) {
-            logger.warn("Milestone '{}' has already been claimed.", milestone.getName());
+            log.warn("Milestone '{}' has already been claimed.", milestone.getName());
             return false;
         }
 
         if (!milestone.canClaim(player)) {
-            logger.warn("{} does not meet the requirements for milestone '{}'.", player.getName(), milestone.getName());
+            log.warn("{} does not meet the requirements for milestone '{}'.", player.getName(), milestone.getName());
             return false;
         }
         claimedMilestones.put(milestone, player);
         player.addClaimedMilestone(milestone);
 
-        logger.info("{} has claimed the milestone: {}!", player.getName(), milestone.getName());
+        log.info("{} has claimed the milestone: {}!", player.getName(), milestone.getName());
         return true;
     }
 

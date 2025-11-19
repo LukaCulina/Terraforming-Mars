@@ -171,7 +171,6 @@ public class PlacementManager {
             case GREENERY: gameBoard.placeGreenery(tile, owner); break;
             case CITY: gameBoard.placeCity(tile, owner); break;
             default: log.error("Trying to place an unexpected tile type: {}.", tileTypeToPlace); return;
-
         }
         if (cardToPlace != null) {
             owner.playCard(cardToPlace, gameManager);

@@ -11,7 +11,6 @@ import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.application.Platform;
 import javafx.stage.Window;
 import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,7 +28,6 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
 
     public void performAction() {
         gameManager.incrementActionsTaken();
-
         controller.updateAllUI();
 
         if (gameManager.getActionsTakenThisTurn() >= 2) {
@@ -44,7 +42,6 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         if (gameManager.getActionsTakenThisTurn() < 2) {
             GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
             recordAndSaveMove(move);
-
             log.info("{} consciously passed the turn with {} actions taken.",
                     gameManager.getCurrentPlayer().getName(), gameManager.getActionsTakenThisTurn());
         } else {
@@ -90,7 +87,6 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
             performAction();
             GameMove move = new GameMove(currentPlayer.getName(), ActionType.CLAIM_MILESTONE, milestone.name(), LocalDateTime.now());
             recordAndSaveMove(move);
-
         } else {
             log.warn("Failed attempt by {} to claim milestone '{}'.", currentPlayer.getName(), milestone.getName());
         }
@@ -98,7 +94,6 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
 
     public void handleStandardProject(StandardProject project) {
         Player currentPlayer = gameManager.getCurrentPlayer();
-
         int finalCost = CostService.getFinalProjectCost(project, currentPlayer);
 
         if (currentPlayer.getMC() < finalCost) {
@@ -140,8 +135,8 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         currentPlayer.resourceProperty(ResourceType.HEAT).set(currentPlayer.resourceProperty(ResourceType.HEAT).get() - 8);
         gameBoard.increaseTemperature();
         currentPlayer.increaseTR(1);
-
         performAction();
+
         GameMove move = new GameMove(currentPlayer.getName(), ActionType.CONVERT_HEAT, "Raise temperature", LocalDateTime.now());
         recordAndSaveMove(move);
     }

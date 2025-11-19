@@ -37,5 +37,4 @@ public class GameMove implements Serializable {
     }
 
     public GameMove() {}
-
 }

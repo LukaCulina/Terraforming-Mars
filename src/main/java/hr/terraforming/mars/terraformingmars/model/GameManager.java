@@ -2,13 +2,11 @@ package hr.terraforming.mars.terraformingmars.model;
 
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import lombok.Getter;
@@ -57,8 +55,8 @@ public class GameManager implements Serializable {
     public boolean assignCorporationAndAdvance(Corporation chosenCorp) {
         getCurrentPlayer().setCorporation(chosenCorp);
         log.info("Player {} chose corporation: {}", getCurrentPlayer().getName(), chosenCorp.name());
-
         this.currentPlayerIndex++;
+
         if (currentPlayerIndex >= players.size()) {
             this.currentPlayerIndex = 0;
             return false;
@@ -86,10 +84,8 @@ public class GameManager implements Serializable {
 
         List<Card> shuffledCards = new ArrayList<>(remainingCards);
         Collections.shuffle(shuffledCards);
-
         int cardsToTake = Math.min(count, shuffledCards.size());
         List<Card> drawnCards = new ArrayList<>(shuffledCards.subList(0, cardsToTake));
-
         this.remainingCards.removeAll(drawnCards);
 
         log.info("Drawn {} cards. Cards remaining in deck: {}.", drawnCards.size(), this.remainingCards.size());
@@ -110,7 +106,6 @@ public class GameManager implements Serializable {
         this.currentPlayerIndex = 0;
         this.passedPlayers.clear();
         resetActionsTaken();
-
         log.info("Starting Generation {}. Phase: {}", generation, currentPhase);
     }
 
@@ -175,17 +170,17 @@ public class GameManager implements Serializable {
     public Player getCurrentPlayer() { return players.get(currentPlayerIndex); }
 
     public List<Player> getPlayers() { return Collections.unmodifiableList(players); }
+
     public GameBoard getGameBoard() {
         return board;
     }
 
     public List<Player> calculateFinalScores() {
         log.info(" FINAL SCORING");
-        for (Player p : players) {
+        players.forEach(p -> {
             p.calculateTilePoints();
             log.info("{} - Final Score: {}", p.getName(), p.getFinalScore());
-
-        }
+        });
 
         players.sort(Comparator.comparingInt(Player::getFinalScore).reversed()
                 .thenComparing(Player::getMC, Comparator.reverseOrder()));
@@ -202,15 +197,11 @@ public class GameManager implements Serializable {
         this.generation = 1;
         this.currentPhase = GamePhase.ACTIONS;
         this.currentPlayerIndex = 0;
-
         this.actionsTakenThisTurn = 0;
         this.passedPlayers.clear();
-
         this.cardDraftPlayerIndex = 0;
-
         this.remainingCorporations.clear();
         this.remainingCorporations.addAll(CorporationFactory.getAllCorporations());
-
         this.remainingCards.clear();
         this.remainingCards.addAll(CardFactory.getAllCards());
 
