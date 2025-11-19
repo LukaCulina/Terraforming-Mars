@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class GetLastGameMoveThread extends GameMoveThread implements Runnable {
+
     private final Label label;
 
     public GetLastGameMoveThread(Label label) {

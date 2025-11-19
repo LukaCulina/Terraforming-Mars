@@ -7,22 +7,19 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class GameMoveUtils {
 
     private GameMoveUtils() {
         throw new IllegalStateException("Utility class");
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(GameMoveUtils.class);
 
     private static final String GAME_MOVE_HISTORY_FILE_NAME = "gameMoves/moves.dat";
 
@@ -34,14 +31,14 @@ public class GameMoveUtils {
         File parentDir = file.getParentFile();
 
         if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
-                logger.error("Failed to create directory: {}", parentDir.getAbsolutePath());
+                log.error("Failed to create directory: {}", parentDir.getAbsolutePath());
                 return;
             }
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(gameMoveList);
         } catch (IOException e) {
-            logger.error("Failed to save game moves to file '{}'", GAME_MOVE_HISTORY_FILE_NAME, e);
+            log.error("Failed to save game moves to file '{}'", GAME_MOVE_HISTORY_FILE_NAME, e);
         }
     }
 
@@ -63,7 +60,7 @@ public class GameMoveUtils {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             return (List<GameMove>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            logger.error("Error loading game moves: '{}'", e.getMessage());
+            log.error("Error loading game moves: '{}'", e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -73,9 +70,9 @@ public class GameMoveUtils {
         if (file.exists()) {
             try {
                 Files.delete(file.toPath());
-                logger.info("Game move history file deleted.");
+                log.info("Game move history file deleted.");
             } catch (IOException e) {
-                logger.error("Failed to delete game move history file.", e);
+                log.error("Failed to delete game move history file.", e);
             }
         }
     }
@@ -90,5 +87,4 @@ public class GameMoveUtils {
         theLastMoveTimeline.setCycleCount(Animation.INDEFINITE);
         return theLastMoveTimeline;
     }
-
 }

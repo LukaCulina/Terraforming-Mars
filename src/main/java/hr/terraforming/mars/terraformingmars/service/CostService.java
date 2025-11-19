@@ -4,7 +4,6 @@ import hr.terraforming.mars.terraformingmars.enums.StandardProject;
 import hr.terraforming.mars.terraformingmars.model.Corporation;
 import hr.terraforming.mars.terraformingmars.model.Player;
 
-
 public final class CostService {
 
     private CostService() {

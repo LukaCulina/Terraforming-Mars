@@ -1,13 +1,13 @@
 package hr.terraforming.mars.terraformingmars.jndi;
 
 import hr.terraforming.mars.terraformingmars.exception.ConfigurationException;
-
 import javax.naming.NamingException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigurationReader {
+
     private static final String CONFIGURATION_FILE_NAME = "conf/application.properties";
 
     private ConfigurationReader() {}

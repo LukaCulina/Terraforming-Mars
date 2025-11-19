@@ -6,14 +6,13 @@ import hr.terraforming.mars.terraformingmars.config.ResourceConfig;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
 import hr.terraforming.mars.terraformingmars.model.Card;
-import hr.terraforming.mars.terraformingmars.model.CardData; // Potrebno kreirati ovu klasu/record
+import hr.terraforming.mars.terraformingmars.model.CardData;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.model.effects.Effect; // Potrebno kreirati
-import hr.terraforming.mars.terraformingmars.model.effects.EffectInterpreter; // Potrebno kreirati
+import hr.terraforming.mars.terraformingmars.model.effects.Effect;
+import hr.terraforming.mars.terraformingmars.model.effects.EffectInterpreter;
 import hr.terraforming.mars.terraformingmars.model.requirements.RequirementInterpreter;
 import lombok.Setter;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;

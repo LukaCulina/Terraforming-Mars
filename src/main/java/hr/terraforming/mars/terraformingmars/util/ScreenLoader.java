@@ -16,20 +16,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+@Slf4j
 public class ScreenLoader {
 
     private ScreenLoader() {
         throw new IllegalStateException("Utility class");
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(ScreenLoader.class);
 
     private static ResourceConfig config;
 
@@ -137,7 +134,7 @@ public class ScreenLoader {
         loadTask.setOnFailed(_ -> {
             delay.stop();
             loadingStage.close();
-            logger.error("Failed to load FXML file asynchronously: {}", fxmlFile, loadTask.getException());
+            log.error("Failed to load FXML file asynchronously: {}", fxmlFile, loadTask.getException());
             Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Could not load screen: " + fxmlFile).showAndWait());
         });
 

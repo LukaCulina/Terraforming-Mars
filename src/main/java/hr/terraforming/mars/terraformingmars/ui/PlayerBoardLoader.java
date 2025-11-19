@@ -10,6 +10,7 @@ import java.io.IOException;
 
 @Slf4j
 public class PlayerBoardLoader {
+
     private PlayerBoardLoader() {
         throw new IllegalStateException("Utility class");
     }
