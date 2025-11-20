@@ -169,7 +169,7 @@
 
         public void startNewGame() {
             gameStateService.clearGameData();
-            GameScreens.showChoosePlayersScreen();
+            GameScreens.showChooseModeScreen();
         }
 
         public void saveGame() {
@@ -199,12 +199,12 @@
         public void updateLastMoveLabel(GameMove lastGameMove) {
             if (lastGameMove != null) {
                 StringBuilder sb = new StringBuilder("Last Move: ");
-                sb.append(lastGameMove.getPlayerName()).append(" - ");
-                sb.append(lastGameMove.getActionType()).append(" (").append(lastGameMove.getDetails()).append(")");
-                if (lastGameMove.getRow() != null) {
-                    sb.append(" at (").append(lastGameMove.getRow()).append(", ").append(lastGameMove.getCol()).append(")");
+                sb.append(lastGameMove.playerName()).append(" - ");
+                sb.append(lastGameMove.actionType()).append(" (").append(lastGameMove.details()).append(")");
+                if (lastGameMove.row() != null) {
+                    sb.append(" at (").append(lastGameMove.row()).append(", ").append(lastGameMove.col()).append(")");
                 }
-                sb.append(" at ").append(lastGameMove.getTimestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                sb.append(" at ").append(lastGameMove.timestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 lastMoveLabel.setText(sb.toString());
             } else {
                 lastMoveLabel.setText("No moves recorded yet.");

@@ -6,8 +6,7 @@
       fx:controller="hr.terraforming.mars.terraformingmars.controller.StartMenuController"
       styleClass="choose-window" alignment="CENTER" spacing="20">
 
-    <Label text="TERRAFORMING MARS"
-           styleClass="start-title"/>
+    <Label text="TERRAFORMING MARS" styleClass="start-title"/>
 
     <VBox spacing="15" alignment="CENTER" maxWidth="300">
         <Button text="Start New Game"

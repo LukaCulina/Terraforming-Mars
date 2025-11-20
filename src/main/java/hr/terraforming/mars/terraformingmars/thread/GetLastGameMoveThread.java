@@ -23,15 +23,15 @@ public class GetLastGameMoveThread extends GameMoveThread implements Runnable {
             if (lastGameMove.isPresent()) {
                 GameMove move = lastGameMove.get();
                 StringBuilder sb = new StringBuilder("Last Move: ");
-                sb.append(move.getPlayerName()).append(" - ");
-                sb.append(move.getActionType().toString());
-                if (move.getDetails() != null && !move.getDetails().isEmpty()) {
-                    sb.append(" (").append(move.getDetails()).append(")");
+                sb.append(move.playerName()).append(" - ");
+                sb.append(move.actionType().toString());
+                if (move.details() != null && !move.details().isEmpty()) {
+                    sb.append(" (").append(move.details()).append(")");
                 }
-                if (move.getRow() != null) {
-                    sb.append(" at [").append(move.getRow()).append(", ").append(move.getCol()).append("]");
+                if (move.row() != null) {
+                    sb.append(" at [").append(move.row()).append(", ").append(move.col()).append("]");
                 }
-                sb.append(" at ").append(move.getTimestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                sb.append(" at ").append(move.timestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 label.setText(sb.toString());
             }
         });

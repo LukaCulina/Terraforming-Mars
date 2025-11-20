@@ -24,12 +24,12 @@ public class ReplayLoader {
 
     public void setupInitialState(List<GameMove> moves, GameManager gameManager) {
         GameMove initialSetupMove = moves.stream()
-                .filter(m -> m.getActionType() == ActionType.INITIAL_SETUP)
+                .filter(m -> m.actionType() == ActionType.INITIAL_SETUP)
                 .findFirst()
                 .orElse(null);
 
         if (initialSetupMove != null) {
-            setupStateFromDetails(gameManager, initialSetupMove.getDetails());
+            setupStateFromDetails(gameManager, initialSetupMove.details());
             moves.remove(initialSetupMove);
         } else {
             new Alert(Alert.AlertType.WARNING, "Replay file is missing initial setup data! Cards will not be shown.").show();

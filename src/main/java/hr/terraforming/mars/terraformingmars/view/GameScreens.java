@@ -38,6 +38,15 @@ public class GameScreens {
         log.info("Main Menu displayed.");
     }
 
+    public static void showChooseModeScreen() {
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "ChooseMode.fxml",
+                "Choose Mode",
+                (ChooseModeController _) -> {}
+        );
+    }
+
     public static void showChoosePlayersScreen() {
         ScreenLoader.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
     }

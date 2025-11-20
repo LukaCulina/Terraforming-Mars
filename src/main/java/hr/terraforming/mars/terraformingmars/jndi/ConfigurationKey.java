@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ConfigurationKey {
 
-    RMI_PORT("rmi.port"), HOSTNAME("hostname");
+    RMI_PORT("rmi.port"), SERVER_PORT("server.port"), HOSTNAME("hostname");
 
     private final String key;
 

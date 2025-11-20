@@ -105,23 +105,34 @@ public class XmlUtils {
             NodeList nodeList = doc.getElementsByTagName("GameMove");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) node;
-                    GameMove move = new GameMove();
-                    move.setPlayerName(element.getElementsByTagName("PlayerName").item(0).getTextContent());
-                    move.setActionType(ActionType.valueOf(element.getElementsByTagName("ActionType").item(0).getTextContent()));
-                    move.setDetails(element.getElementsByTagName("Details").item(0).getTextContent());
-                    move.setTimestamp(LocalDateTime.parse(element.getElementsByTagName("Timestamp").item(0).getTextContent(), FORMATTER));
 
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+
+                    Element element = (Element) node;
+                    String playerName = element.getElementsByTagName("PlayerName").item(0).getTextContent();
+                    ActionType actionType = ActionType.valueOf(element.getElementsByTagName("ActionType").item(0).getTextContent());
+                    String details = element.getElementsByTagName("Details").item(0).getTextContent();
+                    LocalDateTime timestamp = LocalDateTime.parse(
+                            element.getElementsByTagName("Timestamp").item(0).getTextContent(),
+                            FORMATTER
+                    );
+
+                    Integer row = null;
                     if (element.getElementsByTagName("Row").getLength() > 0) {
-                        move.setRow(Integer.parseInt(element.getElementsByTagName("Row").item(0).getTextContent()));
+                        row = Integer.parseInt(element.getElementsByTagName("Row").item(0).getTextContent());
                     }
+
+                    Integer col = null;
                     if (element.getElementsByTagName("Col").getLength() > 0) {
-                        move.setCol(Integer.parseInt(element.getElementsByTagName("Col").item(0).getTextContent()));
+                        col = Integer.parseInt(element.getElementsByTagName("Col").item(0).getTextContent());
                     }
+
+                    TileType tileType = null;
                     if (element.getElementsByTagName(TILE_TYPE).getLength() > 0) {
-                        move.setTileType(TileType.valueOf(element.getElementsByTagName(TILE_TYPE).item(0).getTextContent()));
+                        tileType = TileType.valueOf(element.getElementsByTagName(TILE_TYPE).item(0).getTextContent());
                     }
+
+                    GameMove move = new GameMove(playerName, actionType, details, row, col, tileType, timestamp);
                     moves.add(move);
                 }
             }
@@ -157,19 +168,19 @@ public class XmlUtils {
     private static Element createGameMoveElement(Document doc, GameMove move) {
         Element gameMoveElement = doc.createElement("GameMove");
 
-        gameMoveElement.appendChild(createElement(doc, "PlayerName", move.getPlayerName()));
-        gameMoveElement.appendChild(createElement(doc, "ActionType", move.getActionType().name()));
-        gameMoveElement.appendChild(createElement(doc, "Details", move.getDetails()));
-        gameMoveElement.appendChild(createElement(doc, "Timestamp", move.getTimestamp().format(FORMATTER)));
+        gameMoveElement.appendChild(createElement(doc, "PlayerName", move.playerName()));
+        gameMoveElement.appendChild(createElement(doc, "ActionType", move.actionType().name()));
+        gameMoveElement.appendChild(createElement(doc, "Details", move.details()));
+        gameMoveElement.appendChild(createElement(doc, "Timestamp", move.timestamp().format(FORMATTER)));
 
-        if (move.getRow() != null) {
-            gameMoveElement.appendChild(createElement(doc, "Row", move.getRow().toString()));
+        if (move.row() != null) {
+            gameMoveElement.appendChild(createElement(doc, "Row", move.row().toString()));
         }
-        if (move.getCol() != null) {
-            gameMoveElement.appendChild(createElement(doc, "Col", move.getCol().toString()));
+        if (move.col() != null) {
+            gameMoveElement.appendChild(createElement(doc, "Col", move.col().toString()));
         }
-        if (move.getTileType() != null) {
-            gameMoveElement.appendChild(createElement(doc, TILE_TYPE, move.getTileType().name()));
+        if (move.tileType() != null) {
+            gameMoveElement.appendChild(createElement(doc, TILE_TYPE, move.tileType().name()));
         }
 
         return gameMoveElement;

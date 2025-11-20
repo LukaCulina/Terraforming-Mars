@@ -101,11 +101,11 @@ public class PlacementManager {
                 owner.getName(),
                 ActionType.PLACE_TILE,
                 "Placed " + tileTypeToPlace.name(),
+                tile.getRow(),
+                tile.getCol(),
+                tileTypeToPlace,
                 LocalDateTime.now()
         );
-        placeTileMove.setRow(tile.getRow());
-        placeTileMove.setCol(tile.getCol());
-        placeTileMove.setTileType(tileTypeToPlace);
 
         actionManager.recordAndSaveMove(placeTileMove);
     }

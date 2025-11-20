@@ -24,10 +24,10 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
     void executeReplayMove(GameMove move) {
         GameManager gameManager = controller.getGameManager();
 
-        switch (move.getActionType()) {
+        switch (move.actionType()) {
             case OPEN_CHOOSE_CARDS_MODAL -> {
                 Platform.runLater(() -> {
-                    List<String> names = Arrays.asList(move.getDetails().split(","));
+                    List<String> names = Arrays.asList(move.details().split(","));
                     ScreenLoader.showAsModal(
                             controller.getSceneWindow(),
                             "ChooseCards.fxml",
@@ -40,10 +40,10 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
             }
             case OPEN_SELL_PATENTS_MODAL -> {
                 Platform.runLater(() -> {
-                    List<String> soldCardNames = Arrays.asList(move.getDetails().split(","));
+                    List<String> soldCardNames = Arrays.asList(move.details().split(","));
 
                     Player playerForReplay = gameManager.getPlayers().stream()
-                            .filter(p -> p.getName().equals(move.getPlayerName()))
+                            .filter(p -> p.getName().equals(move.playerName()))
                             .findFirst().orElse(null);
 
                     if (playerForReplay != null) {
@@ -62,7 +62,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
             }
             case OPEN_FINAL_GREENERY_MODAL -> {
                 Platform.runLater(() -> {
-                    String[] parts = move.getDetails().split(",");
+                    String[] parts = move.details().split(",");
                     String playerName = parts[0];
                     int plants = Integer.parseInt(parts[1]);
                     int cost = Integer.parseInt(parts[2]);
@@ -79,7 +79,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
             default -> { /*Nothing is done*/ }
         }
 
-        if ("System".equals(move.getPlayerName())) {
+        if ("System".equals(move.playerName())) {
             handleSystemMove(move, gameManager);
         } else {
             handlePlayerMove(move, gameManager);
@@ -89,21 +89,21 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
     }
 
     private void handleSystemMove(GameMove move, GameManager gameManager) {
-        if (move.getActionType() == ActionType.RESEARCH_COMPLETE) {
+        if (move.actionType() == ActionType.RESEARCH_COMPLETE) {
             gameManager.doProduction();
             gameManager.startNewGeneration();
-            loader.updatePlayerHandsFromDetails(gameManager, move.getDetails());
+            loader.updatePlayerHandsFromDetails(gameManager, move.details());
             controller.setViewedPlayer(gameManager.getCurrentPlayer());
         }
     }
 
     private void handlePlayerMove(GameMove move, GameManager gameManager) {
         Player player = gameManager.getPlayers().stream()
-                .filter(p -> p.getName().equals(move.getPlayerName()))
+                .filter(p -> p.getName().equals(move.playerName()))
                 .findFirst().orElse(null);
 
         if (player == null) {
-            logger.error("Replay Error: Player {} not found.", move.getPlayerName());
+            logger.error("Replay Error: Player {} not found.", move.playerName());
             return;
         }
 
@@ -112,7 +112,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
 
         controller.updateLastMoveLabel(move);
 
-        switch (move.getActionType()) {
+        switch (move.actionType()) {
             case PLACE_TILE -> processPlaceTile(move, player);
             case PLAY_CARD -> processPlayCard(move, player, gameManager);
             case CLAIM_MILESTONE -> processClaimMilestone(move, player);
@@ -126,25 +126,25 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
                     controller.setViewedPlayer(gameManager.getCurrentPlayer());
                 }
             }
-            default -> logger.error("Unknown ActionType in replay: {}.", move.getActionType());
+            default -> logger.error("Unknown ActionType in replay: {}.", move.actionType());
         }
     }
 
     private void processPlaceTile(GameMove move, Player player) {
         GameBoard gameBoard = controller.getGameBoard();
-        Tile tileToPlaceOn = gameBoard.getTileAt(move.getRow(), move.getCol());
+        Tile tileToPlaceOn = gameBoard.getTileAt(move.row(), move.col());
         if (tileToPlaceOn != null) {
-            switch (move.getTileType()) {
+            switch (move.tileType()) {
                 case OCEAN -> gameBoard.placeOcean(tileToPlaceOn, player);
                 case GREENERY -> gameBoard.placeGreenery(tileToPlaceOn, player);
                 case CITY -> gameBoard.placeCity(tileToPlaceOn, player);
-                default -> logger.warn("Replay: Invalid tile type {} for placement.", move.getTileType());
+                default -> logger.warn("Replay: Invalid tile type {} for placement.", move.tileType());
             }
         }
     }
 
     private void processPlayCard(GameMove move, Player player, GameManager gameManager) {
-        Card card = CardFactory.getCardByName(move.getDetails());
+        Card card = CardFactory.getCardByName(move.details());
         if (card != null) {
             player.playCard(card, gameManager);
         }
@@ -152,16 +152,16 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
 
     private void processClaimMilestone(GameMove move, Player player) {
         try {
-            Milestone milestone = Milestone.valueOf(move.getDetails().toUpperCase());
+            Milestone milestone = Milestone.valueOf(move.details().toUpperCase());
             player.spendMC(8);
             controller.getGameBoard().claimMilestone(milestone, player);
         } catch (IllegalArgumentException e) {
-            logger.error("Replay Error: Invalid Milestone name '{}' in game move.", move.getDetails(), e);
+            logger.error("Replay Error: Invalid Milestone name '{}' in game move.", move.details(), e);
         }
     }
 
     private void processUseStandardProject(GameMove move, Player player) {
-        StandardProject project = StandardProject.valueOf(move.getDetails());
+        StandardProject project = StandardProject.valueOf(move.details());
         int finalCost = CostService.getFinalProjectCost(project, player);
         player.spendMC(finalCost);
         project.execute(player, controller.getGameBoard());
@@ -176,10 +176,10 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
 
     private void processSellPatents(GameMove move, Player player) {
         try {
-            String numberStr = move.getDetails().replaceAll("\\D", "");
+            String numberStr = move.details().replaceAll("\\D", "");
             player.addMC(Integer.parseInt(numberStr));
         } catch (NumberFormatException _) {
-            logger.warn("Could not parse number of sold patents from details: {}", move.getDetails());
+            logger.warn("Could not parse number of sold patents from details: {}", move.details());
         }
     }
 

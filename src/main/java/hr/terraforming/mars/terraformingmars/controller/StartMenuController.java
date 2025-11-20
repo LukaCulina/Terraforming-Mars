@@ -18,7 +18,7 @@ public class StartMenuController {
     private void onStartNewGame() {
         log.info("Starting new game...");
         gameStateService.clearGameData();
-        GameScreens.showChoosePlayersScreen();
+        GameScreens.showChooseModeScreen();
     }
 
     @FXML

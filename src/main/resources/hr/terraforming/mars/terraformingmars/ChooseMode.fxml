@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.ChooseModeController"
+      styleClass="choose-window" alignment="CENTER" spacing="20">
+
+    <Label text="Choose the game mode" styleClass="start-title"/>
+
+    <VBox spacing="15" alignment="CENTER" maxWidth="300">
+        <Button text="Local" onAction="#handleLocalMode" styleClass="confirm-button"/>
+
+        <Button text="Online" onAction="#handleOnlineMode" styleClass="confirm-button"/>
+    </VBox>
+</VBox>
