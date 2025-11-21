@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
@@ -18,14 +19,16 @@ public class ClientHandler implements Runnable {
     private final GameManager gameManager;
     private final GameBoard gameBoard;
     private final GameServerThread server;
+    private final ActionManager actionManager;
     private ObjectOutputStream out;
     private ObjectInputStream in;
 
-    public ClientHandler(Socket socket, GameManager gameManager,GameBoard gameBoard, GameServerThread server) {
+    public ClientHandler(Socket socket, GameManager gameManager,GameBoard gameBoard, GameServerThread server, ActionManager actionManager) {
         this.socket = socket;
         this.gameManager = gameManager;
         this.gameBoard = gameBoard;
         this.server = server;
+        this.actionManager = actionManager;
     }
 
     @Override
@@ -43,13 +46,13 @@ public class ClientHandler implements Runnable {
                 log.info("Received move from client: {}", move);
 
                 // Process move on server
-                /*Platform.runLater(() -> {
-                    gameManager.processMove(move);
+                Platform.runLater(() -> {
+                    actionManager.processMove(move);
 
                     // Broadcast new state to all clients
                     GameState newState = new GameState(gameManager, gameBoard);
                     server.broadcastGameState(newState);
-                });*/
+                });
             }
 
         } catch (IOException | ClassNotFoundException e) {

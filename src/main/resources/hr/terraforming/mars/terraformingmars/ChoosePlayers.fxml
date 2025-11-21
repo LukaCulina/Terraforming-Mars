@@ -22,4 +22,6 @@
         <Button onAction="#selectPlayers" text="4" styleClass="player-button" id="button-4"/>
         <Button onAction="#selectPlayers" text="5" styleClass="player-button" id="button-5"/>
     </HBox>
+
+    <Button text="Return" onAction="#returnToPreviousScreen" styleClass="back-button"/>
 </VBox>

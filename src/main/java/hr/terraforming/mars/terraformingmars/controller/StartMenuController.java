@@ -15,14 +15,14 @@ public class StartMenuController {
     private final GameStateService gameStateService = new GameStateService();
 
     @FXML
-    private void onStartNewGame() {
+    private void startNewGame() {
         log.info("Starting new game...");
         gameStateService.clearGameData();
         GameScreens.showChooseModeScreen();
     }
 
     @FXML
-    private void onLoadGame() {
+    private void loadSavedGame() {
         log.info("Loading saved game...");
         GameState loadedState = gameStateService.loadGame();
 

@@ -3,6 +3,7 @@ package hr.terraforming.mars.terraformingmars.manager;
 import hr.terraforming.mars.terraformingmars.controller.SellPatentsController;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
+import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
@@ -195,5 +196,58 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
                 0.5, 0.7,
                 (SellPatentsController c) -> c.initData(gameManager.getCurrentPlayer(), onSaleCompleteAction)
         );
+    }
+
+    public void processMove(GameMove move) {
+        log.info("Processing move: {} - {} - {}",
+                move.playerName(), move.actionType(), move.details());
+
+        // Postavi trenutnog igrača
+        gameManager.setCurrentPlayerByName(move.playerName());
+
+        switch (move.actionType()) {
+            case PLAY_CARD -> {
+                Card card = CardFactory.getCardByName(move.details());
+                if (card != null) {
+                    handlePlayCard(card);
+                } else {
+                    log.warn("Card not found: {}", move.details());
+                }
+            }
+
+            case PLACE_TILE -> // Tile je već postavljen kroz PlacementManager
+                // Samo povećaj akcije i ažuriraj UI
+                    performAction();
+
+            case CLAIM_MILESTONE -> {
+                try {
+                    Milestone milestone = Milestone.valueOf(move.details());
+                    handleClaimMilestone(milestone);
+                } catch (IllegalArgumentException _) {
+                    log.warn("Invalid milestone: {}", move.details());
+                }
+            }
+
+            case USE_STANDARD_PROJECT -> {
+                try {
+                    StandardProject project = StandardProject.valueOf(move.details());
+                    handleStandardProject(project);
+                } catch (IllegalArgumentException _) {
+                    log.warn("Invalid standard project: {}", move.details());
+                }
+            }
+
+            case CONVERT_HEAT -> handleConvertHeat();
+
+            case CONVERT_PLANTS -> handleConvertPlants();
+
+            case PASS_TURN -> handlePassTurn();
+
+            case SELL_PATENTS -> // Sold patents su već procesiran kroz sell patents controller
+                // Samo povećaj akcije
+                    performAction();
+
+            default -> log.warn("Unhandled action type: {}", move.actionType());
+        }
     }
 }

@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.network;
 
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
+import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameState;
@@ -20,14 +21,16 @@ public class GameServerThread implements Runnable{
 
     private final GameManager gameManager;
     private final GameBoard gameBoard;
+    private final ActionManager actionManager;
     private final int maxPlayers;
     private final List<ClientHandler> connectedClients = new ArrayList<>();
     private Consumer<Integer> onPlayerCountChanged;
     private ServerSocket serverSocket;
 
-    public GameServerThread(GameManager gameManager,GameBoard gameBoard, int maxPlayers) {
+    public GameServerThread(GameManager gameManager, GameBoard gameBoard, ActionManager actionManager, int maxPlayers) {
         this.gameManager = gameManager;
         this.gameBoard = gameBoard;
+        this.actionManager = actionManager;
         this.maxPlayers = maxPlayers;
     }
 
@@ -43,7 +46,7 @@ public class GameServerThread implements Runnable{
                 Socket clientSocket = serverSocket.accept();
                 log.info("Client connected: {}", clientSocket.getInetAddress());
 
-                ClientHandler handler = new ClientHandler(clientSocket, gameManager,gameBoard, this);
+                ClientHandler handler = new ClientHandler(clientSocket, gameManager,gameBoard, this, actionManager);
                 connectedClients.add(handler);
                 new Thread(handler).start();
 

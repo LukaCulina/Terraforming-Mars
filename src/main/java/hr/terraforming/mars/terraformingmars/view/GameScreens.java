@@ -47,6 +47,15 @@ public class GameScreens {
         );
     }
 
+    public static void showChooseOnlineModeScreen() {
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "ChooseOnlineMode.fxml",
+                "Choose Online Mode",
+                (ChooseOnlineModeController _) -> {}
+        );
+    }
+
     public static void showChoosePlayersScreen() {
         ScreenLoader.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
     }
