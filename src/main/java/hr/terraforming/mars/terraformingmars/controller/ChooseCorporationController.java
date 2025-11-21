@@ -25,16 +25,21 @@ public class ChooseCorporationController {
     private HBox corporationButtonsContainer;
     @FXML
     private Label chooseCorpLabel;
+    @FXML
+    private Button confirmButton;
 
     private GameManager gameManager;
 
     private List<Corporation> options;
-
+    private Corporation selectedCorporation;
+    private VBox selectedCard;
     public void setCorporationOptions(Player player, List<Corporation> offer, GameManager gameManager) {
         this.gameManager = gameManager;
         chooseCorpLabel.setText(player.getName() + ", choose your corporation:");
         this.options = offer;
+        this.selectedCorporation = null;
         populateCorporationBoxes();
+        updateConfirmButton();
     }
 
     private void populateCorporationBoxes() {
@@ -96,33 +101,52 @@ public class ChooseCorporationController {
 
         contentWrapper.getChildren().addAll(nameLabel, resourcesSection, abilitySection);
 
-        Button selectBtn = new Button("Select " + corp.name());
-        selectBtn.getStyleClass().add("select-button");
-
-        selectBtn.setOnAction(_ -> {
-            log.info("Player selected corporation '{}' via button click.", corp.name());
-            selectCorporation(corp);
-        });
-
         VBox.setVgrow(contentWrapper, Priority.ALWAYS);
 
         card.setOnMouseClicked(_ -> {
             log.info("Player selected corporation '{}' via card click.", corp.name());
-            selectCorporation(corp);
+            selectCorporationCard(corp, card);
         });
 
-        card.getChildren().addAll(contentWrapper, selectBtn);
+        card.getChildren().addAll(contentWrapper);
 
         return card;
     }
 
-    private void selectCorporation(Corporation corp) {
-        boolean morePlayersToChoose = gameManager.assignCorporationAndAdvance(corp);
+    private void selectCorporationCard(Corporation corp, VBox card) {
+        if (selectedCard != null) {
+            selectedCard.getStyleClass().remove("card-view-selected");
+        }
+
+        selectedCard = card;
+        selectedCorporation = corp;
+
+        card.getStyleClass().add("card-view-selected");
+
+        updateConfirmButton();
+    }
+
+    @FXML
+    private void confirmSelection() {
+        if (selectedCorporation == null) {
+            log.warn("No corporation selected!");
+            return;
+        }
+
+        log.info("Player confirmed corporation '{}'", selectedCorporation.name());
+
+        boolean morePlayersToChoose = gameManager.assignCorporationAndAdvance(selectedCorporation);
 
         if (morePlayersToChoose) {
             GameScreens.showChooseCorporationScreen(gameManager);
         } else {
             GameScreens.showInitialCardDraftScreen(gameManager);
+        }
+    }
+
+    private void updateConfirmButton() {
+        if (confirmButton != null) {
+            confirmButton.setDisable(selectedCorporation == null);
         }
     }
 

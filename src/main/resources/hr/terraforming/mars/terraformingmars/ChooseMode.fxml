@@ -9,7 +9,7 @@
       fx:controller="hr.terraforming.mars.terraformingmars.controller.ChooseModeController"
       styleClass="choose-window" alignment="CENTER" spacing="20">
 
-    <Label text="Choose the game mode" styleClass="start-title"/>
+    <Label text="Choose the game mode" styleClass="choose-label"/>
 
     <VBox spacing="15" alignment="CENTER" maxWidth="300">
         <Button text="Local" onAction="#handleLocalMode" styleClass="confirm-button"/>
