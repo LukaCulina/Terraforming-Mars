@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.enums.GameplayPhase;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.model.Player;
@@ -10,14 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GameStateCoordinator implements GameStateListener {
 
-    private enum GamePhase {
-        JOINING,           // Čekanje da se svi spojе
-        CORPORATION_SELECTION,  // Biranje korporacija
-        CARD_DRAFT,        // Biranje karata
-        PLAYING            // Glavna igra
-    }
-
-    private GamePhase currentPhase = GamePhase.JOINING;
+    private GameplayPhase currentPhase = GameplayPhase.JOINING;
     private final GameClientThread client;
     private boolean nameSent = false;
 
@@ -51,7 +45,7 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (allJoined) {
             log.info("✅ All players joined! Going to Corporation Selection");
-            currentPhase = GamePhase.CORPORATION_SELECTION;
+            currentPhase = GameplayPhase.CORPORATION_SELECTION;
             GameScreens.showChooseCorporationScreen(state.gameManager());
         }
     }
@@ -62,7 +56,7 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (allChosen) {
             log.info("✅ All players chose corporations! Going to card draft");
-            currentPhase = GamePhase.CARD_DRAFT;
+            currentPhase = GameplayPhase.CARD_DRAFT;
             GameScreens.showInitialCardDraftScreen(state.gameManager());
             return;
         }
@@ -79,7 +73,7 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (currentPlayerForDraft == null) {
             log.info("✅ All players chose cards! Game started");
-            currentPhase = GamePhase.PLAYING;
+            currentPhase = GameplayPhase.PLAYING;
 
             GameScreens.startGameWithChosenCards(state);
             return;

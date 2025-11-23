@@ -48,16 +48,14 @@ public class GameManager implements Serializable {
         return offer;
     }
 
-    public boolean assignCorporationAndAdvance(Corporation chosenCorp) {
+    public void assignCorporationAndAdvance(Corporation chosenCorp) {
         getCurrentPlayer().setCorporation(chosenCorp);
         log.info("Player {} chose corporation: {}", getCurrentPlayer().getName(), chosenCorp.name());
         this.currentPlayerIndex++;
 
         if (currentPlayerIndex >= players.size()) {
             this.currentPlayerIndex = 0;
-            return false;
         }
-        return true;
     }
 
     public Player getCurrentPlayerForDraft() {

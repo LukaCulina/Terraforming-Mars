@@ -63,8 +63,7 @@
         @Getter private UIManager uiManager;
         @Getter private ActionManager actionManager;
         @Getter public GameManager gameManager;
-        @Setter
-        @Getter private GameBoard gameBoard;
+        @Setter @Getter private GameBoard gameBoard;
         private PlayerBoardController currentPlayerBoardController;
         @Getter private PlacementCoordinator placementCoordinator;
         @Setter private Player viewedPlayer = null;
@@ -72,11 +71,8 @@
         private ReplayManager replayManager;
         private Timeline moveHistoryTimeline;
         private ChatService chatService;
-        @FXML
-        private ListView<String> chatListView;
-
-        @FXML
-        private TextField chatInput;
+        @FXML private ListView<String> chatListView;
+        @FXML private TextField chatInput;
 
         @FXML
         private void initialize() {
@@ -108,7 +104,6 @@
                     gameManagerIsNull ? "NULL" : "NOT NULL",
                     gameBoardIsNull ? "NULL" : "NOT NULL");
 
-            // Ako je gameBoard null, možeš ovdje baciti iznimku ili dodatno logirati stack trace
             if (gameBoardIsNull) {
                 log.error("GameBoard is null in received GameState! Stack trace:", new Exception("Stack trace"));
             }
@@ -121,6 +116,7 @@
             }
 
             String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+            assert state.gameManager() != null;
             String currentPlayerName = state.gameManager().getCurrentPlayer().getName();
 
             if (currentPlayerName.equals(myPlayerName)) {
@@ -181,7 +177,6 @@
             }
         }
 
-        // Poll chat messages
         private void startChatPolling() {
             Timeline chatPoll = new Timeline(new KeyFrame(Duration.seconds(1), _ -> {
                 try {
@@ -194,7 +189,7 @@
                     log.error("Chat polling error", e);
                 }
             }));
-            chatPoll.setCycleCount(Timeline.INDEFINITE);
+            chatPoll.setCycleCount(Animation.INDEFINITE);
             chatPoll.play();
         }
 
@@ -228,12 +223,6 @@
             if (playerType == PlayerType.HOST) {
                 GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
                 if (server != null) {
-                    // Poveži ovu metodu updateFromNetwork na serverov listener
-                    // NAPOMENA: Ovdje moraš paziti jer server ima samo JEDAN slot za listenera (setLocalHostListener).
-                    // Najbolje je da HostGameStateCoordinator u sebi delegira poziv glavnom kontroleru kad igra počne.
-                    // ILI: Promijeni server da podržava listu listenera (addLocalListener umjesto set).
-
-                    // Ako želiš jednostavno:
                     server.setLocalHostListener(this::updateFromNetwork);
                 }
             }
@@ -245,17 +234,14 @@
                     showPlayerBoard(myPlayer);
                 }
             } else {
-                // LOCAL mod - viewed player je trenutni igrač
                 showPlayerBoard(gameManager.getCurrentPlayer());
             }
 
-            //this.gameManager.startGame();
 
             if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
                 this.gameManager.startGame();
             }
 
-            //this.viewedPlayer = this.gameManager.getCurrentPlayer();
             Platform.runLater(() -> gameBoardPane.maxHeightProperty().bind(
                     hexBoardPane.getScene().heightProperty().subtract(28)
             ));

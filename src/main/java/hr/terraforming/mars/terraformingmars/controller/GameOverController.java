@@ -33,7 +33,7 @@ public class GameOverController {
         scoresGrid.add(createHeaderLabel("Player"), col++, 0);
         scoresGrid.add(createHeaderLabel("TR"), col++, 0);
         scoresGrid.add(createHeaderLabel("Milestones"), col++, 0);
-        scoresGrid.add(createHeaderLabel("Board bounses"), col++, 0);
+        scoresGrid.add(createHeaderLabel("Board bonuses"), col++, 0);
         scoresGrid.add(createHeaderLabel("Cards"), col++, 0);
         scoresGrid.add(createHeaderLabel("Total"), col, 0);
     }

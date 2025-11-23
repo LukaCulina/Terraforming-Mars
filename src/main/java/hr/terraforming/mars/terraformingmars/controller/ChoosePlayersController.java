@@ -40,7 +40,7 @@ public class ChoosePlayersController {
 
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
-        log.info("Creating {} game with {} players", playerType, numberOfPlayers);  // ✅ Jedan log
+        log.info("Creating {} game with {} players", playerType, numberOfPlayers);
 
         List<Player> players = new ArrayList<>();
         for (int i = 1; i <= numberOfPlayers; i++) {

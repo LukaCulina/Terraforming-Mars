@@ -205,7 +205,6 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         log.info("Processing move: {} - {} - {}",
                 move.playerName(), move.actionType(), move.details());
 
-        // Postavi trenutnog igrača
         gameManager.setCurrentPlayerByName(move.playerName());
 
         switch (move.actionType()) {
@@ -218,9 +217,7 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
                 }
             }
 
-            case PLACE_TILE -> // Tile je već postavljen kroz PlacementManager
-                // Samo povećaj akcije i ažuriraj UI
-                    performAction();
+            case PLACE_TILE, SELL_PATENTS -> performAction();
 
             case CLAIM_MILESTONE -> {
                 try {
@@ -245,10 +242,6 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
             case CONVERT_PLANTS -> handleConvertPlants();
 
             case PASS_TURN -> handlePassTurn();
-
-            case SELL_PATENTS -> // Sold patents su već procesiran kroz sell patents controller
-                // Samo povećaj akcije
-                    performAction();
 
             default -> log.warn("Unhandled action type: {}", move.actionType());
         }

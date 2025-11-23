@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.enums.GameplayPhase;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
@@ -9,14 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HostGameStateCoordinator implements GameStateListener {
 
-    private enum GamePhase {
-        JOINING,
-        CORPORATION_SELECTION,
-        CARD_DRAFT,
-        PLAYING
-    }
-
-    private GamePhase currentPhase = GamePhase.JOINING;
+    private GameplayPhase currentPhase = GameplayPhase.JOINING;
 
     @Override
     public void onGameStateReceived(GameState state) {
@@ -31,7 +25,7 @@ public class HostGameStateCoordinator implements GameStateListener {
 
                     if (allJoined) {
                         log.info("HOST: Svi igrači spojeni, prelazim na Corporation Selection");
-                        currentPhase = GamePhase.CORPORATION_SELECTION;
+                        currentPhase = GameplayPhase.CORPORATION_SELECTION;
                         GameScreens.showChooseCorporationScreen(state.gameManager());
                     }
                 }
@@ -42,7 +36,7 @@ public class HostGameStateCoordinator implements GameStateListener {
 
                     if (allChosen) {
                         log.info("HOST: Svi odabrali korporacije, prelazim na Card Draft");
-                        currentPhase = GamePhase.CARD_DRAFT;
+                        currentPhase = GameplayPhase.CARD_DRAFT;
                         GameScreens.showInitialCardDraftScreen(state.gameManager());
                         return;
                     }
@@ -55,7 +49,7 @@ public class HostGameStateCoordinator implements GameStateListener {
                     Player currentPlayer = state.gameManager().getCurrentPlayerForDraft();
                     if (currentPlayer == null) {
                         log.info("HOST: Draft gotov, počinje igra");
-                        currentPhase = GamePhase.PLAYING;
+                        currentPhase = GameplayPhase.PLAYING;
                         GameScreens.startGameWithChosenCards(state);
                     } else {
                         GameScreens.showInitialCardDraftScreen(state.gameManager());
