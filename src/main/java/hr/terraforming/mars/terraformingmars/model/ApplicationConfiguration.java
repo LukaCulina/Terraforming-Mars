@@ -9,17 +9,13 @@ import lombok.Setter;
 public class ApplicationConfiguration {
 
     private static ApplicationConfiguration instance;
-    @Getter
-    @Setter
+    @Getter @Setter
     private PlayerType playerType;
-    @Getter
-    @Setter
+    @Getter @Setter
     private int playerCount;
-    @Getter
-    @Setter
+    @Getter @Setter
     private String myPlayerName;
-    @Getter
-    @Setter
+    @Getter @Setter
     private GameServerThread gameServer;
     @Getter @Setter
     private GameClientThread gameClient;

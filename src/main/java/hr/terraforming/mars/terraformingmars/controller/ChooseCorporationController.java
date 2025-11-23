@@ -21,15 +21,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class ChooseCorporationController {
 
-    @FXML
-    private HBox corporationButtonsContainer;
-    @FXML
-    private Label chooseCorpLabel;
-    @FXML
-    private Button confirmButton;
+    @FXML private HBox corporationButtonsContainer;
+    @FXML private Label chooseCorpLabel;
+    @FXML private Button confirmButton;
 
     private GameManager gameManager;
-
     private List<Corporation> options;
     private Corporation selectedCorporation;
     private VBox selectedCard;
@@ -44,7 +40,6 @@ public class ChooseCorporationController {
         } else {
             showCorporationSelection(player, offer);
         }
-
     }
 
     private void showWaitingForPlayer(String playerName) {
@@ -165,8 +160,7 @@ public class ChooseCorporationController {
             return;
         }
 
-       gameManager.assignCorporationAndAdvance(selectedCorporation);
-
+        gameManager.assignCorporationAndAdvance(selectedCorporation);
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
         if (playerType == PlayerType.HOST) {

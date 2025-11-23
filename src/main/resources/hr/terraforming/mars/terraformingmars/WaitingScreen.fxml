@@ -2,14 +2,11 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hr.terraforming.mars.terraformingmars.controller.WaitingScreenController"
-      styleClass="choose-window"
-      alignment="CENTER"
-      spacing="30">
+      styleClass="choose-window" alignment="CENTER" spacing="30">
 
     <padding>
         <Insets top="40" right="40" bottom="40" left="40"/>
@@ -27,5 +24,4 @@
     </VBox>
 
     <ProgressIndicator/>
-
 </VBox>
