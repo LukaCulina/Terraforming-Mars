@@ -4,19 +4,15 @@ import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
-import hr.terraforming.mars.terraformingmars.enums.ResourceType;
+import hr.terraforming.mars.terraformingmars.view.CorporationViewBuilder;
+import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class ChooseCorporationController {
@@ -76,69 +72,12 @@ public class ChooseCorporationController {
     private void populateCorporationBoxes() {
         corporationButtonsContainer.getChildren().clear();
         for (Corporation corp : options) {
-            VBox corpCard = createCorporationNode(corp);
+            VBox corpCard = CorporationViewBuilder.createCorporationNode(corp);
+
+            corpCard.setOnMouseClicked(_ -> selectCorporationCard(corp, corpCard));
+
             corporationButtonsContainer.getChildren().add(corpCard);
         }
-    }
-
-    private VBox createCorporationNode(Corporation corp) {
-        VBox card = new VBox();
-        card.getStyleClass().add("corporation-card");
-        card.setAlignment(Pos.TOP_CENTER);
-        card.setPadding(new Insets(20));
-        card.setPrefSize(320, 450);
-        card.setMaxSize(320, 450);
-
-        VBox contentWrapper = new VBox(15);
-        contentWrapper.setAlignment(Pos.TOP_CENTER);
-
-        Label nameLabel = new Label(corp.name().toUpperCase());
-        nameLabel.getStyleClass().add("corporation-name");
-
-        VBox resourcesSection = new VBox(10);
-        Label resourcesTitle = new Label("Initial State:");
-        resourcesTitle.getStyleClass().add("section-title");
-
-        GridPane grid = new GridPane();
-        grid.getStyleClass().add("resources-grid");
-        grid.setHgap(15);
-        grid.setVgap(8);
-
-        AtomicInteger row = new AtomicInteger(0);
-        grid.add(new Label("💰 Starting MC: " + corp.startingMC()), 0, row.getAndIncrement());
-
-        if (corp.startingResources() != null && !corp.startingResources().isEmpty()) {
-            corp.startingResources().forEach((type, amount) ->
-                    grid.add(new Label(getResourceIcon(type) + " " + amount + " " + formatResourceName(type.name())), 0, row.getAndIncrement()));
-        }
-
-        if (corp.startingProduction() != null && !corp.startingProduction().isEmpty()) {
-            grid.add(new Label("⬆Production:"), 0, row.getAndIncrement());
-            corp.startingProduction().forEach((_, amount) ->
-                    grid.add(new Label("   + " + amount + "/gen"), 0, row.getAndIncrement()));
-        }
-        resourcesSection.getChildren().addAll(resourcesTitle, grid);
-
-        VBox abilitySection = new VBox(5);
-        Label abilityTitle = new Label("Ability:");
-        abilityTitle.getStyleClass().add("section-title");
-
-        Label abilityLabel = new Label(corp.abilityDescription());
-        abilityLabel.getStyleClass().add("ability-text");
-        abilityLabel.setWrapText(true);
-        abilityLabel.setAlignment(Pos.CENTER);
-        abilityLabel.setMaxWidth(260);
-        abilitySection.getChildren().addAll(abilityTitle, abilityLabel);
-
-        contentWrapper.getChildren().addAll(nameLabel, resourcesSection, abilitySection);
-
-        VBox.setVgrow(contentWrapper, Priority.ALWAYS);
-
-        card.setOnMouseClicked(_ -> selectCorporationCard(corp, card));
-
-        card.getChildren().addAll(contentWrapper);
-
-        return card;
     }
 
     private void selectCorporationCard(Corporation corp, VBox card) {
@@ -163,15 +102,28 @@ public class ChooseCorporationController {
         gameManager.assignCorporationAndAdvance(selectedCorporation);
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
-        if (playerType == PlayerType.HOST) {
-            GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
-            if (server != null) {
-                server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
+        switch (playerType) {
+            case PlayerType.HOST -> {
+                GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
+                if (server != null) {
+                    server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
+                }
             }
-        } else if (playerType == PlayerType.CLIENT) {
-            GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
-            if (client != null) {
-                client.sendCorporationChoice(selectedCorporation.name());
+            case PlayerType.CLIENT -> {
+                GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
+                if (client != null) {
+                    client.sendCorporationChoice(selectedCorporation.name());
+                }
+            }
+            default -> {
+                boolean allChosen = gameManager.getPlayers().stream()
+                        .allMatch(p -> p.getCorporation() != null);
+
+                if (allChosen) {
+                    GameScreens.showInitialCardDraftScreen(gameManager);
+                } else {
+                    GameScreens.showChooseCorporationScreen(gameManager);
+                }
             }
         }
     }
@@ -180,21 +132,5 @@ public class ChooseCorporationController {
         if (confirmButton != null) {
             confirmButton.setDisable(selectedCorporation == null);
         }
-    }
-
-    private String getResourceIcon(ResourceType type) {
-        return switch (type) {
-            case STEEL -> "🔩";
-            case TITANIUM -> "🛰️";
-            case PLANTS -> "🌿";
-            case ENERGY -> "⚡";
-            case HEAT -> "🔥";
-            default -> "";
-        };
-    }
-
-    private String formatResourceName(String name) {
-        if (name == null || name.isEmpty()) return "";
-        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 }

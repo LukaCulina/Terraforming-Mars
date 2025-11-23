@@ -131,19 +131,19 @@ public class ChooseCardsController {
             return;
         }
 
-            if (onConfirm != null) {
-                onConfirm.accept(boughtCards);
-            }
+        if (onConfirm != null) {
+            onConfirm.accept(boughtCards);
+            closeWindow();
+        }
 
-            if (playerType == PlayerType.HOST) {
-                var server = config.getGameServer();
-                if (server != null) {
-                    log.info("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
-                    server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
-                    log.info("✅ HOST broadcasted card draft state to all clients");
-                }
+        if (playerType == PlayerType.HOST) {
+            var server = config.getGameServer();
+            if (server != null) {
+                log.info("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
+                server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
+                log.info("✅ HOST broadcasted card draft state to all clients");
             }
-
+        }
     }
 
     private void closeWindow() {
