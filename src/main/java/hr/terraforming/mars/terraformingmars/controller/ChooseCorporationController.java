@@ -1,9 +1,9 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
-import hr.terraforming.mars.terraformingmars.model.Corporation;
-import hr.terraforming.mars.terraformingmars.model.GameManager;
-import hr.terraforming.mars.terraformingmars.model.Player;
+import hr.terraforming.mars.terraformingmars.enums.PlayerType;
+import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.network.GameClientThread;
+import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -33,13 +33,49 @@ public class ChooseCorporationController {
     private List<Corporation> options;
     private Corporation selectedCorporation;
     private VBox selectedCard;
+
     public void setCorporationOptions(Player player, List<Corporation> offer, GameManager gameManager) {
         this.gameManager = gameManager;
+
+        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
+        if (myPlayerName != null && !player.getName().equals(myPlayerName)) {
+            showWaitingForPlayer(player.getName());
+        } else {
+            showCorporationSelection(player, offer);
+        }
+
+    }
+
+    private void showWaitingForPlayer(String playerName) {
+        chooseCorpLabel.setText("");
+        chooseCorpLabel.getStyleClass().clear();
+
+        chooseCorpLabel.setText("Waiting for " + playerName + " to choose their corporation...");
+        chooseCorpLabel.getStyleClass().add("waiting-text");
+
+        corporationButtonsContainer.getChildren().clear();
+        confirmButton.setVisible(false);
+        confirmButton.setManaged(false);
+
+        log.info("Waiting for {} to choose corporation", playerName);
+    }
+
+    private void showCorporationSelection(Player player, List<Corporation> offer) {
         chooseCorpLabel.setText(player.getName() + ", choose your corporation:");
+        chooseCorpLabel.setStyle("");
+
         this.options = offer;
         this.selectedCorporation = null;
+        this.selectedCard = null;
+
         populateCorporationBoxes();
         updateConfirmButton();
+
+        confirmButton.setVisible(true);
+        confirmButton.setManaged(true);
+
+        log.info("{} is choosing corporation", player.getName());
     }
 
     private void populateCorporationBoxes() {
@@ -103,10 +139,7 @@ public class ChooseCorporationController {
 
         VBox.setVgrow(contentWrapper, Priority.ALWAYS);
 
-        card.setOnMouseClicked(_ -> {
-            log.info("Player selected corporation '{}' via card click.", corp.name());
-            selectCorporationCard(corp, card);
-        });
+        card.setOnMouseClicked(_ -> selectCorporationCard(corp, card));
 
         card.getChildren().addAll(contentWrapper);
 
@@ -129,18 +162,23 @@ public class ChooseCorporationController {
     @FXML
     private void confirmSelection() {
         if (selectedCorporation == null) {
-            log.warn("No corporation selected!");
             return;
         }
 
-        log.info("Player confirmed corporation '{}'", selectedCorporation.name());
+       gameManager.assignCorporationAndAdvance(selectedCorporation);
 
-        boolean morePlayersToChoose = gameManager.assignCorporationAndAdvance(selectedCorporation);
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
-        if (morePlayersToChoose) {
-            GameScreens.showChooseCorporationScreen(gameManager);
-        } else {
-            GameScreens.showInitialCardDraftScreen(gameManager);
+        if (playerType == PlayerType.HOST) {
+            GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
+            if (server != null) {
+                server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
+            }
+        } else if (playerType == PlayerType.CLIENT) {
+            GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
+            if (client != null) {
+                client.sendCorporationChoice(selectedCorporation.name());
+            }
         }
     }
 

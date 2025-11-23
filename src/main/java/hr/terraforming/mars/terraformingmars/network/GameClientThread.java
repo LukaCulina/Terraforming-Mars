@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import javafx.application.Platform;
@@ -9,7 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class GameClientThread implements Runnable {
@@ -17,8 +19,8 @@ public class GameClientThread implements Runnable {
     private final int port;
     private Socket socket;
     private ObjectOutputStream out;
-    private ObjectInputStream in;
-    private Consumer<GameState> onGameStateReceived;
+    private final List<GameStateListener> listeners = new ArrayList<>();
+    private volatile boolean running = true;
 
     public GameClientThread(String hostname, int port) {
         this.hostname = hostname;
@@ -27,6 +29,7 @@ public class GameClientThread implements Runnable {
 
     @Override
     public void run() {
+        ObjectInputStream in = null;
         try {
             socket = new Socket(hostname, port);
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -34,18 +37,77 @@ public class GameClientThread implements Runnable {
 
             log.info("Connected to server at {}:{}", hostname, port);
 
-            // Listen for game state updates from server
-            while (true) {
+            while (running) {
                 GameState state = (GameState) in.readObject();
                 log.info("Received game state update");
 
-                if (onGameStateReceived != null) {
-                    Platform.runLater(() -> onGameStateReceived.accept(state));
-                }
+                Platform.runLater(() -> {
+                    synchronized (listeners) {
+                        for (GameStateListener listener : listeners) {
+                            listener.onGameStateReceived(state);
+                        }
+                    }
+                });
             }
 
         } catch (IOException | ClassNotFoundException e) {
-            log.error("Client error", e);
+            if (running) {
+                log.error("Client error", e);
+            } else {
+                log.info("Client disconnected");
+            }
+        } finally {
+            try {
+                if (in != null) in.close();
+                if (out != null) out.close();
+                if (socket != null) socket.close();
+            } catch (IOException e) {
+                log.error("Error closing client resources", e);
+            }
+        }
+    }
+
+    public void addGameStateListener(GameStateListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    public void sendCardChoice(List<Card> selectedCards) {
+        try {
+            if (out != null) {
+                out.writeObject(new CardChoiceMessage(
+                        selectedCards.stream().map(Card::getName).toList()
+                ));
+                out.flush();
+                log.info("✅ Sent card choice with {} cards", selectedCards.size());
+            }
+        } catch (IOException e) {
+            log.error("Failed to send card choice", e);
+        }
+    }
+
+    public void sendPlayerName(String playerName) {
+        try {
+            if (out != null) {
+                out.writeObject(new PlayerNameMessage(playerName));
+                out.flush();
+                log.info("✅ Sent player name to server: {}", playerName);
+            }
+        } catch (IOException e) {
+            log.error("Failed to send player name", e);
+        }
+    }
+
+    public void sendCorporationChoice(String corporationName) {
+        try {
+            if (out != null) {
+                out.writeObject(new CorporationChoiceMessage(corporationName));
+                out.flush();
+                log.info("✅ Sent corporation choice to server: {}", corporationName);
+            }
+        } catch (IOException e) {
+            log.error("Failed to send corporation choice", e);
         }
     }
 
@@ -58,7 +120,14 @@ public class GameClientThread implements Runnable {
         }
     }
 
-    public void setOnGameStateReceived(Consumer<GameState> callback) {
-        this.onGameStateReceived = callback;
+    public void shutdown() {
+        running = false;
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            log.error("Error closing client socket", e);
+        }
     }
 }

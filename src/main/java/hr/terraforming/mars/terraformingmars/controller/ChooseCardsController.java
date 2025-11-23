@@ -1,8 +1,8 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
+import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
-import hr.terraforming.mars.terraformingmars.model.Card;
-import hr.terraforming.mars.terraformingmars.model.Player;
+import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.IntegerProperty;
@@ -32,20 +32,50 @@ public class ChooseCardsController {
     private static final String SELECTED_CARD_STYLE = "card-view-selected";
 
     private Player player;
+    private GameManager gameManager;
     private final Set<Card> selectedCards = new HashSet<>();
     private final IntegerProperty remainingMC = new SimpleIntegerProperty();
-
     private Consumer<List<Card>> onConfirm;
 
-    public void setup(Player player, List<Card> offer, Consumer<List<Card>> onConfirm) {
+    public void setup(Player player, List<Card> offer, Consumer<List<Card>> onConfirm, GameManager gameManager) {
         this.player = player;
         this.onConfirm = onConfirm;
+        this.gameManager = gameManager;
 
+        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
+        if (myPlayerName != null && !player.getName().equals(myPlayerName)) {
+            showWaitingForPlayer(player.getName());
+        } else {
+            showCardSelection(player, offer);
+        }
+    }
+
+    private void showWaitingForPlayer(String playerName) {
+        chooseCardsLabel.setText("");
+        chooseCardsLabel.getStyleClass().clear();
+
+        chooseCardsLabel.setText("Waiting for " + playerName + " to choose their cards...");
+        chooseCardsLabel.getStyleClass().add("waiting-text");
+
+        remainingMCLabel.setVisible(false);
+
+        cardsTile.getChildren().clear();
+        confirmButton.setVisible(false);
+        confirmButton.setManaged(false);
+
+        log.info("Waiting for {} to choose cards", playerName);
+    }
+
+    private void showCardSelection(Player player, List<Card> offer) {
         chooseCardsLabel.setText(player.getName() + ", choose your cards:");
+        chooseCardsLabel.setStyle("");
+
         this.selectedCards.clear();
 
         remainingMCLabel.textProperty().bind(remainingMC.asString("Remaining MC: %d"));
         remainingMC.set(player.getMC());
+        remainingMCLabel.setVisible(true);
 
         cardsTile.getChildren().clear();
         for (Card card : offer) {
@@ -53,7 +83,13 @@ public class ChooseCardsController {
             cardNode.setOnMouseClicked(_ -> toggleSelection(card, cardNode));
             cardsTile.getChildren().add(cardNode);
         }
+
+        confirmButton.setVisible(true);
+        confirmButton.setManaged(true);
+
+        log.info("{} is choosing cards", player.getName());
     }
+
 
     private void toggleSelection(Card card, VBox cardNode) {
 
@@ -82,10 +118,32 @@ public class ChooseCardsController {
     private void confirmSelection() {
         List<Card> boughtCards = new ArrayList<>(selectedCards);
 
-        if (onConfirm != null) {
-            onConfirm.accept(boughtCards);
+        var config = ApplicationConfiguration.getInstance();
+        var playerType = config.getPlayerType();
+
+        if (playerType == PlayerType.CLIENT) {
+            var client = config.getGameClient();
+            if (client != null) {
+                client.sendCardChoice(boughtCards);
+                log.info("✅ CLIENT sent card choice ({} cards) to server", boughtCards.size());
+            }
+            showWaitingForPlayer(player.getName());
+            return;
         }
-        closeWindow();
+
+            if (onConfirm != null) {
+                onConfirm.accept(boughtCards);
+            }
+
+            if (playerType == PlayerType.HOST) {
+                var server = config.getGameServer();
+                if (server != null) {
+                    log.info("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
+                    server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
+                    log.info("✅ HOST broadcasted card draft state to all clients");
+                }
+            }
+
     }
 
     private void closeWindow() {

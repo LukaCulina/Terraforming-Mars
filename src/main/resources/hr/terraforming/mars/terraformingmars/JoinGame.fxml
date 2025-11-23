@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.JoinGameController"
+      styleClass="choose-window"
+      alignment="CENTER"
+      spacing="30">
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <Label text="Join Game" styleClass="start-title"/>
+
+    <VBox spacing="15" alignment="CENTER" maxWidth="400">
+
+        <VBox spacing="8">
+            <Label text="Your Name:" styleClass="input-label"/>
+            <TextField fx:id="playerNameInput"
+                       promptText="Enter your name (e.g., Player 2)"
+                       styleClass="text-input"
+                       prefWidth="300"/>
+        </VBox>
+
+        <VBox spacing="8">
+            <Label text="Server IP Address:" styleClass="input-label"/>
+            <TextField fx:id="serverIpInput"
+                       promptText="Enter server IP (e.g., 192.168.1.100)"
+                       text="localhost"
+                       styleClass="text-input"
+                       prefWidth="300"/>
+        </VBox>
+
+        <VBox spacing="8">
+            <Label text="Port:" styleClass="input-label"/>
+            <TextField fx:id="portInput"
+                       promptText="Server port"
+                       text="1234"
+                       styleClass="text-input"
+                       prefWidth="300"/>
+        </VBox>
+
+        <Label fx:id="statusLabel"
+               styleClass="status-label"
+               wrapText="true"/>
+
+    </VBox>
+
+    <Button text="Connect"
+            onAction="#handleConnect"
+            styleClass="confirm-button"/>
+
+    <Button text="Return"
+            onAction="#handleBack"
+            styleClass="back-button"/>
+
+</VBox>

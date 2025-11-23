@@ -1,6 +1,8 @@
 package hr.terraforming.mars.terraformingmars.model;
 
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
+import hr.terraforming.mars.terraformingmars.network.GameClientThread;
+import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +18,11 @@ public class ApplicationConfiguration {
     @Getter
     @Setter
     private String myPlayerName;
+    @Getter
+    @Setter
+    private GameServerThread gameServer;
+    @Getter @Setter
+    private GameClientThread gameClient;
 
     private ApplicationConfiguration() {
         this.playerType = PlayerType.LOCAL;

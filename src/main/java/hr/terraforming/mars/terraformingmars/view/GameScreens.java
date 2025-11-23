@@ -56,6 +56,33 @@ public class GameScreens {
         );
     }
 
+    public static void showJoinGameScreen() {
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "JoinGame.fxml",
+                "Join Game",
+                (JoinGameController _) -> {}
+        );
+    }
+
+    public static void showChooseNameScreen(GameManager gameManager, GameBoard gameBoard) {
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "ChooseName.fxml",
+                "Choose a name",
+                (ChooseNameController controller) -> controller.setup(gameManager, gameBoard)
+        );
+    }
+
+    public static void showWaitingForPlayersScreen(GameManager gameManager, int expectedPlayerCount) {
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "WaitingScreen.fxml",
+                "Waiting for Players",
+                (WaitingScreenController controller) -> controller.setup(gameManager, expectedPlayerCount)
+        );
+    }
+
     public static void showChoosePlayersScreen() {
         ScreenLoader.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
     }
@@ -77,7 +104,7 @@ public class GameScreens {
             handleCardDraftConfirmation(chosenCards, currentPlayer, gameManager);
 
         ScreenLoader.showAsMainScreen(mainStage, "ChooseCards.fxml", "Choose Initial Cards - " + currentPlayer.getName(),
-                (ChooseCardsController c) -> c.setup(currentPlayer, offer, onConfirmAction));
+                (ChooseCardsController c) -> c.setup(currentPlayer, offer, onConfirmAction, gameManager));
     }
 
     private static void handleCardDraftConfirmation(

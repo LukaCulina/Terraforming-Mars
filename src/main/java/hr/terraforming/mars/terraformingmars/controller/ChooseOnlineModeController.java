@@ -19,9 +19,7 @@ public class ChooseOnlineModeController {
     private void joinGame() {
         ApplicationConfiguration.getInstance().setPlayerType(PlayerType.CLIENT);
 
-        // GameScreens.showJoinGameScreen();
-
-        GameScreens.showChoosePlayersScreen();
+        GameScreens.showJoinGameScreen();
     }
 
     @FXML

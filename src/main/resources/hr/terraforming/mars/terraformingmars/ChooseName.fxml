@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.ChooseNameController"
+      styleClass="choose-window"
+      alignment="CENTER"
+      spacing="30">
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <Label text="Enter Your Name" styleClass="start-title"/>
+
+    <VBox spacing="15" alignment="CENTER" maxWidth="400">
+        <Label text="Your Name:" styleClass="input-label"/>
+        <TextField fx:id="nameInput"
+                   promptText="Enter your name (e.g., Luka)"
+                   styleClass="text-input"
+                   prefWidth="300"/>
+    </VBox>
+
+        <Button text="Continue"
+                onAction="#handleContinue"
+                styleClass="confirm-button"
+                />
+
+        <Button text="Return"
+                onAction="#handleBack"
+                styleClass="back-button"
+                />
+</VBox>

@@ -8,4 +8,3 @@ import java.util.Map;
 public record Corporation(String name, int startingMC, Map<ResourceType, Integer> startingResources,
                           Map<ResourceType, Integer> startingProduction, String abilityDescription) implements Serializable {
 }
-

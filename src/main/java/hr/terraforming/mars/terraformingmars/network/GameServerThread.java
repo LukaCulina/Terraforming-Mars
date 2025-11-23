@@ -7,13 +7,14 @@ import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import javafx.application.Platform;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -23,9 +24,12 @@ public class GameServerThread implements Runnable{
     private final GameBoard gameBoard;
     private final ActionManager actionManager;
     private final int maxPlayers;
-    private final List<ClientHandler> connectedClients = new ArrayList<>();
+    private final List<ClientHandler> connectedClients = new CopyOnWriteArrayList<>();
+    @Setter
     private Consumer<Integer> onPlayerCountChanged;
     private ServerSocket serverSocket;
+    @Setter
+    private GameStateListener localHostListener;
 
     public GameServerThread(GameManager gameManager, GameBoard gameBoard, ActionManager actionManager, int maxPlayers) {
         this.gameManager = gameManager;
@@ -38,6 +42,7 @@ public class GameServerThread implements Runnable{
     public void run() {
         try {
             int port = ConfigurationReader.getIntegerValue(ConfigurationKey.SERVER_PORT);
+
             serverSocket = new ServerSocket(port);
 
             log.info("Server started on port {}, waiting for {} players...", port, maxPlayers - 1);
@@ -50,10 +55,13 @@ public class GameServerThread implements Runnable{
                 connectedClients.add(handler);
                 new Thread(handler).start();
 
-                // Notify controller
+                waitForHandlerReady(handler);
+
                 if (onPlayerCountChanged != null) {
                     Platform.runLater(() -> onPlayerCountChanged.accept(connectedClients.size()));
                 }
+
+                broadcastGameState(new GameState(gameManager, gameBoard));
             }
 
             log.info("All players connected, game can start!");
@@ -63,18 +71,25 @@ public class GameServerThread implements Runnable{
         }
     }
 
+    private void waitForHandlerReady(ClientHandler handler) {
+        boolean initialized = handler.waitUntilReady(5000);
+
+        if (!initialized) {
+            log.error("ClientHandler failed to initialize after 5000 ms");
+        } else {
+            log.debug("ClientHandler ready");
+        }
+    }
+
+
     public void broadcastGameState(GameState state) {
         for (ClientHandler client : connectedClients) {
             client.sendGameState(state);
         }
-    }
 
-    public int getConnectedPlayerCount() {
-        return connectedClients.size();
-    }
-
-    public void setOnPlayerCountChanged(Consumer<Integer> callback) {
-        this.onPlayerCountChanged = callback;
+        if (localHostListener != null) {
+            localHostListener.onGameStateReceived(state);
+        }
     }
 
     public void shutdown() {
@@ -89,5 +104,4 @@ public class GameServerThread implements Runnable{
             log.error("Error shutting down server", e);
         }
     }
-
 }

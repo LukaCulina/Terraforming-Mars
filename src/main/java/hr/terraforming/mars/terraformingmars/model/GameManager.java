@@ -16,15 +16,12 @@ public class GameManager implements Serializable {
     
     private final List<Player> players;
     private int currentPlayerIndex = 0;
-    @Getter
-    private GamePhase currentPhase;
-    @Getter
-    private int generation = 1;
+    @Getter private GamePhase currentPhase;
+    @Getter private int generation = 1;
     private final List<Player> passedPlayers = new ArrayList<>();
     private transient GameBoard board;
     private int cardDraftPlayerIndex = 0;
-    @Getter
-    private int actionsTakenThisTurn = 0;
+    @Getter private int actionsTakenThisTurn = 0;
     private final List<Corporation> remainingCorporations;
     private final List<Card> remainingCards;
 
@@ -188,5 +185,15 @@ public class GameManager implements Serializable {
                 return;
             }
         }
+    }
+
+    public Player getPlayerByName(String playerName) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player;
+            }
+        }
+        log.warn("Player with name '{}' not found!", playerName);
+        return null;
     }
 }

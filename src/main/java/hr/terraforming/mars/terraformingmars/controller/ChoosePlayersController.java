@@ -53,13 +53,7 @@ public class ChoosePlayersController {
         if (playerType == PlayerType.LOCAL) {
             GameScreens.showChooseCorporationScreen(gameManager);
         } else if (playerType == PlayerType.HOST) {
-
-            config.setMyPlayerName("Player 1");
-
-            log.info("Host is Player 1, waiting for {} clients", numberOfPlayers - 1);
-
-            // ZA SADA: Testiraj kao local (kasnije implementiraj WaitingLobby)
-            GameScreens.showChooseCorporationScreen(gameManager);
+            GameScreens.showChooseNameScreen(gameManager, gameBoard);
         }
     }
 

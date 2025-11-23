@@ -53,7 +53,7 @@ public class ResearchPhaseManager {
                 "Research Phase - " + currentPlayer.getName(),
                 0.7,
                 0.8,
-                (ChooseCardsController c) -> c.setup(currentPlayer, offer, this::finishForCurrentPlayer)
+                (ChooseCardsController c) -> c.setup(currentPlayer, offer, this::finishForCurrentPlayer, gameManager)
         );
     }
 

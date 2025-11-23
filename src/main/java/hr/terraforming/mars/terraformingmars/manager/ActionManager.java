@@ -25,6 +25,9 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
 
         new Thread(new SaveNewGameMoveThread(move)).start();
         Platform.runLater(() -> controller.updateLastMoveLabel(move));
+
+        controller.onLocalPlayerMove(move);
+
     }
 
     public void performAction() {
