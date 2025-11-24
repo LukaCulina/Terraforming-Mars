@@ -67,7 +67,7 @@ public class ChooseNameController {
                 );
 
                 HostGameStateCoordinator hostCoordinator = new HostGameStateCoordinator();
-                gameServer.setLocalHostListener(hostCoordinator);
+                gameServer.addLocalListener(hostCoordinator);
 
                 ApplicationConfiguration.getInstance().setGameServer(gameServer);
 

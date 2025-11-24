@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.model;
 
+import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
@@ -31,4 +32,14 @@ public class ApplicationConfiguration {
         }
         return instance;
     }
+    private TerraformingMarsController activeGameController;
+
+    public void setActiveGameController(TerraformingMarsController controller) {
+        this.activeGameController = controller;
+    }
+
+    public TerraformingMarsController getActiveGameController() {
+        return activeGameController;
+    }
+
 }

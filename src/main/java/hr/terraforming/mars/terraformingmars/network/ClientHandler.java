@@ -5,6 +5,7 @@ import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
+import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class ClientHandler implements Runnable {
     private final GameManager gameManager;
     private final GameBoard gameBoard;
     private final GameServerThread server;
-    private final ActionManager actionManager;
+    private ActionManager actionManager;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private volatile boolean ready = false;
@@ -62,6 +63,11 @@ public class ClientHandler implements Runnable {
         } finally {
             cleanup();
         }
+    }
+
+    public void setActionManager(ActionManager actionManager) {
+        this.actionManager = actionManager;
+        log.info("✅ ActionManager injected into ClientHandler");
     }
 
     private void handleMessage(Object obj) {
@@ -133,7 +139,15 @@ public class ClientHandler implements Runnable {
 
     private void handleGameMove(GameMove move) {
         if (actionManager != null) {
-            actionManager.processMove(move);
+            Platform.runLater(() -> {
+                try {
+                    actionManager.processMove(move);
+                    log.info("Broadcasting game state after move by {}", move.playerName());
+                    server.broadcastGameState(new GameState(gameManager, gameBoard));
+                } catch (Exception e) {
+                    log.error("Error processing move on FX thread", e);
+                }
+            });
         } else {
             log.warn("ActionManager is null, cannot process move");
         }

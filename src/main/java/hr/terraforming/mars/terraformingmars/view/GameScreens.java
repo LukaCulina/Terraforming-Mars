@@ -130,6 +130,7 @@ public class GameScreens {
         var result = ScreenLoader.loadFxml("GameScreen.fxml");
         TerraformingMarsController mainController = (TerraformingMarsController) result.controller();
         Scene mainGameScene = ScreenLoader.createScene(result.root());
+        ApplicationConfiguration.getInstance().setActiveGameController(mainController);
 
         mainController.setupGame(gameState);
 

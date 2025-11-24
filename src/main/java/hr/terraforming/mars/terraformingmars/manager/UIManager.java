@@ -22,11 +22,11 @@ import java.util.Map;
 
 public class UIManager {
 
-    private GameBoard gameBoard;
     @Getter
     private final HexBoardDrawer hexBoardDrawer;
 
-    private final GameManager gameManager;
+    private GameBoard gameBoard;
+    private GameManager gameManager;
     private final ActionManager actionManager;
     private final GlobalStatusComponents globalStatus;
     private final ActionPanelComponents actionPanels;
@@ -44,7 +44,8 @@ public class UIManager {
         this.playerControls = playerControls;
     }
 
-    public void linkNewGameBoard(GameBoard newBoard) {
+    public void updateGameState(GameManager newManager, GameBoard newBoard) {
+        this.gameManager = newManager;
         this.gameBoard = newBoard;
         if (this.hexBoardDrawer != null) {
             this.hexBoardDrawer.setGameBoard(newBoard);
@@ -128,7 +129,7 @@ public class UIManager {
                 }
             }
         });
-        playerControls.passTurnButton().setDisable(isPlacing || !isActionPhase);
+        //playerControls.passTurnButton().setDisable(isPlacing || !isActionPhase);
     }
 
     private void updateMilestoneButtonsState(boolean isPlacing) {

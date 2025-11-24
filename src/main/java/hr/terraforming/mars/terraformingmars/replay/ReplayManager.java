@@ -33,8 +33,7 @@ public class ReplayManager {
 
         controller.setGameBoard(newReplayBoard);
         controller.getGameManager().resetForNewGame(newReplayBoard);
-        controller.getUiManager().linkNewGameBoard(newReplayBoard);
-
+        controller.getUiManager().updateGameState(controller.getGameManager(), newReplayBoard);
         controller.setViewedPlayer(controller.getGameManager().getCurrentPlayer());
         controller.updateAllUI();
     }

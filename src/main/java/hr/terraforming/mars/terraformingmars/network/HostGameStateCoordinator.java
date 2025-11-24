@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.network;
 
 import hr.terraforming.mars.terraformingmars.enums.GameplayPhase;
+import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
@@ -56,8 +57,16 @@ public class HostGameStateCoordinator implements GameStateListener {
                     }
                 }
                 case PLAYING -> {
-                    // Logika za update ploče tijekom igre
+                    // Dohvati aktivnog kontrolera
+                    var controller = ApplicationConfiguration.getInstance().getActiveGameController();
+                    if (controller != null) {
+                        // Proslijedi stanje!
+                        controller.updateFromNetwork(state);
+                    } else {
+                        log.warn("HOST: Primio sam stanje u PLAYING fazi, ali kontroler nije postavljen!");
+                    }
                 }
+
             }
         });
     }

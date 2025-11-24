@@ -93,7 +93,17 @@ public class Player implements Serializable {
         if (card == null || !getHand().contains(card)) {
             return false;
         }
+
         int finalCost = state.getCardCost(card, this.corporation);
+
+        boolean requirementsOk = card.getRequirement().test(this, this.board);
+
+        log.info("canPlayCard('{}'): MC={}/{}, reqOk={}, oceans={}, oxygen={}, temp={}",
+                card.getName(), getMC(), finalCost, requirementsOk,
+                board.getOceansPlaced(),
+                board.getOxygenLevel(),
+                board.getTemperature());
+
         if (getMC() < finalCost) {
             log.warn("Cannot play '{}': Insufficient MC (needs {}, has {}).", card.getName(), finalCost, getMC());
             return false;

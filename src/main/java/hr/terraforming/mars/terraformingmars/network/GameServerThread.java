@@ -22,14 +22,13 @@ public class GameServerThread implements Runnable{
 
     private final GameManager gameManager;
     private final GameBoard gameBoard;
-    private final ActionManager actionManager;
+    private ActionManager actionManager;
     private final int maxPlayers;
     private final List<ClientHandler> connectedClients = new CopyOnWriteArrayList<>();
     @Setter
     private Consumer<Integer> onPlayerCountChanged;
     private ServerSocket serverSocket;
-    @Setter
-    private GameStateListener localHostListener;
+    private final List<GameStateListener> localListeners = new CopyOnWriteArrayList<>();
 
     public GameServerThread(GameManager gameManager, GameBoard gameBoard, ActionManager actionManager, int maxPlayers) {
         this.gameManager = gameManager;
@@ -81,14 +80,42 @@ public class GameServerThread implements Runnable{
         }
     }
 
+    public void setActionManager(ActionManager actionManager) {
+        this.actionManager = actionManager;
+        log.info("✅ ActionManager injected into GameServerThread");
 
+        for (ClientHandler client : connectedClients) {
+            client.setActionManager(actionManager);
+        }
+    }
+
+    public void addLocalListener(GameStateListener listener) {
+        if (listener != null) {
+            this.localListeners.add(listener);
+            log.info("🔌 Listener added. Total listeners: {}", localListeners.size());
+        }
+    }
+
+    // DODATI I OVO (Dobra praksa):
+    public void removeLocalListener(GameStateListener listener) {
+        this.localListeners.remove(listener);
+    }
+
+    // 3. AŽURIRAJ BROADCAST METODU:
     public void broadcastGameState(GameState state) {
+        // Slanje klijentima (ostaje isto)
         for (ClientHandler client : connectedClients) {
             client.sendGameState(state);
         }
 
-        if (localHostListener != null) {
-            localHostListener.onGameStateReceived(state);
+        // Slanje lokalnim listenerima (Hostu)
+        // Umjesto if (localHostListener != null)...
+        for (GameStateListener listener : localListeners) {
+            try {
+                listener.onGameStateReceived(state);
+            } catch (Exception e) {
+                log.error("Error in local listener", e);
+            }
         }
     }
 

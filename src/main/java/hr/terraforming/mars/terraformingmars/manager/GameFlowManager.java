@@ -11,8 +11,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public record GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
-    
+public class GameFlowManager {
+
+    private final TerraformingMarsController controller;
+    private GameManager gameManager;
+    private GameBoard gameBoard;
+
+    public GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
+        this.controller = controller;
+        this.gameManager = gameManager;
+        this.gameBoard = gameBoard;
+    }
+
+    public void updateState(GameManager newManager, GameBoard newBoard) {
+        this.gameManager = newManager;
+        this.gameBoard = newBoard;
+        log.info("GameFlowManager updated with new GameManager/GameBoard.");
+    }
+
     public void handleEndOfActionPhase() {
         log.info("All players have passed. Starting Production Phase.");
 

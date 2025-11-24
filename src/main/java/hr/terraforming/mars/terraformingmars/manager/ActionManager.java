@@ -11,15 +11,42 @@ import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.application.Platform;
 import javafx.stage.Window;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
-public record ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
-                            GameFlowManager gameFlowManager) {
-    
+public class ActionManager {
+
+    @Getter
+    private final TerraformingMarsController controller;
+    @Getter
+    private GameManager gameManager;
+    @Getter
+    private GameBoard gameBoard;
+    @Getter
+    private final GameFlowManager gameFlowManager;
+
+    public ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
+                         GameFlowManager gameFlowManager) {
+        this.controller = controller;
+        this.gameManager = gameManager;
+        this.gameBoard = gameBoard;
+        this.gameFlowManager = gameFlowManager;
+    }
+
+    public void updateState(GameManager newManager, GameBoard newBoard) {
+        this.gameManager = newManager;
+        this.gameBoard = newBoard;
+        log.info("ActionManager state updated with new GameManager/GameBoard references.");
+
+        if (gameFlowManager != null) {
+            gameFlowManager.updateState(newManager, newBoard);
+        }
+    }
+
     public void recordAndSaveMove(GameMove move) {
         XmlUtils.appendGameMove(move);
 
@@ -41,6 +68,11 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
     }
 
     public void handlePassTurn() {
+        String myName = hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration.getInstance().getMyPlayerName();
+        String currentTurnName = gameManager.getCurrentPlayer().getName();
+
+        log.info("🛑 [ActionManager] handlePassTurn called. MyName='{}', CurrentTurn='{}'. Am I active? {}",
+                myName, currentTurnName, currentTurnName.equals(myName));
         if (gameManager.getCurrentPhase() != GamePhase.ACTIONS) return;
 
         if (gameManager.getActionsTakenThisTurn() < 2) {
@@ -56,7 +88,14 @@ public record ActionManager(TerraformingMarsController controller, GameManager g
         boolean allPlayersPassed = gameManager.passTurn();
 
         if (allPlayersPassed) {
-            gameFlowManager.handleEndOfActionPhase();
+
+            PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
+            if (playerType == PlayerType.HOST || playerType == PlayerType.LOCAL) {
+                gameFlowManager.handleEndOfActionPhase();
+            } else {
+                log.info("CLIENT: All players passed, waiting for server to change phase.");
+            }
         } else {
             controller.setViewedPlayer(gameManager.getCurrentPlayer());
             controller.updateAllUI();

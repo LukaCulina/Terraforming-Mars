@@ -90,7 +90,7 @@ public class TerraformingMarsController {
         }
     }
 
-    private void updateFromNetwork(GameState state) {
+    public void updateFromNetwork(GameState state) {
 
         if (state == null) {
             log.error("Received null GameState!");
@@ -108,26 +108,51 @@ public class TerraformingMarsController {
             log.error("GameBoard is null in received GameState! Stack trace:", new Exception("Stack trace"));
         }
 
+        if (state.gameManager() == null || state.gameBoard() == null) {
+            log.error("Critical error: Received incomplete GameState! Manager={}, Board={}",
+                    state.gameManager(), state.gameBoard());
+            return;
+        }
+
         this.gameManager = state.gameManager();
         this.gameBoard = state.gameBoard();
 
-        if (gameManager != null && gameBoard != null) {
-            gameManager.relink(gameBoard);
+        gameManager.relink(gameBoard);
+
+        if (uiManager != null) {
+            uiManager.updateGameState(this.gameManager, this.gameBoard);
+        }
+
+        if (actionManager != null) {
+            actionManager.updateState(this.gameManager, this.gameBoard);
         }
 
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        assert state.gameManager() != null;
         String currentPlayerName = state.gameManager().getCurrentPlayer().getName();
+        log.info("🔄 NETWORK UPDATE: My Name='{}', Current Turn='{}'", myPlayerName, currentPlayerName);
 
-        if (currentPlayerName.equals(myPlayerName)) {
+        if (myPlayerName != null) {
+            Player myPlayer = gameManager.getPlayerByName(myPlayerName);
+            if (myPlayer != null) {
+                this.viewedPlayer = myPlayer;
+            }
+        } else {
+            this.viewedPlayer = gameManager.getCurrentPlayer();
+        }
+
+        boolean isMyTurn = currentPlayerName.equals(myPlayerName);
+        log.info("👉 Is it my turn? {}", isMyTurn);
+
+        if (isMyTurn) {
             setGameControlsEnabled(true);
-            log.info("It's my turn!");
+            log.info("✅ CONTROLS ENABLED for {}", myPlayerName);
         } else {
             setGameControlsEnabled(false);
-            log.info("Waiting for {}'s turn...", currentPlayerName);
+            log.info("🚫 CONTROLS DISABLED (Waiting for {})", currentPlayerName);
         }
 
         updateAllUI();
+        updatePlayerHighlight(gameManager.getCurrentPlayer());
     }
 
     public void onLocalPlayerMove(GameMove move) {
@@ -206,6 +231,10 @@ public class TerraformingMarsController {
             return;
         }
 
+        if (gameManager != null) {
+            gameManager.relink(gameBoard);
+        }
+
         initializeComponents();
 
         if (playerType != PlayerType.LOCAL) {
@@ -223,7 +252,7 @@ public class TerraformingMarsController {
         if (playerType == PlayerType.HOST) {
             GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
             if (server != null) {
-                server.setLocalHostListener(this::updateFromNetwork);
+                server.addLocalListener(this::updateFromNetwork);
             }
         }
 
@@ -253,6 +282,16 @@ public class TerraformingMarsController {
     public void initializeComponents() {
         GameFlowManager gameFlowManager = new GameFlowManager(this, this.gameManager, this.gameBoard);
         this.actionManager = new ActionManager(this, this.gameManager, this.gameBoard, gameFlowManager);
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+        if (playerType == PlayerType.HOST) {
+            GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
+            if (server != null) {
+                server.setActionManager(this.actionManager);
+                log.info("✅ ActionManager injected into server and all clients");
+            } else {
+                log.warn("⚠️ GameServerThread is null, cannot inject ActionManager!");
+            }
+        }
         this.placementManager = new PlacementManager(this, this.gameManager, this.gameBoard, this.actionManager);
         this.placementCoordinator = new PlacementCoordinator(this.placementManager);
 
@@ -308,9 +347,11 @@ public class TerraformingMarsController {
         if (currentPlayerBoardController != null) {
             currentPlayerBoardController.setHandInteractionEnabled(isEnabled);
         }
+    }
 
+    public void setCancelButtonVisible(boolean visible) {
         if (cancelPlacementButton != null) {
-            cancelPlacementButton.setVisible(!isEnabled);
+            cancelPlacementButton.setVisible(visible);
         }
     }
 

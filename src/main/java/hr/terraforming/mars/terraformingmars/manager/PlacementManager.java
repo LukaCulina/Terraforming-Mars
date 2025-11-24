@@ -67,6 +67,7 @@ public class PlacementManager {
         log.info("Entering placement mode: {}", mode);
         mainController.drawBoard();
         mainController.setGameControlsEnabled(false);
+        mainController.setCancelButtonVisible(true);
     }
 
     public void executePlacement(Tile selectedTile) {
@@ -181,6 +182,7 @@ public class PlacementManager {
         this.cardToPlace = null;
         this.tileTypeToPlace = null;
         this.moveInProgress = null;
+        mainController.setCancelButtonVisible(false);
     }
 
     private void resetAllState() {
