@@ -123,6 +123,12 @@ public class ScreenLoader {
             stage.setWidth(owner.getWidth() * widthPercentage);
             stage.setHeight(owner.getHeight() * heightPercentage);
 
+            double centerX = owner.getX() + (owner.getWidth() - stage.getWidth()) / 2;
+            double centerY = owner.getY() + (owner.getHeight() - stage.getHeight()) / 2;
+
+            stage.setX(centerX);
+            stage.setY(centerY);
+
             stage.showAndWait();
         });
 

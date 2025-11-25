@@ -3,16 +3,17 @@ package hr.terraforming.mars.terraformingmars.manager;
 import hr.terraforming.mars.terraformingmars.controller.ChooseCardsController;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
-import hr.terraforming.mars.terraformingmars.model.Card;
-import hr.terraforming.mars.terraformingmars.model.GameManager;
-import hr.terraforming.mars.terraformingmars.model.GameMove;
-import hr.terraforming.mars.terraformingmars.model.Player;
+import hr.terraforming.mars.terraformingmars.enums.PlayerType;
+import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import javafx.application.Platform;
 import javafx.stage.Window;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 public class ResearchPhaseManager {
 
     private final GameManager gameManager;
@@ -30,16 +31,31 @@ public class ResearchPhaseManager {
 
     public void start() {
         this.researchPlayerIndex = 0;
+        log.info("🎬 ResearchPhaseManager starting from index 0");
         Platform.runLater(this::showScreenForNextPlayer);
     }
 
     private void showScreenForNextPlayer() {
+        log.info("🎯 showScreenForNextPlayer called: researchPlayerIndex={}, totalPlayers={}",
+                researchPlayerIndex, gameManager.getPlayers().size());
+
         if (researchPlayerIndex >= gameManager.getPlayers().size()) {
             onResearchComplete.run();
             return;
         }
 
         Player currentPlayer = gameManager.getPlayers().get(researchPlayerIndex);
+        log.info("👤 Current player for research: {}", currentPlayer.getName());
+
+        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
+        if (playerType != PlayerType.LOCAL && !currentPlayer.getName().equals(myPlayerName)) {
+            log.info("Waiting for {} to complete research phase", currentPlayer.getName());
+            return;
+        }
+        log.info("🎴 Opening modal for {}", currentPlayer.getName());
+
         List<Card> offer = gameManager.drawCards(4);
 
         if (offer.isEmpty()) {
@@ -57,8 +73,14 @@ public class ResearchPhaseManager {
         );
     }
 
+    public void continueToNextPlayer() {
+        researchPlayerIndex++;
+        Platform.runLater(this::showScreenForNextPlayer);
+    }
+
     private void finishForCurrentPlayer(List<Card> boughtCards) {
         Player currentPlayer = gameManager.getPlayers().get(researchPlayerIndex);
+        log.info("✅ {} finished research, bought {} cards", currentPlayer.getName(), boughtCards.size());
 
         if (!boughtCards.isEmpty()) {
             String details = boughtCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
@@ -75,7 +97,12 @@ public class ResearchPhaseManager {
         if (currentPlayer.spendMC(cost)) {
             currentPlayer.getHand().addAll(boughtCards);
         }
+        log.info("🔄 Calling advanceDraftPlayer() for {}", currentPlayer.getName());
+
+        gameManager.advanceDraftPlayer();
         researchPlayerIndex++;
+        log.info("➡️ Moving to next player (researchPlayerIndex now: {})", researchPlayerIndex);
+
         Platform.runLater(this::showScreenForNextPlayer);
     }
 }

@@ -16,6 +16,7 @@ public class GameFlowManager {
     private final TerraformingMarsController controller;
     private GameManager gameManager;
     private GameBoard gameBoard;
+    private ResearchPhaseManager currentResearchManager = null;
 
     public GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
         this.controller = controller;
@@ -52,6 +53,8 @@ public class GameFlowManager {
         log.info("Production phase is over. Starting a new generation.");
 
         gameManager.startNewGeneration();
+        gameManager.resetDraftPhase();
+
         controller.setViewedPlayer(gameManager.getCurrentPlayer());
         controller.updateAllUI();
 
@@ -62,6 +65,12 @@ public class GameFlowManager {
                 this::onResearchComplete
         );
         researchManager.start();
+    }
+
+    public void continueResearchPhase() {
+        if (currentResearchManager != null) {
+            currentResearchManager.continueToNextPlayer();
+        }
     }
 
     private void onResearchComplete() {

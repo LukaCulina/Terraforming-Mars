@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigurationReader {
-    private static final String CONFIGURATION_FILE_NAME = "D:/conf/application.properties";
+    private static final String CONFIGURATION_FILE_NAME = "C:/conf/application.properties";
 
     private ConfigurationReader() {}
 

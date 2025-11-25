@@ -1,6 +1,8 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.chat.ChatService;
+import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
@@ -30,8 +32,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class TerraformingMarsController {
@@ -140,6 +144,17 @@ public class TerraformingMarsController {
             this.viewedPlayer = gameManager.getCurrentPlayer();
         }
 
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
+        if (playerType == PlayerType.HOST && gameManager.getCurrentPhase() == GamePhase.RESEARCH) {
+            log.info("Host received update during research phase - continuing to next player");
+            Platform.runLater(() -> {
+                if (actionManager != null && actionManager.getGameFlowManager() != null) {
+                    actionManager.getGameFlowManager().continueResearchPhase();
+                }
+            });
+        }
+
         boolean isMyTurn = currentPlayerName.equals(myPlayerName);
         log.info("👉 Is it my turn? {}", isMyTurn);
 
@@ -151,9 +166,74 @@ public class TerraformingMarsController {
             log.info("🚫 CONTROLS DISABLED (Waiting for {})", currentPlayerName);
         }
 
+        if (gameManager.getCurrentPhase() == GamePhase.RESEARCH) {
+            Player currentResearchPlayer = gameManager.getCurrentPlayerForDraft();
+
+            log.info("🔍 RESEARCH CHECK: currentPlayer='{}', myName='{}', playerType={}",
+                    currentResearchPlayer != null ? currentResearchPlayer.getName() : "NULL",
+                    myPlayerName, playerType);
+
+            if (playerType == PlayerType.CLIENT) {
+                if (currentResearchPlayer != null && myPlayerName.equals(currentResearchPlayer.getName())) {
+                    if (!isResearchModalOpen) {
+                        isResearchModalOpen = true;
+                        Platform.runLater(() -> openResearchModalForClient(currentResearchPlayer));
+                    }
+                }
+            }
+            // HOST i LOCAL koriste ResearchPhaseManager koji se pokreće iz GameFlowManagera
+        } else {
+            isResearchModalOpen = false;
+        }
+
+
         updateAllUI();
         updatePlayerHighlight(gameManager.getCurrentPlayer());
     }
+
+    private boolean isResearchModalOpen = false;
+
+    private void openResearchModalForClient(Player player) {
+        List<Card> offer = gameManager.drawCards(4);
+
+        log.info("🎴 CLIENT: Opening research modal for {}", player.getName());
+
+        ScreenLoader.showAsModal(
+                getSceneWindow(),
+                "ChooseCards.fxml",
+                "Research Phase - " + player.getName(),
+                0.7, 0.8,
+                (ChooseCardsController c) ->
+                        c.setup(
+                        player,
+                        offer,
+                        (boughtCards) -> finishResearchForClient(player, boughtCards),
+                        gameManager
+                )
+        );
+    }
+
+    private void finishResearchForClient(Player player, List<Card> boughtCards) {
+        int cost = boughtCards.size() * 3;
+        if (player.spendMC(cost)) {
+            player.getHand().addAll(boughtCards);
+        }
+
+        if (!boughtCards.isEmpty()) {
+            String details = boughtCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
+            GameMove move = new GameMove(
+                    player.getName(),
+                    ActionType.OPEN_CHOOSE_CARDS_MODAL,
+                    details,
+                    LocalDateTime.now()
+            );
+            actionManager.recordAndSaveMove(move);
+        }
+
+        isResearchModalOpen = false;
+        log.info("✅ CLIENT: Research complete for {}", player.getName());
+    }
+
 
     public void onLocalPlayerMove(GameMove move) {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
