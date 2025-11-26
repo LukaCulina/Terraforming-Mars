@@ -75,9 +75,9 @@ public class ActionManager {
                 myName, currentTurnName, currentTurnName.equals(myName));
         if (gameManager.getCurrentPhase() != GamePhase.ACTIONS) return;
 
+        GameMove move = new GameMove(currentTurnName, ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
+
         if (gameManager.getActionsTakenThisTurn() < 2) {
-            GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
-            recordAndSaveMove(move);
             log.info("{} consciously passed the turn with {} actions taken.",
                     gameManager.getCurrentPlayer().getName(), gameManager.getActionsTakenThisTurn());
         } else {
@@ -87,8 +87,9 @@ public class ActionManager {
 
         boolean allPlayersPassed = gameManager.passTurn();
 
-        if (allPlayersPassed) {
+        recordAndSaveMove(move);
 
+        if (allPlayersPassed) {
             PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
             log.info("🔍 All players passed! PlayerType={}, isHOST={}, isLOCAL={}, isCLIENT={}",
                     playerType,

@@ -6,7 +6,6 @@ import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
-import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.application.Platform;
 import javafx.stage.Window;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +76,6 @@ public class ResearchPhaseManager {
     }
 
     private void finishForCurrentPlayer(List<Card> boughtCards) {
-        // ✅ Provjeri da li je već završeno (da se ne poziva dvaput)
         if (researchPlayerIndex >= gameManager.getPlayers().size()) {
             log.warn("⚠️ finishForCurrentPlayer called but research already complete, ignoring");
             return;
@@ -95,8 +93,7 @@ public class ResearchPhaseManager {
                     details,
                     java.time.LocalDateTime.now()
             );
-            //controller.getActionManager().recordAndSaveMove(modalMove);
-            XmlUtils.appendGameMove(modalMove);
+            controller.getActionManager().recordAndSaveMove(modalMove);
         }
 
         int cost = boughtCards.size() * 3;

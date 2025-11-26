@@ -16,13 +16,11 @@ public class HostGameStateCoordinator implements GameStateListener {
     @Override
     public void onGameStateReceived(GameState state) {
         Platform.runLater(() -> {
-            // Host ne mora slati svoje ime, to je već u GameManageru
 
             switch (currentPhase) {
                 case JOINING -> {
-                    // Provjeri jesu li se svi spojili
                     boolean allJoined = state.gameManager().getPlayers().stream()
-                            .noneMatch(p -> p.getName().startsWith("Player ")); // Ili tvoja logika za provjeru
+                            .noneMatch(p -> p.getName().startsWith("Player "));
 
                     if (allJoined) {
                         log.info("HOST: Svi igrači spojeni, prelazim na Corporation Selection");
@@ -31,7 +29,6 @@ public class HostGameStateCoordinator implements GameStateListener {
                     }
                 }
                 case CORPORATION_SELECTION -> {
-                    // Provjeri jesu li svi odabrali
                     boolean allChosen = state.gameManager().getPlayers().stream()
                             .allMatch(p -> p.getCorporation() != null);
 
@@ -42,8 +39,6 @@ public class HostGameStateCoordinator implements GameStateListener {
                         return;
                     }
 
-                    // Ovdje je ključ: Osvježi ekran tko god da je na redu!
-                    // Controller će sam odlučiti prikazati "Choose" ili "Waiting"
                     GameScreens.showChooseCorporationScreen(state.gameManager());
                 }
                 case CARD_DRAFT -> {
@@ -57,16 +52,13 @@ public class HostGameStateCoordinator implements GameStateListener {
                     }
                 }
                 case PLAYING -> {
-                    // Dohvati aktivnog kontrolera
                     var controller = ApplicationConfiguration.getInstance().getActiveGameController();
                     if (controller != null) {
-                        // Proslijedi stanje!
                         controller.updateFromNetwork(state);
                     } else {
                         log.warn("HOST: Primio sam stanje u PLAYING fazi, ali kontroler nije postavljen!");
                     }
                 }
-
             }
         });
     }

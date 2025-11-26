@@ -35,7 +35,6 @@ import java.rmi.registry.Registry;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class TerraformingMarsController {
@@ -118,6 +117,8 @@ public class TerraformingMarsController {
             return;
         }
 
+        log.info("CLIENT: Updating local state from network GameState.");
+
         this.gameManager = state.gameManager();
         this.gameBoard = state.gameBoard();
 
@@ -147,16 +148,17 @@ public class TerraformingMarsController {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
         boolean isMyTurn = currentPlayerName.equals(myPlayerName);
+        boolean isActionPhase = gameManager.getCurrentPhase() == hr.terraforming.mars.terraformingmars.enums.GamePhase.ACTIONS;
         log.info("👉 Is it my turn? {}", isMyTurn);
 
-        if (isMyTurn) {
+        if (isMyTurn && isActionPhase) {
             setGameControlsEnabled(true);
-            log.info("✅ CONTROLS ENABLED for {}", myPlayerName);
+            log.info("CONTROLS ENABLED for {}", myPlayerName);
+            Platform.runLater(this::updateAllUI);
         } else {
             setGameControlsEnabled(false);
-            log.info("🚫 CONTROLS DISABLED (Waiting for {})", currentPlayerName);
+            log.info("CONTROLS DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
         }
-
         if (gameManager.getCurrentPhase() == GamePhase.RESEARCH) {
             Player currentResearchPlayer = gameManager.getCurrentPlayerForDraft();
 
@@ -202,7 +204,7 @@ public class TerraformingMarsController {
                         c.setup(
                         player,
                         offer,
-                        (boughtCards) -> finishResearchForClient(player, boughtCards),
+                        boughtCards -> finishResearchForClient(player, boughtCards),
                         gameManager,
                         true
                 )

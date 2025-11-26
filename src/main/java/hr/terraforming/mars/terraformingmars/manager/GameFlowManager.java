@@ -17,8 +17,6 @@ public class GameFlowManager {
     private final TerraformingMarsController controller;
     private GameManager gameManager;
     private GameBoard gameBoard;
-    private ResearchPhaseManager currentResearchManager = null;
-    private boolean researchPhaseInProgress = false;
 
     public GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
         this.controller = controller;
@@ -69,7 +67,7 @@ public class GameFlowManager {
         researchManager.start();
     }
 
-    private void onResearchComplete() {
+    public void onResearchComplete() {
         log.info("🔬 onResearchComplete() called | currentPlayerIndex={} | currentPhase={} | Thread: {}",
                 gameManager.getCurrentPlayer().getName(),
                 gameManager.getCurrentPhase(),
@@ -94,7 +92,6 @@ public class GameFlowManager {
 
         controller.updateAllUI();
 
-        // ✅ DODAJ: Broadcast novog stanja nakon research faze
         var config = ApplicationConfiguration.getInstance();
         if (config.getPlayerType() == hr.terraforming.mars.terraformingmars.enums.PlayerType.HOST) {
             var server = config.getGameServer();

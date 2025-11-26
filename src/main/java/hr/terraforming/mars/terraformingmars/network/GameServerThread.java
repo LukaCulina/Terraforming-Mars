@@ -96,7 +96,6 @@ public class GameServerThread implements Runnable{
         }
     }
 
-    // DODATI I OVO (Dobra praksa):
     public void removeLocalListener(GameStateListener listener) {
         this.localListeners.remove(listener);
     }
@@ -105,17 +104,14 @@ public class GameServerThread implements Runnable{
         log.info("📡 Broadcasting to {} clients and {} local listeners",
                 connectedClients.size(), localListeners.size());
 
-        // Debug: Ispiši sve listenere
         for (GameStateListener listener : localListeners) {
             log.info("   - Listener: {}", listener.getClass().getSimpleName());
         }
 
-        // Slanje klijentima
         for (ClientHandler client : connectedClients) {
             client.sendGameState(state);
         }
 
-        // Slanje lokalnim listenerima
         for (GameStateListener listener : localListeners) {
             Platform.runLater(() -> {
                 try {
@@ -130,7 +126,6 @@ public class GameServerThread implements Runnable{
 
         log.info("✅ Broadcast complete");
     }
-
 
     public void shutdown() {
         try {

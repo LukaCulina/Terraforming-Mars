@@ -1,6 +1,5 @@
 package hr.terraforming.mars.terraformingmars.network;
 
-import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
@@ -136,6 +135,8 @@ public class ClientHandler implements Runnable {
         log.info("Draft player advanced. More players: {} | currentPlayerIndex AFTER advanceDraft={}",
                 morePlayers, gameManager.getCurrentPlayer().getName());
 
+        boolean broadcastHandledExternally = false;
+
         if (!morePlayers) {
             if (gameManager.getGeneration() == 0) {
                 GameMoveUtils.saveInitialSetupMove(gameManager);
@@ -146,11 +147,20 @@ public class ClientHandler implements Runnable {
                         gameManager.getCurrentPlayer().getName());
             } else {
                 log.info("🔬 Research phase draft complete, continuing game");
+                broadcastHandledExternally = true;
+                Platform.runLater(() -> {
+                    var flowManager = actionManager.getGameFlowManager();
+                    flowManager.onResearchComplete();
+                });
             }
         }
 
-        server.broadcastGameState(new GameState(gameManager, gameBoard));
-        log.info("✅ Applied card choice for {} and broadcasted state", draftPlayer.getName());
+        if (!broadcastHandledExternally) {
+            server.broadcastGameState(new GameState(gameManager, gameBoard));
+            log.info("✅ Applied card choice for {} and broadcasted state", draftPlayer.getName());
+        } else {
+            log.info("✅ Applied card choice for {} (broadcast handled by GameFlowManager)", draftPlayer.getName());
+        }
     }
 
     private void handleGameMove(GameMove move) {
@@ -158,8 +168,8 @@ public class ClientHandler implements Runnable {
             Platform.runLater(() -> {
                 try {
                     actionManager.processMove(move);
-                    log.info("Broadcasting game state after move by {}", move.playerName());
-                    server.broadcastGameState(new GameState(gameManager, gameBoard));
+                    //log.info("Broadcasting game state after move by {}", move.playerName());
+                    //server.broadcastGameState(new GameState(gameManager, gameBoard));
                 } catch (Exception e) {
                     log.error("Error processing move on FX thread", e);
                 }

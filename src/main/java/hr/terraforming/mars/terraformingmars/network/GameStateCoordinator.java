@@ -83,10 +83,8 @@ public class GameStateCoordinator implements GameStateListener {
     }
 
     private void handlePlayingPhase(GameState state, String myPlayerName) {
-        // Dohvati aktivnog kontrolera
         var controller = ApplicationConfiguration.getInstance().getActiveGameController();
         if (controller != null) {
-            // Proslijedi stanje!
             controller.updateFromNetwork(state);
         } else {
             log.warn("CLIENT: Primio sam stanje u PLAYING fazi, ali kontroler nije postavljen!");
