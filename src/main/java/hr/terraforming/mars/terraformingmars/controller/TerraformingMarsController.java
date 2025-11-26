@@ -146,15 +146,6 @@ public class TerraformingMarsController {
 
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
-        if (playerType == PlayerType.HOST && gameManager.getCurrentPhase() == GamePhase.RESEARCH) {
-            log.info("Host received update during research phase - continuing to next player");
-            Platform.runLater(() -> {
-                if (actionManager != null && actionManager.getGameFlowManager() != null) {
-                    actionManager.getGameFlowManager().continueResearchPhase();
-                }
-            });
-        }
-
         boolean isMyTurn = currentPlayerName.equals(myPlayerName);
         log.info("👉 Is it my turn? {}", isMyTurn);
 
@@ -175,17 +166,21 @@ public class TerraformingMarsController {
 
             if (playerType == PlayerType.CLIENT) {
                 if (currentResearchPlayer != null && myPlayerName.equals(currentResearchPlayer.getName())) {
+                    log.info("Opening research modal for player '{}'", currentResearchPlayer.getName());
+
                     if (!isResearchModalOpen) {
                         isResearchModalOpen = true;
                         Platform.runLater(() -> openResearchModalForClient(currentResearchPlayer));
                     }
                 }
             }
-            // HOST i LOCAL koriste ResearchPhaseManager koji se pokreće iz GameFlowManagera
         } else {
             isResearchModalOpen = false;
         }
 
+        log.info("Ending updateFromNetwork with viewedPlayer='{}', currentPlayer='{}'",
+                (viewedPlayer != null ? viewedPlayer.getName() : "NULL"),
+                (gameManager.getCurrentPlayer() != null ? gameManager.getCurrentPlayer().getName() : "NULL"));
 
         updateAllUI();
         updatePlayerHighlight(gameManager.getCurrentPlayer());
@@ -208,7 +203,8 @@ public class TerraformingMarsController {
                         player,
                         offer,
                         (boughtCards) -> finishResearchForClient(player, boughtCards),
-                        gameManager
+                        gameManager,
+                        true
                 )
         );
     }
@@ -322,6 +318,8 @@ public class TerraformingMarsController {
         }
 
         if (playerType == PlayerType.CLIENT) {
+            setGameControlsEnabled(false);
+            log.info("🚫 CLIENT controls disabled on setup (waiting for host turn info)");
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
             if (client != null) {
                 client.addGameStateListener(this::updateFromNetwork);

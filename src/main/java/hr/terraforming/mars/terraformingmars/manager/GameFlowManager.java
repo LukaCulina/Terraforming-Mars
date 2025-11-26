@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
@@ -17,6 +18,7 @@ public class GameFlowManager {
     private GameManager gameManager;
     private GameBoard gameBoard;
     private ResearchPhaseManager currentResearchManager = null;
+    private boolean researchPhaseInProgress = false;
 
     public GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
         this.controller = controller;
@@ -67,19 +69,41 @@ public class GameFlowManager {
         researchManager.start();
     }
 
-    public void continueResearchPhase() {
-        if (currentResearchManager != null) {
-            currentResearchManager.continueToNextPlayer();
-        }
-    }
-
     private void onResearchComplete() {
+        log.info("🔬 onResearchComplete() called | currentPlayerIndex={} | currentPhase={} | Thread: {}",
+                gameManager.getCurrentPlayer().getName(),
+                gameManager.getCurrentPhase(),
+                Thread.currentThread().getName());
+
+        if (gameManager.getCurrentPhase() == GamePhase.ACTIONS) {
+            log.warn("⚠️ Already in ACTIONS phase, skipping duplicate beginActionPhase()");
+            return;
+        }
+
         createAndSaveResearchPhaseSnapshot(gameManager);
 
         log.info("Research phase complete. Starting Action Phase.");
 
+        log.info("✅ About to call beginActionPhase() | currentPlayerIndex BEFORE={}",
+                gameManager.getCurrentPlayer().getName());
+
         gameManager.beginActionPhase();
+
+        log.info("✅ After beginActionPhase() | currentPlayerIndex AFTER={}",
+                gameManager.getCurrentPlayer().getName());
+
         controller.updateAllUI();
+
+        // ✅ DODAJ: Broadcast novog stanja nakon research faze
+        var config = ApplicationConfiguration.getInstance();
+        if (config.getPlayerType() == hr.terraforming.mars.terraformingmars.enums.PlayerType.HOST) {
+            var server = config.getGameServer();
+            if (server != null) {
+                log.info("📡 Broadcasting game state after research complete");
+                server.broadcastGameState(new GameState(gameManager, gameBoard));
+            }
+        }
+
     }
 
     private void createAndSaveResearchPhaseSnapshot(GameManager gameManager) {

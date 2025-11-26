@@ -104,7 +104,7 @@ public class GameScreens {
             handleCardDraftConfirmation(chosenCards, currentPlayer, gameManager);
 
         ScreenLoader.showAsMainScreen(mainStage, "ChooseCards.fxml", "Choose Initial Cards - " + currentPlayer.getName(),
-                (ChooseCardsController c) -> c.setup(currentPlayer, offer, onConfirmAction, gameManager));
+                (ChooseCardsController c) -> c.setup(currentPlayer, offer, onConfirmAction, gameManager, false));
     }
 
     private static void handleCardDraftConfirmation(

@@ -101,23 +101,36 @@ public class GameServerThread implements Runnable{
         this.localListeners.remove(listener);
     }
 
-    // 3. AŽURIRAJ BROADCAST METODU:
     public void broadcastGameState(GameState state) {
-        // Slanje klijentima (ostaje isto)
+        log.info("📡 Broadcasting to {} clients and {} local listeners",
+                connectedClients.size(), localListeners.size());
+
+        // Debug: Ispiši sve listenere
+        for (GameStateListener listener : localListeners) {
+            log.info("   - Listener: {}", listener.getClass().getSimpleName());
+        }
+
+        // Slanje klijentima
         for (ClientHandler client : connectedClients) {
             client.sendGameState(state);
         }
 
-        // Slanje lokalnim listenerima (Hostu)
-        // Umjesto if (localHostListener != null)...
+        // Slanje lokalnim listenerima
         for (GameStateListener listener : localListeners) {
-            try {
-                listener.onGameStateReceived(state);
-            } catch (Exception e) {
-                log.error("Error in local listener", e);
-            }
+            Platform.runLater(() -> {
+                try {
+                    log.info("🔔 Calling listener.onGameStateReceived()");
+                    listener.onGameStateReceived(state);
+                    log.info("✅ Listener callback completed");
+                } catch (Exception e) {
+                    log.error("❌ Error in local listener", e);
+                }
+            });
         }
+
+        log.info("✅ Broadcast complete");
     }
+
 
     public void shutdown() {
         try {

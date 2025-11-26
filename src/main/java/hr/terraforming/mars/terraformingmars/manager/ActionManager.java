@@ -90,7 +90,11 @@ public class ActionManager {
         if (allPlayersPassed) {
 
             PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-
+            log.info("🔍 All players passed! PlayerType={}, isHOST={}, isLOCAL={}, isCLIENT={}",
+                    playerType,
+                    playerType == PlayerType.HOST,
+                    playerType == PlayerType.LOCAL,
+                    playerType == PlayerType.CLIENT);
             if (playerType == PlayerType.HOST || playerType == PlayerType.LOCAL) {
                 gameFlowManager.handleEndOfActionPhase();
             } else {
@@ -241,10 +245,15 @@ public class ActionManager {
     }
 
     public void processMove(GameMove move) {
-        log.info("Processing move: {} - {} - {}",
-                move.playerName(), move.actionType(), move.details());
+        log.info("🔄 processMove() called: Player='{}', Action='{}', Details='{}' | GamePhase='{}' | CurrentPlayer='{}'",
+                move.playerName(), move.actionType(), move.details(),
+                gameManager.getCurrentPhase(), gameManager.getCurrentPlayer().getName());
 
-        gameManager.setCurrentPlayerByName(move.playerName());
+        if (move.actionType() != ActionType.OPEN_CHOOSE_CARDS_MODAL) {
+            gameManager.setCurrentPlayerByName(move.playerName());
+        } else {
+            log.info("Ignoring setCurrentPlayerByName for OPEN_CHOOSE_CARDS_MODAL");
+        }
 
         switch (move.actionType()) {
             case PLAY_CARD -> {
@@ -281,6 +290,8 @@ public class ActionManager {
             case CONVERT_PLANTS -> handleConvertPlants();
 
             case PASS_TURN -> handlePassTurn();
+
+            case RESEARCH_COMPLETE -> log.info("🔬 Processing RESEARCH_COMPLETE move");
 
             default -> log.warn("Unhandled action type: {}", move.actionType());
         }

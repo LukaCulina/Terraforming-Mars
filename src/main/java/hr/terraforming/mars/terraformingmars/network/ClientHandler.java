@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
@@ -127,10 +128,25 @@ public class ClientHandler implements Runnable {
         draftPlayer.spendMC(cost);
         draftPlayer.getHand().addAll(boughtCards);
 
+        log.info("Processing card choice for player {} | currentPlayerIndex BEFORE advanceDraft={}",
+                draftPlayer.getName(), gameManager.getCurrentPlayer().getName());
+
         boolean morePlayers = gameManager.advanceDraftPlayer();
+
+        log.info("Draft player advanced. More players: {} | currentPlayerIndex AFTER advanceDraft={}",
+                morePlayers, gameManager.getCurrentPlayer().getName());
+
         if (!morePlayers) {
-            GameMoveUtils.saveInitialSetupMove(gameManager);
-            gameManager.startGame();
+            if (gameManager.getGeneration() == 0) {
+                GameMoveUtils.saveInitialSetupMove(gameManager);
+                log.info("🎮 BEFORE startGame() | currentPlayerIndex={}",
+                        gameManager.getCurrentPlayer().getName());
+                gameManager.startGame();
+                log.info("🎮 AFTER startGame() | currentPlayerIndex={}",
+                        gameManager.getCurrentPlayer().getName());
+            } else {
+                log.info("🔬 Research phase draft complete, continuing game");
+            }
         }
 
         server.broadcastGameState(new GameState(gameManager, gameBoard));

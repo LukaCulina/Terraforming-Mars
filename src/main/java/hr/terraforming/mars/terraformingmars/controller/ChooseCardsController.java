@@ -36,11 +36,13 @@ public class ChooseCardsController {
     private final Set<Card> selectedCards = new HashSet<>();
     private final IntegerProperty remainingMC = new SimpleIntegerProperty();
     private Consumer<List<Card>> onConfirm;
+    private boolean isResearchPhase = false;
 
-    public void setup(Player player, List<Card> offer, Consumer<List<Card>> onConfirm, GameManager gameManager) {
+    public void setup(Player player, List<Card> offer, Consumer<List<Card>> onConfirm, GameManager gameManager, boolean isResearchPhase) {
         this.player = player;
         this.onConfirm = onConfirm;
         this.gameManager = gameManager;
+        this.isResearchPhase = isResearchPhase;
 
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
@@ -127,8 +129,10 @@ public class ChooseCardsController {
                 client.sendCardChoice(boughtCards);
                 log.info("✅ CLIENT sent card choice ({} cards) to server", boughtCards.size());
             }
-            showWaitingForPlayer(player.getName());
-            return;
+            if (!isResearchPhase) {
+                showWaitingForPlayer(player.getName());
+                return;
+            }
         }
 
         if (onConfirm != null) {
