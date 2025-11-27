@@ -3,6 +3,7 @@ package hr.terraforming.mars.terraformingmars.manager;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import javafx.application.Platform;
 import lombok.Getter;
@@ -150,6 +151,16 @@ public class PlacementManager {
         mainController.setGameControlsEnabled(true);
         mainController.drawBoard();
 
+        // ★★★ NOVO: Broadcast nakon placementa ★★★
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+        if (playerType == PlayerType.HOST) {
+            GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
+            if (server != null) {
+                server.broadcastGameState(new GameState(gameManager, gameBoard));
+                log.info("HOST broadcasted GameState AFTER placement");
+            }
+        }
+
         if (wasFinalGreenery && onPlacementCompleteCallback != null) {
             Platform.runLater(onPlacementCompleteCallback);
         }
@@ -202,9 +213,29 @@ public class PlacementManager {
         this.onPlacementCompleteCallback = null;
     }
 
-    public Player getPlacementOwner() {
+    /*public Player getPlacementOwner() {
         return (placementMode == PlacementMode.FINAL_GREENERY)
                 ? finalGreeneryPlayer
                 : gameManager.getCurrentPlayer();
+    }*/
+    public Player getPlacementOwner() {
+        // ★★★ PRIORITET: Koristi igrača iz moveInProgress-a ★★★
+        if (moveInProgress != null && moveInProgress.playerName() != null) {
+            Player movePlayer = gameManager.getPlayerByName(moveInProgress.playerName());
+            if (movePlayer != null) {
+                log.info("Placement owner from move: {}", movePlayer.getName());
+                return movePlayer;
+            }
+        }
+
+        // Fallback za final greenery
+        if (placementMode == PlacementMode.FINAL_GREENERY) {
+            return finalGreeneryPlayer;
+        }
+
+        // Default current player
+        return gameManager.getCurrentPlayer();
     }
+
+
 }

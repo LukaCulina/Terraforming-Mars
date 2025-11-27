@@ -168,8 +168,6 @@ public class ClientHandler implements Runnable {
             Platform.runLater(() -> {
                 try {
                     actionManager.processMove(move);
-                    //log.info("Broadcasting game state after move by {}", move.playerName());
-                    //server.broadcastGameState(new GameState(gameManager, gameBoard));
                 } catch (Exception e) {
                     log.error("Error processing move on FX thread", e);
                 }

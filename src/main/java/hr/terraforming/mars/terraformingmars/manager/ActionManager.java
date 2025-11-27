@@ -268,7 +268,24 @@ public class ActionManager {
                 }
             }
 
-            case PLACE_TILE, SELL_PATENTS -> performAction();
+            case PLACE_TILE -> {
+                // SAMO HOST treba procesirati placement, klijent preskače
+                if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.HOST) {
+                    // Rekonstruiraj tile placement iz GameMove-a
+                    Player player = gameManager.getPlayerByName(move.playerName());
+                    Tile tile = gameBoard.getTileAt(move.row(), move.col());
+                    if (tile != null && player != null) {
+                        switch (move.tileType()) {
+                            case OCEAN -> gameBoard.placeOcean(tile, player);
+                            case GREENERY -> gameBoard.placeGreenery(tile, player);
+                            case CITY -> gameBoard.placeCity(tile, player);
+                        }
+                    }
+                }
+                //performAction();  // Ovo ostaje za action counting
+            }
+
+            case SELL_PATENTS -> performAction();
 
             case CLAIM_MILESTONE -> {
                 try {
