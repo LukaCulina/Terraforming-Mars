@@ -11,12 +11,14 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -157,13 +159,41 @@ public class XmlUtils {
         transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 
         Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
+        //transformer.setOutputProperty(OutputKeys.INDENT, "yes");  // ČISTI XML
+        //transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-        try (java.io.FileWriter writer = new java.io.FileWriter(XmlUtils.GAME_MOVES_XML_FILE)) {
+        DOMSource source = new DOMSource(doc);
+        //File xmlFile = new File(GAME_MOVES_XML_FILE);
+
+        /*if (xmlFile.exists()) {
+            Files.deleteIfExists(xmlFile.toPath());
+        }*/
+
+        try (FileWriter writer = new FileWriter(XmlUtils.GAME_MOVES_XML_FILE)) {
             StreamResult result = new StreamResult(writer);
             transformer.transform(source, result);
         }
     }
+
+    /*private static void writeDocument(Document doc) throws TransformerException, IOException {
+        File tempFile = new File(GAME_MOVES_XML_FILE + ".tmp");
+        File targetFile = new File(GAME_MOVES_XML_FILE);
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource source = new DOMSource(doc);
+        try (FileWriter writer = new FileWriter(tempFile)) {
+            StreamResult result = new StreamResult(writer);
+            transformer.transform(source, result);
+        }
+
+        Files.move(tempFile.toPath(), targetFile.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+    }*/
 
     private static Element createGameMoveElement(Document doc, GameMove move) {
         Element gameMoveElement = doc.createElement("GameMove");

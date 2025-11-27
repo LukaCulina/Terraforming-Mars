@@ -56,6 +56,7 @@ public class PlacementManager {
 
     private void enterPlacementMode(PlacementMode mode, TileType tileType, GameMove move,
                                     Card card, StandardProject project, Player player, Runnable callback) {
+
         this.placementMode = mode;
         this.tileTypeToPlace = tileType;
         this.moveInProgress = move;
@@ -72,10 +73,20 @@ public class PlacementManager {
 
     public void executePlacement(Tile selectedTile) {
         Player placementOwner = getPlacementOwner();
+        String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
 
         if (placementOwner == null) {
             log.error("Placement failed: No player defined for tile placement. This should not happen.");
 
+            cancelPlacement();
+            return;
+        }
+
+        // ★★★ FINALNA PROVJERA PRED PLACEMENT ★★★
+        if (!placementOwner.getName().equals(myName)) {
+            log.error("🚫 Nepovlašteni placement pokušaj! Owner: {}, MyName: {}",
+                    placementOwner.getName(), myName);
             cancelPlacement();
             return;
         }

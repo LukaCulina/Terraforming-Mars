@@ -59,13 +59,15 @@ public class GameManager implements Serializable {
     }
 
     public Player getCurrentPlayerForDraft() {
-        if (cardDraftPlayerIndex < players.size()) {
-            Player p = players.get(cardDraftPlayerIndex);
-            log.info("📋 getCurrentPlayerForDraft() → index={}, player='{}'", cardDraftPlayerIndex, p.getName());
-            return p;
+        if (cardDraftPlayerIndex >= players.size()) {
+            log.debug("getCurrentPlayerForDraft: Draft completed (index{} >= size{})",
+                    cardDraftPlayerIndex, players.size());
+            return null;
         }
-        log.warn("📋 getCurrentPlayerForDraft() → index={} OUT OF BOUNDS (size={})", cardDraftPlayerIndex, players.size());
-        return null;
+
+        Player p = players.get(cardDraftPlayerIndex);
+        log.info("📋 getCurrentPlayerForDraft() → index={}, player='{}'", cardDraftPlayerIndex, p.getName());
+        return p;
     }
 
     public boolean advanceDraftPlayer() {

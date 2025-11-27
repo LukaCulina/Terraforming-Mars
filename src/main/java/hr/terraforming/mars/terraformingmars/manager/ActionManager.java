@@ -246,9 +246,11 @@ public class ActionManager {
     }
 
     public void processMove(GameMove move) {
-        log.info("🔄 processMove() called: Player='{}', Action='{}', Details='{}' | GamePhase='{}' | CurrentPlayer='{}'",
-                move.playerName(), move.actionType(), move.details(),
-                gameManager.getCurrentPhase(), gameManager.getCurrentPlayer().getName());
+        String currentPlayerName = gameManager.getCurrentPlayer().getName();
+        String movePlayerName = move.playerName();
+
+        log.info("🔄 processMove() called: Player='{}', Action='{}', CurrentPlayer='{}'",
+                movePlayerName, move.actionType(), currentPlayerName);
 
         if (move.actionType() != ActionType.OPEN_CHOOSE_CARDS_MODAL) {
             gameManager.setCurrentPlayerByName(move.playerName());
