@@ -129,7 +129,6 @@ public class UIManager {
                 }
             }
         });
-        //playerControls.passTurnButton().setDisable(isPlacing || !isActionPhase);
     }
 
     private void updateMilestoneButtonsState(boolean isPlacing) {

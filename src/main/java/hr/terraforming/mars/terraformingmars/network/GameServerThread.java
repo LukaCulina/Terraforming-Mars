@@ -101,8 +101,7 @@ public class GameServerThread implements Runnable{
     }
 
     public void broadcastGameState(GameState state) {
-        log.info("📡 Broadcasting to {} clients and {} local listeners",
-                connectedClients.size(), localListeners.size());
+        log.debug("📡 Broadcasting to {} clients...", connectedClients.size());
 
         for (GameStateListener listener : localListeners) {
             log.info("   - Listener: {}", listener.getClass().getSimpleName());

@@ -100,24 +100,17 @@ public class TerraformingMarsController {
             return;
         }
 
-        boolean gameBoardIsNull = (state.gameBoard() == null);
-        boolean gameManagerIsNull = (state.gameManager() == null);
-
-        log.info("Received GameState update - gameManager: {}, gameBoard: {}",
-                gameManagerIsNull ? "NULL" : "NOT NULL",
-                gameBoardIsNull ? "NULL" : "NOT NULL");
-
-        if (gameBoardIsNull) {
-            log.error("GameBoard is null in received GameState! Stack trace:", new Exception("Stack trace"));
-        }
-
         if (state.gameManager() == null || state.gameBoard() == null) {
             log.error("Critical error: Received incomplete GameState! Manager={}, Board={}",
                     state.gameManager(), state.gameBoard());
             return;
         }
 
-        log.info("CLIENT: Updating local state from network GameState.");
+        log.debug("🔄 NetUpdate: Gen={}, Phase={}, CurrentTurn={}, MyName={}",
+                state.gameManager().getGeneration(),
+                state.gameManager().getCurrentPhase(),
+                state.gameManager().getCurrentPlayer().getName(),
+                ApplicationConfiguration.getInstance().getMyPlayerName());
 
         this.gameManager = state.gameManager();
         this.gameBoard = state.gameBoard();
@@ -162,12 +155,13 @@ public class TerraformingMarsController {
         if (gameManager.getCurrentPhase() == GamePhase.RESEARCH) {
             Player currentResearchPlayer = gameManager.getCurrentPlayerForDraft();
 
-            log.info("🔍 RESEARCH CHECK: currentPlayer='{}', myName='{}', playerType={}",
-                    currentResearchPlayer != null ? currentResearchPlayer.getName() : "NULL",
-                    myPlayerName, playerType);
+            log.debug("🔍 Research Check: current={}, me={}",
+                    (currentResearchPlayer != null ? currentResearchPlayer.getName() : "NULL"),
+                    myPlayerName);
 
-            if (playerType == PlayerType.CLIENT) {
-                if (currentResearchPlayer != null && myPlayerName.equals(currentResearchPlayer.getName())) {
+            if (playerType == PlayerType.CLIENT && currentResearchPlayer != null) {
+                assert myPlayerName != null;
+                if (myPlayerName.equals(currentResearchPlayer.getName())) {
                     log.info("Opening research modal for player '{}'", currentResearchPlayer.getName());
 
                     if (!isResearchModalOpen) {
@@ -179,10 +173,6 @@ public class TerraformingMarsController {
         } else {
             isResearchModalOpen = false;
         }
-
-        log.info("Ending updateFromNetwork with viewedPlayer='{}', currentPlayer='{}'",
-                (viewedPlayer != null ? viewedPlayer.getName() : "NULL"),
-                (gameManager.getCurrentPlayer() != null ? gameManager.getCurrentPlayer().getName() : "NULL"));
 
         updateAllUI();
         updatePlayerHighlight(gameManager.getCurrentPlayer());
@@ -326,13 +316,6 @@ public class TerraformingMarsController {
             if (client != null) {
                 client.addGameStateListener(this::updateFromNetwork);
                 log.info("CLIENT registered UI update listener");
-            }
-        }
-
-        if (playerType == PlayerType.HOST) {
-            GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
-            if (server != null) {
-                server.addLocalListener(this::updateFromNetwork);
             }
         }
 

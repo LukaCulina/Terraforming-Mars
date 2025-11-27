@@ -158,20 +158,15 @@ public class GameManager implements Serializable {
         generation++;
         currentPhase = GamePhase.RESEARCH;
         currentPlayerIndex = 0;
+        this.actionsTakenThisTurn = 0;
         passedPlayers.clear();
         log.info("🆕 startNewGeneration() | OLD currentPlayerIndex={} → NEW={} | Generation={} | Thread: {}",
                 oldIndex, currentPlayerIndex, generation, Thread.currentThread().getName());    }
 
     public void beginActionPhase() {
-        int oldIndex = this.currentPlayerIndex;
         this.currentPhase = GamePhase.ACTIONS;
         this.currentPlayerIndex = 0;
-
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        String caller = stackTrace.length > 2 ? stackTrace[2].getMethodName() : "unknown";
-
-        log.info("🎯 beginActionPhase() | OLD currentPlayerIndex={} → NEW={} | Called from: {} | Thread: {}",
-                oldIndex, this.currentPlayerIndex, caller, Thread.currentThread().getName());
+        this.actionsTakenThisTurn = 0;
     }
 
     public Player getCurrentPlayer() { return players.get(currentPlayerIndex); }
@@ -207,20 +202,9 @@ public class GameManager implements Serializable {
     }
 
     public void setCurrentPlayerByName(String playerName) {
-        int oldIndex = this.currentPlayerIndex;
-
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getName().equals(playerName)) {
                 this.currentPlayerIndex = i;
-
-                StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-                StringBuilder callerChain = new StringBuilder();
-                for (int j = 2; j < Math.min(7, stackTrace.length); j++) {
-                    callerChain.append(stackTrace[j].getMethodName()).append(" → ");
-                }
-
-                log.info("🎭 setCurrentPlayerByName() | OLD={} → NEW={} | PlayerName='{}' | Called from: {} | Thread: {}",
-                        oldIndex, this.currentPlayerIndex, playerName, callerChain, Thread.currentThread().getName());
                 return;
             }
         }

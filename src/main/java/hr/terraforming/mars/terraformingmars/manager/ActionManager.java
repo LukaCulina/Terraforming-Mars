@@ -37,6 +37,11 @@ public class ActionManager {
         this.gameFlowManager = gameFlowManager;
     }
 
+    private boolean isLocalPlayerMove(Player player) {
+        String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        return player.getName().equals(myName);
+    }
+
     public void updateState(GameManager newManager, GameBoard newBoard) {
         this.gameManager = newManager;
         this.gameBoard = newBoard;
@@ -118,7 +123,12 @@ public class ActionManager {
         GameMove move = new GameMove(currentPlayer.getName(), ActionType.PLAY_CARD, card.getName(), LocalDateTime.now());
 
         if (card.getTileToPlace() != null) {
-            controller.getPlacementCoordinator().enterPlacementModeForCard(card, move);
+            if (isLocalPlayerMove(currentPlayer)) {
+                controller.getPlacementCoordinator().enterPlacementModeForCard(card, move);
+            } else {
+                currentPlayer.playCard(card, gameManager);
+                log.info("Network: {} played card {} (tile placement pending)", currentPlayer.getName(), card.getName());
+            }
         } else {
             currentPlayer.playCard(card, gameManager);
             performAction();
@@ -153,14 +163,21 @@ public class ActionManager {
         GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.USE_STANDARD_PROJECT, project.name(), LocalDateTime.now());
 
         if (project.requiresTilePlacement()) {
-            controller.getPlacementCoordinator().enterPlacementModeForProject(project, move);
+            if (isLocalPlayerMove(currentPlayer)) {
+                controller.getPlacementCoordinator().enterPlacementModeForProject(project, move);
+            } else {
+                currentPlayer.spendMC(finalCost);
+                log.info("Network: {} used standard project {} (tile placement pending)", currentPlayer.getName(), project.getName());
+            }
         } else {
             if (project == StandardProject.SELL_PATENTS) {
                 if (currentPlayer.getHand().isEmpty()) {
                     log.warn("{} tried to sell patents but has no cards in hand.", currentPlayer.getName());
                     return;
                 }
-                openSellPatentsWindow();
+                if (isLocalPlayerMove(currentPlayer)) {
+                    openSellPatentsWindow();
+                }
             } else {
                 currentPlayer.spendMC(finalCost);
                 project.execute(currentPlayer, gameBoard);
@@ -207,8 +224,12 @@ public class ActionManager {
                 LocalDateTime.now()
         );
 
-        controller.getPlacementCoordinator().enterPlacementModeForPlant(convertPlantsMove);
-    }
+        if (isLocalPlayerMove(currentPlayer)) {
+            controller.getPlacementCoordinator().enterPlacementModeForPlant(convertPlantsMove);
+        } else {
+            currentPlayer.spendPlantsForGreenery();
+            log.info("Network: {} converting plants (waiting for PLACE_TILE)", currentPlayer.getName());
+        }    }
 
     public void openSellPatentsWindow() {
         Consumer<List<Card>> onSaleCompleteAction = soldCards -> {
@@ -268,22 +289,7 @@ public class ActionManager {
                 }
             }
 
-            case PLACE_TILE -> {
-                // SAMO HOST treba procesirati placement, klijent preskače
-                if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.HOST) {
-                    // Rekonstruiraj tile placement iz GameMove-a
-                    Player player = gameManager.getPlayerByName(move.playerName());
-                    Tile tile = gameBoard.getTileAt(move.row(), move.col());
-                    if (tile != null && player != null) {
-                        switch (move.tileType()) {
-                            case OCEAN -> gameBoard.placeOcean(tile, player);
-                            case GREENERY -> gameBoard.placeGreenery(tile, player);
-                            case CITY -> gameBoard.placeCity(tile, player);
-                        }
-                    }
-                }
-                //performAction();  // Ovo ostaje za action counting
-            }
+            case PLACE_TILE -> handlePlaceTile(move);
 
             case SELL_PATENTS -> performAction();
 
@@ -314,6 +320,24 @@ public class ActionManager {
             case RESEARCH_COMPLETE -> log.info("🔬 Processing RESEARCH_COMPLETE move");
 
             default -> log.warn("Unhandled action type: {}", move.actionType());
+        }
+    }
+
+    private void handlePlaceTile(GameMove move) {
+        if (ApplicationConfiguration.getInstance().getPlayerType() != PlayerType.HOST) {
+            return;
+        }
+
+        Player player = gameManager.getPlayerByName(move.playerName());
+        Tile tile = gameBoard.getTileAt(move.row(), move.col());
+
+        if (tile != null && player != null) {
+            switch (move.tileType()) {
+                case OCEAN -> gameBoard.placeOcean(tile, player);
+                case GREENERY -> gameBoard.placeGreenery(tile, player);
+                case CITY -> gameBoard.placeCity(tile, player);
+                default -> log.warn("⚠️ Received PLACE_TILE with unhandled type: {}", move.tileType());
+            }
         }
     }
 }

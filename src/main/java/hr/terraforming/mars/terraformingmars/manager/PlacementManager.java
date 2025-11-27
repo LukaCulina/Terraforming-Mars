@@ -84,9 +84,8 @@ public class PlacementManager {
             return;
         }
 
-        // ★★★ FINALNA PROVJERA PRED PLACEMENT ★★★
         if (!placementOwner.getName().equals(myName)) {
-            log.error("🚫 Nepovlašteni placement pokušaj! Owner: {}, MyName: {}",
+            log.error("🚫 Unauthorized placement attempt! Owner: {}, MyName: {}",
                     placementOwner.getName(), myName);
             cancelPlacement();
             return;
@@ -151,7 +150,6 @@ public class PlacementManager {
         mainController.setGameControlsEnabled(true);
         mainController.drawBoard();
 
-        // ★★★ NOVO: Broadcast nakon placementa ★★★
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
         if (playerType == PlayerType.HOST) {
             GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
@@ -213,13 +211,7 @@ public class PlacementManager {
         this.onPlacementCompleteCallback = null;
     }
 
-    /*public Player getPlacementOwner() {
-        return (placementMode == PlacementMode.FINAL_GREENERY)
-                ? finalGreeneryPlayer
-                : gameManager.getCurrentPlayer();
-    }*/
     public Player getPlacementOwner() {
-        // ★★★ PRIORITET: Koristi igrača iz moveInProgress-a ★★★
         if (moveInProgress != null && moveInProgress.playerName() != null) {
             Player movePlayer = gameManager.getPlayerByName(moveInProgress.playerName());
             if (movePlayer != null) {
@@ -228,14 +220,10 @@ public class PlacementManager {
             }
         }
 
-        // Fallback za final greenery
         if (placementMode == PlacementMode.FINAL_GREENERY) {
             return finalGreeneryPlayer;
         }
 
-        // Default current player
         return gameManager.getCurrentPlayer();
     }
-
-
 }
