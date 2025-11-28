@@ -16,50 +16,58 @@ public class HostGameStateCoordinator implements GameStateListener {
     @Override
     public void onGameStateReceived(GameState state) {
         Platform.runLater(() -> {
-
             switch (currentPhase) {
-                case JOINING -> {
-                    boolean allJoined = state.gameManager().getPlayers().stream()
-                            .noneMatch(p -> p.getName().startsWith("Player "));
-
-                    if (allJoined) {
-                        log.info("HOST: Svi igrači spojeni, prelazim na Corporation Selection");
-                        currentPhase = GameplayPhase.CORPORATION_SELECTION;
-                        GameScreens.showChooseCorporationScreen(state.gameManager());
-                    }
-                }
-                case CORPORATION_SELECTION -> {
-                    boolean allChosen = state.gameManager().getPlayers().stream()
-                            .allMatch(p -> p.getCorporation() != null);
-
-                    if (allChosen) {
-                        log.info("HOST: Svi odabrali korporacije, prelazim na Card Draft");
-                        currentPhase = GameplayPhase.CARD_DRAFT;
-                        GameScreens.showInitialCardDraftScreen(state.gameManager());
-                        return;
-                    }
-
-                    GameScreens.showChooseCorporationScreen(state.gameManager());
-                }
-                case CARD_DRAFT -> {
-                    Player currentPlayer = state.gameManager().getCurrentPlayerForDraft();
-                    if (currentPlayer == null) {
-                        log.info("HOST: Draft gotov, počinje igra");
-                        currentPhase = GameplayPhase.PLAYING;
-                        GameScreens.startGameWithChosenCards(state);
-                    } else {
-                        GameScreens.showInitialCardDraftScreen(state.gameManager());
-                    }
-                }
-                case PLAYING -> {
-                    var controller = ApplicationConfiguration.getInstance().getActiveGameController();
-                    if (controller != null) {
-                        controller.updateFromNetwork(state);
-                    } else {
-                        log.warn("HOST: Primio sam stanje u PLAYING fazi, ali kontroler nije postavljen!");
-                    }
-                }
+                case JOINING -> handleJoiningPhase(state);
+                case CORPORATION_SELECTION -> handleCorporationSelection(state);
+                case CARD_DRAFT -> handleCardDraft(state);
+                case PLAYING -> handlePlayingPhase(state);
             }
         });
+    }
+
+    private void handleJoiningPhase(GameState state) {
+        boolean allJoined = state.gameManager().getPlayers().stream()
+                .noneMatch(p -> p.getName().startsWith("Player "));
+
+        if (allJoined) {
+            log.info("HOST: All players joined, transitioning to Corporation Selection");
+            currentPhase = GameplayPhase.CORPORATION_SELECTION;
+            GameScreens.showChooseCorporationScreen(state.gameManager());
+        }
+    }
+
+    private void handleCorporationSelection(GameState state) {
+        boolean allChosen = state.gameManager().getPlayers().stream()
+                .allMatch(p -> p.getCorporation() != null);
+
+        if (allChosen) {
+            log.info("HOST: All players chose corporations, transitioning to Card Draft");
+            currentPhase = GameplayPhase.CARD_DRAFT;
+            GameScreens.showInitialCardDraftScreen(state.gameManager());
+            return;
+        }
+
+        GameScreens.showChooseCorporationScreen(state.gameManager());
+    }
+
+    private void handleCardDraft(GameState state) {
+
+        Player currentPlayer = state.gameManager().getCurrentPlayerForDraft();
+        if (currentPlayer == null) {
+            log.info("HOST: Draft completed, starting game");
+            currentPhase = GameplayPhase.PLAYING;
+            GameScreens.startGameWithChosenCards(state);
+        } else {
+            GameScreens.showInitialCardDraftScreen(state.gameManager());
+        }
+    }
+
+    private void handlePlayingPhase(GameState state) {
+        var controller = ApplicationConfiguration.getInstance().getActiveGameController();
+        if (controller != null) {
+            controller.updateFromNetwork(state);
+        } else {
+            log.warn("HOST: Received PLAYING phase state, but controller is not set!");
+        }
     }
 }
