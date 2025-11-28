@@ -8,6 +8,7 @@ import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
+import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.ui.PlayerBoardLoader;
@@ -35,6 +36,8 @@ import java.rmi.registry.Registry;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class TerraformingMarsController {
@@ -76,6 +79,7 @@ public class TerraformingMarsController {
     private ChatService chatService;
     @FXML private ListView<String> chatListView;
     @FXML private TextField chatInput;
+    private final AtomicInteger localStateCallCount = new AtomicInteger(0);
 
     @FXML
     private void initialize() {
@@ -94,23 +98,45 @@ public class TerraformingMarsController {
     }
 
     public void updateFromNetwork(GameState state) {
-
-        if (state == null) {
-            log.error("Received null GameState!");
+        if (!validateGameState(state)) {
             return;
         }
 
+        logNetworkUpdate(state);
+        updateLocalState(state);
+        updateViewedPlayer();
+        updateGameControls(state);
+        handleResearchPhase();
+
+        updateAllUI();
+        updatePlayerHighlight(gameManager.getCurrentPlayer());
+    }
+
+    private boolean validateGameState(GameState state) {
+        if (state == null) {
+            log.error("Received null GameState!");
+            return false;
+        }
         if (state.gameManager() == null || state.gameBoard() == null) {
             log.error("Critical error: Received incomplete GameState! Manager={}, Board={}",
                     state.gameManager(), state.gameBoard());
-            return;
+            return false;
         }
+        return true;
+    }
 
+    private void logNetworkUpdate(GameState state) {
         log.debug("🔄 NetUpdate: Gen={}, Phase={}, CurrentTurn={}, MyName={}",
                 state.gameManager().getGeneration(),
                 state.gameManager().getCurrentPhase(),
                 state.gameManager().getCurrentPlayer().getName(),
                 ApplicationConfiguration.getInstance().getMyPlayerName());
+    }
+
+    private void updateLocalState(GameState state) {
+        int callId = localStateCallCount.incrementAndGet();
+        log.info("🎯 updateLocalState() CALL #{} from {}", callId,
+                Thread.currentThread().getStackTrace()[2]);
 
         this.gameManager = state.gameManager();
         this.gameBoard = state.gameBoard();
@@ -120,63 +146,68 @@ public class TerraformingMarsController {
         if (uiManager != null) {
             uiManager.updateGameState(this.gameManager, this.gameBoard);
         }
-
         if (actionManager != null) {
             actionManager.updateState(this.gameManager, this.gameBoard);
         }
+    }
 
+    private void updateViewedPlayer() {
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        String currentPlayerName = state.gameManager().getCurrentPlayer().getName();
-        log.info("🔄 NETWORK UPDATE: My Name='{}', Current Turn='{}'", myPlayerName, currentPlayerName);
 
         if (myPlayerName != null) {
             Player myPlayer = gameManager.getPlayerByName(myPlayerName);
             if (myPlayer != null) {
                 this.viewedPlayer = myPlayer;
+                return;
             }
-        } else {
-            this.viewedPlayer = gameManager.getCurrentPlayer();
         }
+        this.viewedPlayer = gameManager.getCurrentPlayer();
+    }
 
-        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+    private void updateGameControls(GameState state) {
+        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        String currentPlayerName = state.gameManager().getCurrentPlayer().getName();
 
         boolean isMyTurn = currentPlayerName.equals(myPlayerName);
-        boolean isActionPhase = gameManager.getCurrentPhase() == hr.terraforming.mars.terraformingmars.enums.GamePhase.ACTIONS;
-        log.info("👉 Is it my turn? {}", isMyTurn);
+        boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
 
         if (isMyTurn && isActionPhase) {
             setGameControlsEnabled(true);
-            log.info("CONTROLS ENABLED for {}", myPlayerName);
+            log.debug("✅ Controls ENABLED for {}", myPlayerName);
             Platform.runLater(this::updateAllUI);
         } else {
             setGameControlsEnabled(false);
-            log.info("CONTROLS DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
+            log.debug("🚫 Controls DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
         }
-        if (gameManager.getCurrentPhase() == GamePhase.RESEARCH) {
-            Player currentResearchPlayer = gameManager.getCurrentPlayerForDraft();
-
-            log.debug("🔍 Research Check: current={}, me={}",
-                    (currentResearchPlayer != null ? currentResearchPlayer.getName() : "NULL"),
-                    myPlayerName);
-
-            if (playerType == PlayerType.CLIENT && currentResearchPlayer != null) {
-                assert myPlayerName != null;
-                if (myPlayerName.equals(currentResearchPlayer.getName())) {
-                    log.info("Opening research modal for player '{}'", currentResearchPlayer.getName());
-
-                    if (!isResearchModalOpen) {
-                        isResearchModalOpen = true;
-                        Platform.runLater(() -> openResearchModalForClient(currentResearchPlayer));
-                    }
-                }
-            }
-        } else {
-            isResearchModalOpen = false;
-        }
-
-        updateAllUI();
-        updatePlayerHighlight(gameManager.getCurrentPlayer());
     }
+
+    private void handleResearchPhase() {
+        if (gameManager.getCurrentPhase() != GamePhase.RESEARCH) {
+            isResearchModalOpen = false;
+            return;
+        }
+
+        Player currentResearchPlayer = gameManager.getCurrentPlayerForDraft();
+        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
+        log.debug("🔍 Research Check: current={}, me={}",
+                (currentResearchPlayer != null ? currentResearchPlayer.getName() : "NULL"),
+                myPlayerName);
+
+        if (playerType == PlayerType.CLIENT
+                && currentResearchPlayer != null
+                && Objects.equals(myPlayerName, currentResearchPlayer.getName())) {
+
+            log.info("Opening research modal for player '{}'", currentResearchPlayer.getName());
+
+            if (!isResearchModalOpen) {
+                isResearchModalOpen = true;
+                Platform.runLater(() -> openResearchModalForClient(currentResearchPlayer));
+            }
+        }
+    }
+
 
     private boolean isResearchModalOpen = false;
 
@@ -227,9 +258,9 @@ public class TerraformingMarsController {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
         if (playerType == PlayerType.HOST) {
-            GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
-            if (server != null) {
-                server.broadcastGameState(new GameState(gameManager, gameBoard));
+            NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
+            if (broadcaster != null) {
+                broadcaster.broadcast();
             }
         } else if (playerType == PlayerType.CLIENT) {
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();

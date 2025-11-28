@@ -45,7 +45,6 @@ public class ActionManager {
     public void updateState(GameManager newManager, GameBoard newBoard) {
         this.gameManager = newManager;
         this.gameBoard = newBoard;
-        log.info("ActionManager state updated with new GameManager/GameBoard references.");
 
         if (gameFlowManager != null) {
             gameFlowManager.updateState(newManager, newBoard);

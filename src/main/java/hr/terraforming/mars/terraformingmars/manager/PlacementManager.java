@@ -3,7 +3,7 @@ package hr.terraforming.mars.terraformingmars.manager;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
-import hr.terraforming.mars.terraformingmars.network.GameServerThread;
+import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import javafx.application.Platform;
 import lombok.Getter;
@@ -150,13 +150,11 @@ public class PlacementManager {
         mainController.setGameControlsEnabled(true);
         mainController.drawBoard();
 
-        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-        if (playerType == PlayerType.HOST) {
-            GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
-            if (server != null) {
-                server.broadcastGameState(new GameState(gameManager, gameBoard));
-                log.info("HOST broadcasted GameState AFTER placement");
-            }
+        var config = ApplicationConfiguration.getInstance();
+        NetworkBroadcaster broadcaster = config.getBroadcaster();
+        if (broadcaster != null) {
+            broadcaster.broadcast();
+            log.info("HOST broadcasted GameState AFTER placement");
         }
 
         if (wasFinalGreenery && onPlacementCompleteCallback != null) {

@@ -3,6 +3,7 @@ package hr.terraforming.mars.terraformingmars.controller;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.IntegerProperty;
@@ -141,10 +142,10 @@ public class ChooseCardsController {
         }
 
         if (playerType == PlayerType.HOST) {
-            var server = config.getGameServer();
-            if (server != null) {
+            NetworkBroadcaster broadcaster = config.getBroadcaster();
+            if (broadcaster != null) {
                 log.info("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
-                server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
+                broadcaster.broadcast();
                 log.info("✅ HOST broadcasted card draft state to all clients");
             }
         }

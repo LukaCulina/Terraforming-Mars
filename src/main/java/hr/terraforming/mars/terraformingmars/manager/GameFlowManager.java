@@ -3,6 +3,7 @@ package hr.terraforming.mars.terraformingmars.manager;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
@@ -94,13 +95,12 @@ public class GameFlowManager {
 
         var config = ApplicationConfiguration.getInstance();
         if (config.getPlayerType() == hr.terraforming.mars.terraformingmars.enums.PlayerType.HOST) {
-            var server = config.getGameServer();
-            if (server != null) {
-                log.info("📡 Broadcasting game state after research complete");
-                server.broadcastGameState(new GameState(gameManager, gameBoard));
+            NetworkBroadcaster broadcaster = config.getBroadcaster();
+            if (broadcaster != null) {
+                log.info("Broadcasting game state after research complete");
+                broadcaster.broadcast();
             }
         }
-
     }
 
     private void createAndSaveResearchPhaseSnapshot(GameManager gameManager) {

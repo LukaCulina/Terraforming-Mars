@@ -4,22 +4,20 @@ import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsControll
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
+import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter @Setter
 public class ApplicationConfiguration {
 
     private static ApplicationConfiguration instance;
-    @Getter @Setter
     private PlayerType playerType;
-    @Getter @Setter
     private int playerCount;
-    @Getter @Setter
     private String myPlayerName;
-    @Getter @Setter
     private GameServerThread gameServer;
-    @Getter @Setter
     private GameClientThread gameClient;
+    private NetworkBroadcaster broadcaster;
 
     private ApplicationConfiguration() {
         this.playerType = PlayerType.LOCAL;
@@ -33,13 +31,4 @@ public class ApplicationConfiguration {
         return instance;
     }
     private TerraformingMarsController activeGameController;
-
-    public void setActiveGameController(TerraformingMarsController controller) {
-        this.activeGameController = controller;
-    }
-
-    public TerraformingMarsController getActiveGameController() {
-        return activeGameController;
-    }
-
 }

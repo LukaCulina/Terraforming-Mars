@@ -6,6 +6,7 @@ import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import hr.terraforming.mars.terraformingmars.network.HostGameStateCoordinator;
+import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -65,6 +66,9 @@ public class ChooseNameController {
                         null,
                         playerCount
                 );
+                NetworkBroadcaster broadcaster = new NetworkBroadcaster(gameManager, gameBoard);
+                ApplicationConfiguration.getInstance().setBroadcaster(broadcaster);
+                log.info("✅ NetworkBroadcaster created with server");
 
                 HostGameStateCoordinator hostCoordinator = new HostGameStateCoordinator();
                 gameServer.addLocalListener(hostCoordinator);

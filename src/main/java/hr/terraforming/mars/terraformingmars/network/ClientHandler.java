@@ -20,8 +20,6 @@ import java.util.concurrent.CompletableFuture;
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final GameManager gameManager;
-    private final GameBoard gameBoard;
-    private final GameServerThread server;
     private ActionManager actionManager;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -29,11 +27,9 @@ public class ClientHandler implements Runnable {
     private final CompletableFuture<Void> readyFuture = new CompletableFuture<>();
     private volatile boolean running = true;
 
-    public ClientHandler(Socket socket, GameManager gameManager,GameBoard gameBoard, GameServerThread server, ActionManager actionManager) {
+    public ClientHandler(Socket socket, GameManager gameManager, ActionManager actionManager) {
         this.socket = socket;
         this.gameManager = gameManager;
-        this.gameBoard = gameBoard;
-        this.server = server;
         this.actionManager = actionManager;
     }
 
@@ -87,8 +83,12 @@ public class ClientHandler implements Runnable {
             if (p.getName().startsWith("Player ")) {
                 p.setName(msg.playerName());
                 log.info("✅ Assigned name '{}' to player", msg.playerName());
-
-                server.broadcastGameState(new GameState(gameManager, gameBoard));
+                var config = ApplicationConfiguration.getInstance();
+                NetworkBroadcaster broadcaster = config.getBroadcaster();
+                if (broadcaster != null) {
+                    broadcaster.broadcast();
+                    log.info("✅ Broadcasted after player name assignment");
+                }
                 break;
             }
         }
@@ -103,7 +103,12 @@ public class ClientHandler implements Runnable {
         if (corp != null) {
             gameManager.assignCorporationAndAdvance(corp);
             log.info("✅ Assigned corporation '{}' to {}", msg.corporationName(), currentPlayer.getName());
-            server.broadcastGameState(new GameState(gameManager, gameBoard));
+            var config = ApplicationConfiguration.getInstance();
+            NetworkBroadcaster broadcaster = config.getBroadcaster();
+            if (broadcaster != null) {
+                broadcaster.broadcast();
+                log.info("✅ Broadcasted after corporation choice");
+            }
         } else {
             log.warn("Corporation not found: {}", msg.corporationName());
         }
@@ -156,8 +161,11 @@ public class ClientHandler implements Runnable {
         }
 
         if (!broadcastHandledExternally) {
-            server.broadcastGameState(new GameState(gameManager, gameBoard));
-            log.info("✅ Applied card choice for {} and broadcasted state", draftPlayer.getName());
+            NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
+            if (broadcaster != null) {
+                broadcaster.broadcast();
+                log.info("✅ Applied card choice for {} and broadcasted state", draftPlayer.getName());
+            }
         } else {
             log.info("✅ Applied card choice for {} (broadcast handled by GameFlowManager)", draftPlayer.getName());
         }

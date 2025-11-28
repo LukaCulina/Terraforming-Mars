@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.ui;
 
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import javafx.animation.PauseTransition;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
@@ -13,21 +14,25 @@ public class ResizeHandler {
     }
 
     public static void attachResizeListeners(AnchorPane pane, HexBoardDrawer drawer) {
-        addWidthHeightListener(pane, drawer);
-    }
+        PauseTransition resizePause = new PauseTransition(Duration.millis(100));
 
-    public static void addWidthHeightListener(AnchorPane pane, HexBoardDrawer drawer) {
+        Runnable triggerRedraw = () -> {
+            resizePause.stop();
+            resizePause.setOnFinished(_ -> drawer.drawBoard());
+            resizePause.playFromStart();
+        };
+
         pane.widthProperty().addListener((_, oldV, newV) -> {
-            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) drawer.drawBoard();
+            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) triggerRedraw.run();
         });
 
         pane.heightProperty().addListener((_, oldV, newV) -> {
-            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) drawer.drawBoard();
+            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) triggerRedraw.run();
         });
     }
 
     public static void attachFontResizeListeners(Pane pane, Runnable callback) {
-        PauseTransition resizePause = new PauseTransition(Duration.millis(150));
+        PauseTransition resizePause = new PauseTransition(Duration.millis(100));
 
         Runnable scheduleCallback = () -> {
             resizePause.stop();
@@ -46,9 +51,13 @@ public class ResizeHandler {
 
         for (FontMapping mapping : mappings) {
             double fontSize = base * mapping.scaleFactor;
-            pane.lookupAll(mapping.styleClass).forEach(node ->
-                    node.setStyle(String.format("-fx-font-size: %.2fpx;", fontSize))
-            );
+            String style = String.format("-fx-font-size: %.2fpx;", fontSize);
+
+            pane.lookupAll(mapping.styleClass).forEach(node -> {
+                if (node instanceof javafx.scene.text.Text || node instanceof Label) {
+                    (node).setStyle(style);
+                }
+            });
         }
     }
 

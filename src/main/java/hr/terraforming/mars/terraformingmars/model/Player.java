@@ -96,23 +96,10 @@ public class Player implements Serializable {
 
         int finalCost = state.getCardCost(card, this.corporation);
 
-       /*boolean requirementsOk = card.getRequirement().test(this, this.board);
-
-        log.info("canPlayCard('{}'): MC={}/{}, reqOk={}, oceans={}, oxygen={}, temp={}",
-                card.getName(), getMC(), finalCost, requirementsOk,
-                board.getOceansPlaced(),
-                board.getOxygenLevel(),
-                board.getTemperature());*/
-
         if (getMC() < finalCost) {
-            log.warn("Cannot play '{}': Insufficient MC (needs {}, has {}).", card.getName(), finalCost, getMC());
             return false;
         }
-        if (!card.getRequirement().test(this, this.board)) {
-            log.warn("Cannot play '{}': Requirements not met.", card.getName());
-            return false;
-        }
-        return true;
+        return card.getRequirement().test(this, this.board);
     }
 
     public void playCard(Card card, GameManager gameManager) {

@@ -50,7 +50,7 @@ public class GameServerThread implements Runnable{
                 Socket clientSocket = serverSocket.accept();
                 log.info("Client connected: {}", clientSocket.getInetAddress());
 
-                ClientHandler handler = new ClientHandler(clientSocket, gameManager,gameBoard, this, actionManager);
+                ClientHandler handler = new ClientHandler(clientSocket, gameManager, actionManager);
                 connectedClients.add(handler);
                 new Thread(handler).start();
 

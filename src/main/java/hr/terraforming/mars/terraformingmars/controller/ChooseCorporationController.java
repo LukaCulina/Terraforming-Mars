@@ -3,7 +3,7 @@ package hr.terraforming.mars.terraformingmars.controller;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
-import hr.terraforming.mars.terraformingmars.network.GameServerThread;
+import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.view.CorporationViewBuilder;
 import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import javafx.fxml.FXML;
@@ -104,9 +104,9 @@ public class ChooseCorporationController {
 
         switch (playerType) {
             case PlayerType.HOST -> {
-                GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
-                if (server != null) {
-                    server.broadcastGameState(new GameState(gameManager, gameManager.getGameBoard()));
+                NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
+                if (broadcaster != null) {
+                    broadcaster.broadcast();
                 }
             }
             case PlayerType.CLIENT -> {
