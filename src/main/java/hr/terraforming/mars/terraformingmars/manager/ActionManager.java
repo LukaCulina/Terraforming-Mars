@@ -3,7 +3,6 @@ package hr.terraforming.mars.terraformingmars.manager;
 import hr.terraforming.mars.terraformingmars.controller.SellPatentsController;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
-import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
@@ -28,6 +27,7 @@ public class ActionManager {
     private GameBoard gameBoard;
     @Getter
     private final GameFlowManager gameFlowManager;
+    @Getter private final MoveManager moveManager;
 
     public ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
                          GameFlowManager gameFlowManager) {
@@ -35,11 +35,16 @@ public class ActionManager {
         this.gameManager = gameManager;
         this.gameBoard = gameBoard;
         this.gameFlowManager = gameFlowManager;
+        this.moveManager = new MoveManager(gameManager, gameBoard, this);
     }
 
     private boolean isLocalPlayerMove(Player player) {
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
         return player.getName().equals(myName);
+    }
+
+    public void processMove(GameMove move) {
+        moveManager.processMove(move);
     }
 
     public void updateState(GameManager newManager, GameBoard newBoard) {
@@ -245,7 +250,7 @@ public class ActionManager {
             GameMove move = new GameMove(
                     gameManager.getCurrentPlayer().getName(),
                     ActionType.SELL_PATENTS,
-                    "Sold " + soldCards.size() + " card(s)",
+                    details,
                     java.time.LocalDateTime.now()
             );
 
@@ -263,80 +268,5 @@ public class ActionManager {
                 0.5, 0.7,
                 (SellPatentsController c) -> c.initData(gameManager.getCurrentPlayer(), onSaleCompleteAction)
         );
-    }
-
-    public void processMove(GameMove move) {
-        String currentPlayerName = gameManager.getCurrentPlayer().getName();
-        String movePlayerName = move.playerName();
-
-        log.info("🔄 processMove() called: Player='{}', Action='{}', CurrentPlayer='{}'",
-                movePlayerName, move.actionType(), currentPlayerName);
-
-        if (move.actionType() != ActionType.OPEN_CHOOSE_CARDS_MODAL) {
-            gameManager.setCurrentPlayerByName(move.playerName());
-        } else {
-            log.info("Ignoring setCurrentPlayerByName for OPEN_CHOOSE_CARDS_MODAL");
-        }
-
-        switch (move.actionType()) {
-            case PLAY_CARD -> {
-                Card card = CardFactory.getCardByName(move.details());
-                if (card != null) {
-                    handlePlayCard(card);
-                } else {
-                    log.warn("Card not found: {}", move.details());
-                }
-            }
-
-            case PLACE_TILE -> handlePlaceTile(move);
-
-            case SELL_PATENTS -> performAction();
-
-            case CLAIM_MILESTONE -> {
-                try {
-                    Milestone milestone = Milestone.valueOf(move.details());
-                    handleClaimMilestone(milestone);
-                } catch (IllegalArgumentException _) {
-                    log.warn("Invalid milestone: {}", move.details());
-                }
-            }
-
-            case USE_STANDARD_PROJECT -> {
-                try {
-                    StandardProject project = StandardProject.valueOf(move.details());
-                    handleStandardProject(project);
-                } catch (IllegalArgumentException _) {
-                    log.warn("Invalid standard project: {}", move.details());
-                }
-            }
-
-            case CONVERT_HEAT -> handleConvertHeat();
-
-            case CONVERT_PLANTS -> handleConvertPlants();
-
-            case PASS_TURN -> handlePassTurn();
-
-            case RESEARCH_COMPLETE -> log.info("🔬 Processing RESEARCH_COMPLETE move");
-
-            default -> log.warn("Unhandled action type: {}", move.actionType());
-        }
-    }
-
-    private void handlePlaceTile(GameMove move) {
-        if (ApplicationConfiguration.getInstance().getPlayerType() != PlayerType.HOST) {
-            return;
-        }
-
-        Player player = gameManager.getPlayerByName(move.playerName());
-        Tile tile = gameBoard.getTileAt(move.row(), move.col());
-
-        if (tile != null && player != null) {
-            switch (move.tileType()) {
-                case OCEAN -> gameBoard.placeOcean(tile, player);
-                case GREENERY -> gameBoard.placeGreenery(tile, player);
-                case CITY -> gameBoard.placeCity(tile, player);
-                default -> log.warn("⚠️ Received PLACE_TILE with unhandled type: {}", move.tileType());
-            }
-        }
     }
 }
