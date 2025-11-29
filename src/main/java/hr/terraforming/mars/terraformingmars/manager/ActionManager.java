@@ -39,6 +39,10 @@ public class ActionManager {
     }
 
     private boolean isLocalPlayerMove(Player player) {
+        if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {
+            return true;
+        }
+
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
         return player.getName().equals(myName);
     }
@@ -233,7 +237,8 @@ public class ActionManager {
         } else {
             currentPlayer.spendPlantsForGreenery();
             log.info("Network: {} converting plants (waiting for PLACE_TILE)", currentPlayer.getName());
-        }    }
+        }
+    }
 
     public void openSellPatentsWindow() {
         Consumer<List<Card>> onSaleCompleteAction = soldCards -> {

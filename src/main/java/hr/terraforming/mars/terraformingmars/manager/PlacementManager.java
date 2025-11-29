@@ -75,7 +75,7 @@ public class PlacementManager {
     public void executePlacement(Tile selectedTile) {
         Player placementOwner = getPlacementOwner();
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
-
+        boolean isLocalGame = ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL;
 
         if (placementOwner == null) {
             log.error("Placement failed: No player defined for tile placement. This should not happen.");
@@ -84,7 +84,7 @@ public class PlacementManager {
             return;
         }
 
-        if (!placementOwner.getName().equals(myName)) {
+        if (!isLocalGame && !placementOwner.getName().equals(myName)) {
             log.error("🚫 Unauthorized placement attempt! Owner: {}, MyName: {}",
                     placementOwner.getName(), myName);
             cancelPlacement();

@@ -31,4 +31,5 @@ module hr.terraforming.mars.terraformingmars {
     opens hr.terraforming.mars.terraformingmars.replay to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars.jndi;
     opens hr.terraforming.mars.terraformingmars.jndi to javafx.fxml;
+    exports hr.terraforming.mars.terraformingmars.chat to java.rmi;
 }

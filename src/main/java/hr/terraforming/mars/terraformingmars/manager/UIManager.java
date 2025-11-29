@@ -52,7 +52,7 @@ public class UIManager {
         }
     }
 
-    public void initializeUIComponents(TerraformingMarsController controller, BorderPane gameBoardPane, VBox playerInterface, GridPane bottomGrid, StackPane temperaturePane) {
+    public void initializeUIComponents(TerraformingMarsController controller, BorderPane gameBoardPane, BorderPane playerInterface, GridPane bottomGrid, StackPane temperaturePane) {
         UIComponentBuilder componentBuilder = new UIComponentBuilder(controller, actionManager, gameManager);
         componentBuilder.createPlayerButtons(playerControls.playerListBar());
         componentBuilder.createMilestoneButtons(actionPanels.milestonesBox());
@@ -77,12 +77,12 @@ public class UIManager {
         actionPanels.milestonesBox().prefWidthProperty().bind(bottomGrid.widthProperty().multiply(0.40));
     }
 
-    public void updateGeneralUI(Player viewedPlayer, boolean isPlacing) {
+    public void updateGeneralUI(Player viewedPlayer, boolean isPlacing, boolean isMyTurn) {
         updateGlobalParameters();
         updateStandardProjectButtonsState(isPlacing);
         updateMilestoneButtonsState(isPlacing);
         updatePlayerButtonsHighlight(viewedPlayer);
-        updateConvertButtonsState(isPlacing);
+        updateConvertButtonsState(isPlacing, isMyTurn);
         drawBoard();
     }
 
@@ -174,10 +174,11 @@ public class UIManager {
         }
     }
 
-    private void updateConvertButtonsState(boolean isPlacing) {
+    private void updateConvertButtonsState(boolean isPlacing, boolean isMyTurn) {
         Player currentPlayer = gameManager.getCurrentPlayer();
         boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
         boolean canPerformAction = gameManager.getActionsTakenThisTurn() < 2;
+        boolean controlsActive = isMyTurn && isActionPhase && canPerformAction && !isPlacing;
 
         Button convertHeatBtn = playerControls.convertHeatButton();
         Button convertPlantsBtn = playerControls.convertPlantsButton();
@@ -185,12 +186,12 @@ public class UIManager {
         if (convertHeatBtn != null) {
             boolean canAffordHeat = currentPlayer.resourceProperty(ResourceType.HEAT).get() >= 8;
             boolean isTemperatureMaxed = gameBoard.getTemperature() >= GameBoard.MAX_TEMPERATURE;
-            convertHeatBtn.setDisable(isPlacing || !isActionPhase || !canPerformAction || !canAffordHeat || isTemperatureMaxed);
+            convertHeatBtn.setDisable(!controlsActive || !canAffordHeat || isTemperatureMaxed);
         }
 
         if (convertPlantsBtn != null) {
             boolean canAffordPlants = currentPlayer.resourceProperty(ResourceType.PLANTS).get() >= currentPlayer.getGreeneryCost();
-            convertPlantsBtn.setDisable(isPlacing || !isActionPhase || !canPerformAction || !canAffordPlants);
+            convertPlantsBtn.setDisable(!controlsActive || !canAffordPlants);
         }
     }
 }

@@ -16,6 +16,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController">
@@ -92,29 +95,52 @@
             </left>
         </BorderPane>
 
-        <VBox fx:id="playerInterface" alignment="CENTER" spacing="15.0" GridPane.columnIndex="1">
-            <GridPane styleClass="generation-phase">
-                <columnConstraints>
-                    <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                </rowConstraints>
-                <Label fx:id="generationLabel" styleClass="generation-phase-label" />
-                <Label fx:id="phaseLabel" styleClass="generation-phase-label" GridPane.columnIndex="1" />
-            </GridPane>
-            <HBox fx:id="playerListBar" alignment="CENTER" prefHeight="40.0" spacing="10.0" />
+        <BorderPane fx:id="playerInterface" GridPane.columnIndex="1">
+            <top>
+                <VBox spacing="15.0" alignment="CENTER">
+                    <padding>
+                        <Insets top="10.0" left="10.0" right="10.0" bottom="5.0"/>
+                    </padding>
+                    <GridPane styleClass="generation-phase">
+                        <columnConstraints>
+                            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES"/>
+                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES"/>
+                        </columnConstraints>
+                        <Label fx:id="generationLabel" styleClass="generation-phase-label" />
+                        <Label fx:id="phaseLabel" styleClass="generation-phase-label" GridPane.columnIndex="1" />
+                    </GridPane>
+                    <HBox fx:id="playerListBar" alignment="CENTER" prefHeight="40.0" spacing="10.0" />
+                </VBox>
+            </top>
 
-            <VBox fx:id="currentPlayerBoardContainer" alignment="TOP_CENTER" VBox.vgrow="ALWAYS" />
+            <center>
+                <ScrollPane fitToWidth="true" styleClass="transparent-scroll-pane">
+                    <VBox fx:id="currentPlayerBoardContainer" alignment="TOP_CENTER" spacing="10.0"/>
+                </ScrollPane>
+            </center>
 
-            <Label fx:id="lastMoveLabel" styleClass="last-move-label"/>
-            <Button fx:id="passTurnButton" prefHeight="40.0" styleClass="pass-button" text="Pass Turn" />
-            <Button fx:id="cancelPlacementButton" styleClass="cancel-button" text="Cancel Placement" visible="false" />
+            <bottom>
+                <VBox spacing="5.0" alignment="CENTER">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="5.0"/>
+                    </padding>
 
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </VBox>
+                    <Label fx:id="lastMoveLabel" styleClass="last-move-label"/>
+
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button fx:id="passTurnButton" prefHeight="30.0" styleClass="pass-button" text="Pass Turn" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        <Button fx:id="cancelPlacementButton" styleClass="cancel-button" text="Cancel" visible="false" />
+                    </HBox>
+
+                    <VBox fx:id="chatBoxContainer" spacing="5.0" prefHeight="120.0">
+                        <ListView fx:id="chatListView" VBox.vgrow="ALWAYS" />
+                        <HBox spacing="5.0" alignment="CENTER">
+                            <TextField fx:id="chatInput" promptText="Type message..." HBox.hgrow="ALWAYS" />
+                            <Button mnemonicParsing="false" onAction="#sendChatMessage" text="Send" />
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </bottom>
+        </BorderPane>
     </GridPane>
 </VBox>

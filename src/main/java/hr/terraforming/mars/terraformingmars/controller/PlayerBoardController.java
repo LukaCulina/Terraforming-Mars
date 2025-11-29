@@ -45,7 +45,6 @@ public class PlayerBoardController {
     @FXML
     public void initialize() {
         ResizeHandler.attachFontResizeListeners(playerBoard, this::updateFontSizes);
-
     }
 
     private void updateFontSizes() {

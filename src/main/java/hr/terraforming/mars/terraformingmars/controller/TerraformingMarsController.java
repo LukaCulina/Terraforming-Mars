@@ -62,8 +62,9 @@ public class TerraformingMarsController {
     @FXML public Label oceansLabel;
     @FXML public VBox milestonesBox;
     @FXML private Button cancelPlacementButton;
-    @FXML public VBox playerInterface;
+    @FXML public BorderPane playerInterface;
     @FXML private Label lastMoveLabel;
+    @FXML private VBox chatBoxContainer;
 
     @Getter private PlacementManager placementManager;
     @Getter private UIManager uiManager;
@@ -208,7 +209,6 @@ public class TerraformingMarsController {
         }
     }
 
-
     private boolean isResearchModalOpen = false;
 
     private void openResearchModalForClient(Player player) {
@@ -320,8 +320,6 @@ public class TerraformingMarsController {
     public void setupGame(GameState gameState) {
         log.info("Setting up game - gameBoard = {}", gameState.gameBoard() != null ? "NOT NULL" : "NULL");
 
-        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-
         this.gameManager = gameState.gameManager();
         this.gameBoard = gameState.gameBoard();
 
@@ -336,35 +334,59 @@ public class TerraformingMarsController {
 
         initializeComponents();
 
-        if (playerType != PlayerType.LOCAL) {
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+        setupChatVisibility(playerType);
+
+        setupClientNetworkListeners(playerType);
+
+        setupInitialPlayerView();
+
+        if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
+            this.gameManager.startGame();
+        }
+
+        finalizeUISetup();
+    }
+
+    private void setupChatVisibility(PlayerType playerType) {
+        if (chatBoxContainer == null) return;
+
+        boolean isOnline = (playerType != PlayerType.LOCAL);
+        if (isOnline) {
             setupChat();
         }
 
+        chatBoxContainer.setVisible(isOnline);
+        chatBoxContainer.setManaged(isOnline);
+    }
+
+    private void setupClientNetworkListeners(PlayerType playerType) {
         if (playerType == PlayerType.CLIENT) {
             setGameControlsEnabled(false);
             log.info("🚫 CLIENT controls disabled on setup (waiting for host turn info)");
+
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
             if (client != null) {
                 client.addGameStateListener(this::updateFromNetwork);
                 log.info("CLIENT registered UI update listener");
             }
         }
+    }
 
+    private void setupInitialPlayerView() {
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        Player playerToShow = gameManager.getCurrentPlayer();
+
         if (myPlayerName != null) {
             Player myPlayer = gameManager.getPlayerByName(myPlayerName);
             if (myPlayer != null) {
-                showPlayerBoard(myPlayer);
+                playerToShow = myPlayer;
             }
-        } else {
-            showPlayerBoard(gameManager.getCurrentPlayer());
         }
+        showPlayerBoard(playerToShow);
+    }
 
-
-        if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
-            this.gameManager.startGame();
-        }
-
+    private void finalizeUISetup() {
         Platform.runLater(() -> gameBoardPane.maxHeightProperty().bind(
                 hexBoardPane.getScene().heightProperty().subtract(28)
         ));
@@ -409,8 +431,14 @@ public class TerraformingMarsController {
     public void updateAllUI() {
         if (uiManager == null || gameManager == null || viewedPlayer == null) return;
 
+        String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        boolean isMyTurn = gameManager.getCurrentPlayer().getName().equals(myName);
+        if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {
+            isMyTurn = true;
+        }
+
         boolean isPlacing = (placementManager != null && placementManager.isPlacementMode());
-        uiManager.updateGeneralUI(viewedPlayer, isPlacing);
+        uiManager.updateGeneralUI(viewedPlayer, isPlacing, isMyTurn);
 
         if (currentPlayerBoardController != null) {
             currentPlayerBoardController.setPlayer(viewedPlayer, actionManager);
