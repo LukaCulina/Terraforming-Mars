@@ -109,13 +109,13 @@
 }
 
 .card-name-label {
-    -fx-font-size: 0.9em;
+    -fx-font-size: 1em;
     -fx-font-weight: bold;
     -fx-text-fill: #EAEAEA;
 }
 
 .card-description-label {
-    -fx-font-size: 0.75em;
+    -fx-font-size: 0.9em;
     -fx-text-fill: #EAEAEA;
     -fx-text-alignment: center;
 }

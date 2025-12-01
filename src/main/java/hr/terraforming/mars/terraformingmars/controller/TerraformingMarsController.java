@@ -1,11 +1,8 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
-import hr.terraforming.mars.terraformingmars.chat.ChatService;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
-import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
-import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
@@ -25,14 +22,10 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Window;
-import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -71,13 +64,13 @@ public class TerraformingMarsController {
     @Getter private ActionManager actionManager;
     @Getter public GameManager gameManager;
     @Setter @Getter private GameBoard gameBoard;
+    private ChatManager chatManager;
     private PlayerBoardController currentPlayerBoardController;
     @Getter private PlacementCoordinator placementCoordinator;
     @Setter private Player viewedPlayer = null;
     private final GameStateService gameStateService = new GameStateService();
     private ReplayManager replayManager;
     private Timeline moveHistoryTimeline;
-    private ChatService chatService;
     @FXML private ListView<String> chatListView;
     @FXML private TextField chatInput;
     private final AtomicInteger localStateCallCount = new AtomicInteger(0);
@@ -270,51 +263,11 @@ public class TerraformingMarsController {
         }
     }
 
-    private void setupChat() {
-        try {
-            String hostname = ConfigurationReader.getStringValue(ConfigurationKey.HOSTNAME);
-            int rmiPort = ConfigurationReader.getIntegerValue(ConfigurationKey.RMI_PORT);
-
-            Registry registry = LocateRegistry.getRegistry(hostname, rmiPort);
-            chatService = (ChatService) registry.lookup(ChatService.REMOTE_OBJECT_NAME);
-
-            log.info("Connected to chat service");
-
-            startChatPolling();
-
-        } catch (Exception e) {
-            log.error("Failed to connect to chat", e);
-        }
-    }
-
     @FXML
     private void sendChatMessage() {
-        try {
-            String message = chatInput.getText();
-            if (!message.isEmpty()) {
-                String playerName = gameManager.getCurrentPlayer().getName();
-                chatService.sendChatMessage(playerName + ": " + message);
-                chatInput.clear();
-            }
-        } catch (RemoteException e) {
-            log.error("Failed to send chat message", e);
+        if (chatManager != null) {
+            chatManager.sendMessage(gameManager);
         }
-    }
-
-    private void startChatPolling() {
-        Timeline chatPoll = new Timeline(new KeyFrame(Duration.seconds(1), _ -> {
-            try {
-                List<String> messages = chatService.returnChatHistory();
-                Platform.runLater(() -> {
-                    chatListView.getItems().clear();
-                    chatListView.getItems().addAll(messages);
-                });
-            } catch (RemoteException e) {
-                log.error("Chat polling error", e);
-            }
-        }));
-        chatPoll.setCycleCount(Animation.INDEFINITE);
-        chatPoll.play();
     }
 
     public void setupGame(GameState gameState) {
@@ -335,7 +288,9 @@ public class TerraformingMarsController {
         initializeComponents();
 
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-        setupChatVisibility(playerType);
+        if (chatManager != null) {
+            chatManager.setupChatSystem(playerType);
+        }
 
         setupClientNetworkListeners(playerType);
 
@@ -346,18 +301,6 @@ public class TerraformingMarsController {
         }
 
         finalizeUISetup();
-    }
-
-    private void setupChatVisibility(PlayerType playerType) {
-        if (chatBoxContainer == null) return;
-
-        boolean isOnline = (playerType != PlayerType.LOCAL);
-        if (isOnline) {
-            setupChat();
-        }
-
-        chatBoxContainer.setVisible(isOnline);
-        chatBoxContainer.setManaged(isOnline);
     }
 
     private void setupClientNetworkListeners(PlayerType playerType) {
@@ -410,7 +353,7 @@ public class TerraformingMarsController {
         }
         this.placementManager = new PlacementManager(this, this.gameManager, this.gameBoard, this.actionManager);
         this.placementCoordinator = new PlacementCoordinator(this.placementManager);
-
+        this.chatManager = new ChatManager(chatListView, chatInput, chatBoxContainer);
         cancelPlacementButton.setOnAction(_ -> placementManager.cancelPlacement());
 
         this.uiManager = UIInitializer.initUI(this, gameBoard, gameManager, actionManager);

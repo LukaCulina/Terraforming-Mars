@@ -50,7 +50,7 @@ public final class CardViewBuilder {
 
         if (cardWidthProperty != null) {
             cardBox.prefWidthProperty().bind(cardWidthProperty);
-            cardBox.prefHeightProperty().bind(cardBox.prefWidthProperty().multiply(1.4));
+            cardBox.prefHeightProperty().bind(cardBox.prefWidthProperty().multiply(1.3));
 
             cardBox.styleProperty().bind(Bindings.createStringBinding(() -> {
                 double w = cardBox.getPrefWidth();
