@@ -7,7 +7,6 @@ import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
-import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -104,10 +103,9 @@ public class PlayerBoardController {
 
         List<Card> cardsToShow = isShowingHand ? player.getHand() : player.getPlayed();
         final String disabledClass = "card-view-disabled";
-        ReadOnlyDoubleProperty widthProp = cardsDisplayArea.widthProperty();
-
+        var cardWidthBind = CardViewBuilder.createWidthBinding(cardsDisplayArea.widthProperty(), 4);
         cardsToShow.forEach(card -> {
-            VBox cardNode = CardViewBuilder.createCardNode(card, widthProp);
+            VBox cardNode = CardViewBuilder.createCardNode(card, cardWidthBind);
 
             if (isShowingHand) {
                 boolean canPlay = player.canPlayCard(card);

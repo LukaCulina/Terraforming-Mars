@@ -3,7 +3,9 @@ package hr.terraforming.mars.terraformingmars.view;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -19,51 +21,41 @@ public final class CardViewBuilder {
         throw new IllegalStateException("Utility class");
     }
 
-    public static VBox createCardNode(Card card, ReadOnlyDoubleProperty parentWidthProperty) {
+    private static final double GAP = 5.0;
+    private static final double SCROLLBAR_OFFSET = 20.0;
+    private static final double MIN_CARD_WIDTH = 120.0;
+
+    public static DoubleBinding createWidthBinding(ReadOnlyDoubleProperty containerWidthProperty, int minColumns) {
+        return Bindings.createDoubleBinding(() -> {
+            double width = containerWidthProperty.get() - SCROLLBAR_OFFSET;
+
+            if (width < MIN_CARD_WIDTH) return 180.0;
+
+            int cols = minColumns;
+            if (width > 1600) cols = minColumns + 3;
+            else if (width > 1200) cols = minColumns + 2;
+            else if (width > 800) cols = minColumns + 1;
+
+            double cardW = (width - (cols - 1) * GAP) / cols;
+            return Math.floor(Math.max(cardW, MIN_CARD_WIDTH));
+
+        }, containerWidthProperty);
+    }
+
+
+    public static VBox createCardNode(Card card, ObservableValue<? extends Number> cardWidthProperty) {
         VBox cardBox = new VBox(5);
         cardBox.setAlignment(Pos.TOP_CENTER);
         cardBox.getStyleClass().add("card-view");
 
-        if (parentWidthProperty != null) {
-            final double MIN_CARD_WIDTH = 120.0;
-            final double GAP = 5.0;
-            final double SCROLLBAR_OFFSET = 20.0;
-
-            var dynamicWidthBinding = Bindings.createDoubleBinding(() -> {
-
-                double containerWidth = parentWidthProperty.get() - SCROLLBAR_OFFSET;
-
-                int targetColumns;
-                if (containerWidth > 1600) targetColumns = 8;
-                else if (containerWidth > 1200) targetColumns = 7;
-                else if (containerWidth > 800) targetColumns = 5;
-                else targetColumns = 3;
-
-                double exactWidth = (containerWidth - (targetColumns - 1) * GAP) / targetColumns;
-
-                if (exactWidth < 120.0) exactWidth = 120.0;
-
-                return Math.floor(exactWidth) - 1.0;
-
-            }, parentWidthProperty);
-
-            cardBox.prefWidthProperty().bind(dynamicWidthBinding);
-
+        if (cardWidthProperty != null) {
+            cardBox.prefWidthProperty().bind(cardWidthProperty);
             cardBox.prefHeightProperty().bind(cardBox.prefWidthProperty().multiply(1.4));
 
-            cardBox.setMinWidth(MIN_CARD_WIDTH);
-            cardBox.setMinHeight(MIN_CARD_WIDTH * 1.3);
-
             cardBox.styleProperty().bind(Bindings.createStringBinding(() -> {
-                double cardWidth = cardBox.getPrefWidth();
-
-                double idealFontSize = cardWidth * 0.08;
-
-                double actualFontSize = Math.clamp(idealFontSize, 11.0, 24.0);
-
-                return String.format("-fx-font-size: %.1fpx;", actualFontSize);
+                double w = cardBox.getPrefWidth();
+                return String.format("-fx-font-size: %.1fpx;", Math.clamp(w * 0.08, 11.0, 24.0));
             }, cardBox.prefWidthProperty()));
-
         } else {
             cardBox.setPrefSize(180, 220);
         }
