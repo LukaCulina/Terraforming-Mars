@@ -29,16 +29,17 @@ public class GameClientThread implements Runnable {
 
     @Override
     public void run() {
-        ObjectInputStream in = null;
-        try {
-            socket = new Socket(hostname, port);
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
+        try (Socket clientSocket = new Socket(hostname, port);
+             ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+             ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream())) {
+
+            this.socket = clientSocket;
+            this.out = outputStream;
 
             log.info("Connected to server at {}:{}", hostname, port);
 
             while (running) {
-                GameState state = (GameState) in.readObject();
+                GameState state = (GameState) inputStream.readObject();
                 log.info("Received game state update");
 
                 Platform.runLater(() -> {
@@ -55,14 +56,6 @@ public class GameClientThread implements Runnable {
                 log.error("Client error", e);
             } else {
                 log.info("Client disconnected");
-            }
-        } finally {
-            try {
-                if (in != null) in.close();
-                if (out != null) out.close();
-                if (socket != null) socket.close();
-            } catch (IOException e) {
-                log.error("Error closing client resources", e);
             }
         }
     }

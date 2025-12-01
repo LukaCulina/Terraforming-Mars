@@ -35,16 +35,17 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        try {
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 
+            this.out = outputStream;
+            this.in = inputStream;
             ready = true;
             readyFuture.complete(null);
             log.info("✅ ClientHandler ready to send/receive");
 
             while (running && !socket.isClosed()) {
-                Object obj = in.readObject();
+                Object obj = inputStream.readObject();
                 handleMessage(obj);
             }
 
@@ -56,9 +57,8 @@ public class ClientHandler implements Runnable {
             } else {
                 log.info("Client disconnected gracefully");
             }
-        } finally {
-            cleanup();
         }
+        cleanup();
     }
 
     public void setActionManager(ActionManager actionManager) {

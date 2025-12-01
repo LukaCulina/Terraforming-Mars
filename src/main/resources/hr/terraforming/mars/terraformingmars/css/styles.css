@@ -371,7 +371,7 @@
     -fx-border-color: #4B5563;
     -fx-border-width: 1px;
     -fx-padding: 10px;
-    -fx-min-height: 300px;
+    -fx-min-height: 320px;
     -fx-effect: innershadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 2);
 }
 
