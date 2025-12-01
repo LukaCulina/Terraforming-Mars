@@ -43,7 +43,7 @@ public class SellPatentsController {
     private void populateCards() {
         cardsForSalePane.getChildren().clear();
         for (Card card : player.getHand()) {
-            VBox cardNode = CardViewBuilder.createCardNode(card);
+            VBox cardNode = CardViewBuilder.createCardNode(card, cardsForSalePane.widthProperty());
             cardNode.setOnMouseClicked(_ -> toggleCardSelection(card, cardNode));
             cardsForSalePane.getChildren().add(cardNode);
         }
@@ -104,7 +104,7 @@ public class SellPatentsController {
         cardsForSalePane.getChildren().clear();
 
         for (Card card : handBeforeSale) {
-            VBox cardNode = CardViewBuilder.createCardNode(card);
+            VBox cardNode = CardViewBuilder.createCardNode(card, cardsForSalePane.widthProperty());
             cardNode.setMouseTransparent(true);
 
             if (soldCardNames.contains(card.getName())) {

@@ -86,7 +86,7 @@
         </HBox>
 
         <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="transparent-scroll-pane">
-            <TilePane fx:id="cardsDisplayArea" hgap="5" vgap="5" styleClass="cards-tile-pane" />
+            <TilePane fx:id="cardsDisplayArea" hgap="10" vgap="5" styleClass="cards-tile-pane" />
         </ScrollPane>
     </VBox>
 </VBox>

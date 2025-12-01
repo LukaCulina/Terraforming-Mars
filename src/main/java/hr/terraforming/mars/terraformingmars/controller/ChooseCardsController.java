@@ -82,7 +82,7 @@ public class ChooseCardsController {
 
         cardsTile.getChildren().clear();
         for (Card card : offer) {
-            VBox cardNode = CardViewBuilder.createCardNode(card);
+            VBox cardNode = CardViewBuilder.createCardNode(card, cardsTile.widthProperty());
             cardNode.setOnMouseClicked(_ -> toggleSelection(card, cardNode));
             cardsTile.getChildren().add(cardNode);
         }
@@ -166,7 +166,7 @@ public class ChooseCardsController {
         for (String cardName : boughtCardNames) {
             Card card = CardFactory.getCardByName(cardName);
             if (card != null) {
-                VBox cardNode = CardViewBuilder.createCardNode(card);
+                VBox cardNode = CardViewBuilder.createCardNode(card, cardsTile.widthProperty());
                 cardNode.setMouseTransparent(true);
                 cardNode.getStyleClass().add(SELECTED_CARD_STYLE);
                 cardsTile.getChildren().add(cardNode);

@@ -83,7 +83,7 @@
     "cost": 13,
     "tags": ["BUILDING"],
     "description": "Requirement: Energy production >= 1. Effect: Decrease energy production by 1, increase steel production by 2.",
-    "victoryPoints": 1,
+    "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": -1 },
       { "type": "increaseProduction", "resource": "STEEL", "amount": 2 }
@@ -189,7 +189,7 @@
     "cost": 12,
     "tags": ["BUILDING", "ENERGY"],
     "description": "Requirement: At least 4 oceans placed. Effect: Increase energy production by 2.",
-    "victoryPoints": 1,
+    "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": 2 }
     ],

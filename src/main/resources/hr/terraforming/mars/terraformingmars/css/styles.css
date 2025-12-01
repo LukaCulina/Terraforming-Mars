@@ -100,7 +100,7 @@
 
 .card-cost-label {
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-font-size: 1.2em;
     -fx-text-fill: #1a2026;
     -fx-background-color: #FFA500;
     -fx-padding: 4 10;
@@ -109,13 +109,13 @@
 }
 
 .card-name-label {
-    -fx-font-size: 16px;
+    -fx-font-size: 0.9em;
     -fx-font-weight: bold;
     -fx-text-fill: #EAEAEA;
 }
 
 .card-description-label {
-    -fx-font-size: 12px;
+    -fx-font-size: 0.75em;
     -fx-text-fill: #EAEAEA;
     -fx-text-alignment: center;
 }
@@ -391,7 +391,7 @@
 }
 
 .vp-label {
-    -fx-font-size: 20px;
+    -fx-font-size: 1.5em;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-background-color: #8B4513;
@@ -583,10 +583,6 @@
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
-}
-
-.text-input:focused {
-    -fx-border-color: #4CAF50;
 }
 
 .input-label {
