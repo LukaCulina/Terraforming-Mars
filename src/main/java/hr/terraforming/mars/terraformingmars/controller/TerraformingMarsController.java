@@ -266,7 +266,7 @@ public class TerraformingMarsController {
     @FXML
     private void sendChatMessage() {
         if (chatManager != null) {
-            chatManager.sendMessage(gameManager);
+            chatManager.sendMessage();
         }
     }
 

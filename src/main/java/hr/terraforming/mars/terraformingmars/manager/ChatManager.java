@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.chat.ChatService;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
-import hr.terraforming.mars.terraformingmars.model.GameManager;
+import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -83,14 +83,19 @@ public class ChatManager {
         chatPoll.play();
     }
 
-    public void sendMessage(GameManager gameManager) {
+    public void sendMessage() {
         if (chatService == null || chatInput == null) return;
 
         try {
             String message = chatInput.getText();
             if (!message.isEmpty()) {
-                String playerName = gameManager.getCurrentPlayer().getName();
-                chatService.sendChatMessage(playerName + ": " + message);
+                String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
+                if (myName == null) {
+                    myName = "Unknown";
+                }
+
+                chatService.sendChatMessage(myName + ": " + message);
                 chatInput.clear();
             }
         } catch (RemoteException e) {
