@@ -82,7 +82,7 @@ public class GameMoveUtils {
     }
 
     public static Timeline createLastMoveTimeline(Label lastMoveLabel) {
-        Timeline theLastMoveTimeline = new Timeline(new KeyFrame(Duration.seconds(3), _ -> {
+        Timeline theLastMoveTimeline = new Timeline(new KeyFrame(Duration.seconds(2), _ -> {
             GetLastGameMoveThread thread = new GetLastGameMoveThread(lastMoveLabel);
             Thread t = new Thread(thread);
             t.setDaemon(true);

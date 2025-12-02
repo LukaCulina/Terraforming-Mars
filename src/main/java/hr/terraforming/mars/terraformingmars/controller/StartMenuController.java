@@ -31,12 +31,7 @@ public class StartMenuController {
             TerraformingMarsController controller = (TerraformingMarsController) result.controller();
             Scene mainGameScene = ScreenLoader.createScene(result.root());
 
-            controller.gameManager = loadedState.gameManager();
-            controller.setGameBoard(loadedState.gameBoard());
-            controller.getGameManager().relink(controller.getGameBoard());
-            controller.initializeComponents();
-            controller.setViewedPlayer(controller.getGameManager().getCurrentPlayer());
-            controller.updateAllUI();
+            controller.getSetupCoordinator().setupLoadedGame(loadedState);
 
             GameScreens.getMainStage().setScene(mainGameScene);
             GameScreens.getMainStage().setTitle("Terraforming Mars - Loaded Game");

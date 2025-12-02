@@ -9,9 +9,12 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.util.Duration;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 public class ReplayManager {
 
     private final TerraformingMarsController controller;
@@ -40,6 +43,9 @@ public class ReplayManager {
 
 
     public void startReplay() {
+        controller.pauseMoveHistory();
+        log.info("🎬 Starting replay - move history polling PAUSED");
+
         if (replayTimeline != null) {
             replayTimeline.stop();
         }
