@@ -81,9 +81,11 @@ public class ChooseCardsController {
         remainingMCLabel.setVisible(true);
 
         cardsTile.getChildren().clear();
-        var cardWidthBind = CardViewBuilder.createWidthBinding(cardsTile.widthProperty(), 5);
+
+        CardViewBuilder.setupCardTilePane(cardsTile, 3, 6); // Min 3, Max 6
+
         for (Card card : offer) {
-            VBox cardNode = CardViewBuilder.createCardNode(card, cardWidthBind);
+            VBox cardNode = CardViewBuilder.createCardNode(card);
             cardNode.setOnMouseClicked(_ -> toggleSelection(card, cardNode));
             cardsTile.getChildren().add(cardNode);
         }
@@ -164,11 +166,12 @@ public class ChooseCardsController {
         remainingMCLabel.setText("");
 
         cardsTile.getChildren().clear();
-        var cardWidthBind = CardViewBuilder.createWidthBinding(cardsTile.widthProperty(), 5);
+        CardViewBuilder.setupCardTilePane(cardsTile, 3, 6);
+
         for (String cardName : boughtCardNames) {
             Card card = CardFactory.getCardByName(cardName);
             if (card != null) {
-                VBox cardNode = CardViewBuilder.createCardNode(card, cardWidthBind);
+                VBox cardNode = CardViewBuilder.createCardNode(card);
                 cardNode.setMouseTransparent(true);
                 cardNode.getStyleClass().add(SELECTED_CARD_STYLE);
                 cardsTile.getChildren().add(cardNode);

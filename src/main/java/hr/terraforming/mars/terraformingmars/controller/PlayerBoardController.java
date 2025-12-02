@@ -103,9 +103,9 @@ public class PlayerBoardController {
 
         List<Card> cardsToShow = isShowingHand ? player.getHand() : player.getPlayed();
         final String disabledClass = "card-view-disabled";
-        var cardWidthBind = CardViewBuilder.createWidthBinding(cardsDisplayArea.widthProperty(), 4);
+        CardViewBuilder.setupCardTilePane(cardsDisplayArea, 3, 10);
         cardsToShow.forEach(card -> {
-            VBox cardNode = CardViewBuilder.createCardNode(card, cardWidthBind);
+            VBox cardNode = CardViewBuilder.createCardNode(card);
 
             if (isShowingHand) {
                 boolean canPlay = player.canPlayCard(card);

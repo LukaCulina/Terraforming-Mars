@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
-import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.coordinator.ClientResearchCoordinator;
+import hr.terraforming.mars.terraformingmars.coordinator.PlacementCoordinator;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
@@ -26,10 +27,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -67,6 +66,7 @@ public class TerraformingMarsController {
     private ChatManager chatManager;
     private PlayerBoardController currentPlayerBoardController;
     @Getter private PlacementCoordinator placementCoordinator;
+    private ClientResearchCoordinator clientResearchCoordinator;
     @Setter private Player viewedPlayer = null;
     private final GameStateService gameStateService = new GameStateService();
     private ReplayManager replayManager;
@@ -100,7 +100,10 @@ public class TerraformingMarsController {
         updateLocalState(state);
         updateViewedPlayer();
         updateGameControls(state);
-        handleResearchPhase();
+
+        if (clientResearchCoordinator != null) {
+            clientResearchCoordinator.checkAndHandle();
+        }
 
         updateAllUI();
         updatePlayerHighlight(gameManager.getCurrentPlayer());
@@ -174,78 +177,6 @@ public class TerraformingMarsController {
             log.debug("🚫 Controls DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
         }
     }
-
-    private void handleResearchPhase() {
-        if (gameManager.getCurrentPhase() != GamePhase.RESEARCH) {
-            isResearchModalOpen = false;
-            return;
-        }
-
-        Player currentResearchPlayer = gameManager.getCurrentPlayerForDraft();
-        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-
-        log.debug("🔍 Research Check: current={}, me={}",
-                (currentResearchPlayer != null ? currentResearchPlayer.getName() : "NULL"),
-                myPlayerName);
-
-        if (playerType == PlayerType.CLIENT
-                && currentResearchPlayer != null
-                && Objects.equals(myPlayerName, currentResearchPlayer.getName())) {
-
-            log.info("Opening research modal for player '{}'", currentResearchPlayer.getName());
-
-            if (!isResearchModalOpen) {
-                isResearchModalOpen = true;
-                Platform.runLater(() -> openResearchModalForClient(currentResearchPlayer));
-            }
-        }
-    }
-
-    private boolean isResearchModalOpen = false;
-
-    private void openResearchModalForClient(Player player) {
-        List<Card> offer = gameManager.drawCards(4);
-
-        log.info("🎴 CLIENT: Opening research modal for {}", player.getName());
-
-        ScreenLoader.showAsModal(
-                getSceneWindow(),
-                "ChooseCards.fxml",
-                "Research Phase - " + player.getName(),
-                0.7, 0.8,
-                (ChooseCardsController c) ->
-                        c.setup(
-                        player,
-                        offer,
-                        boughtCards -> finishResearchForClient(player, boughtCards),
-                        gameManager,
-                        true
-                )
-        );
-    }
-
-    private void finishResearchForClient(Player player, List<Card> boughtCards) {
-        int cost = boughtCards.size() * 3;
-        if (player.spendMC(cost)) {
-            player.getHand().addAll(boughtCards);
-        }
-
-        if (!boughtCards.isEmpty()) {
-            String details = boughtCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
-            GameMove move = new GameMove(
-                    player.getName(),
-                    ActionType.OPEN_CHOOSE_CARDS_MODAL,
-                    details,
-                    LocalDateTime.now()
-            );
-            actionManager.recordAndSaveMove(move);
-        }
-
-        isResearchModalOpen = false;
-        log.info("✅ CLIENT: Research complete for {}", player.getName());
-    }
-
 
     public void onLocalPlayerMove(GameMove move) {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
@@ -354,6 +285,7 @@ public class TerraformingMarsController {
         this.placementManager = new PlacementManager(this, this.gameManager, this.gameBoard, this.actionManager);
         this.placementCoordinator = new PlacementCoordinator(this.placementManager);
         this.chatManager = new ChatManager(chatListView, chatInput, chatBoxContainer);
+        this.clientResearchCoordinator = new ClientResearchCoordinator(this);
         cancelPlacementButton.setOnAction(_ -> placementManager.cancelPlacement());
 
         this.uiManager = UIInitializer.initUI(this, gameBoard, gameManager, actionManager);
