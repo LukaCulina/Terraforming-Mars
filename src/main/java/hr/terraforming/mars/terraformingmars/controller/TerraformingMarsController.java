@@ -1,12 +1,10 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.coordinator.ClientResearchCoordinator;
+import hr.terraforming.mars.terraformingmars.coordinator.NetworkCoordinator;
 import hr.terraforming.mars.terraformingmars.coordinator.PlacementCoordinator;
-import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
-import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
-import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.ui.PlayerBoardLoader;
@@ -29,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class TerraformingMarsController {
@@ -61,7 +58,7 @@ public class TerraformingMarsController {
     @Getter private PlacementManager placementManager;
     @Getter private UIManager uiManager;
     @Getter private ActionManager actionManager;
-    @Getter public GameManager gameManager;
+    @Setter @Getter public GameManager gameManager;
     @Setter @Getter private GameBoard gameBoard;
     private ChatManager chatManager;
     private PlayerBoardController currentPlayerBoardController;
@@ -73,132 +70,12 @@ public class TerraformingMarsController {
     private Timeline moveHistoryTimeline;
     @FXML private ListView<String> chatListView;
     @FXML private TextField chatInput;
-    private final AtomicInteger localStateCallCount = new AtomicInteger(0);
+    @Getter private NetworkCoordinator networkCoordinator;
 
     @FXML
     private void initialize() {
         currentPlayerBoardController = PlayerBoardLoader.loadPlayerBoard(currentPlayerBoardContainer);
-    }
-
-    private void updatePlayerHighlight(Player currentPlayer) {
-        for (Node node : playerListBar.getChildren()) {
-            node.getStyleClass().remove("current-player-highlight");
-
-            Object userData = node.getUserData();
-            if (userData != null && userData.equals(currentPlayer.getName())) {
-                node.getStyleClass().add("current-player-highlight");
-            }
-        }
-    }
-
-    public void updateFromNetwork(GameState state) {
-        if (!validateGameState(state)) {
-            return;
-        }
-
-        logNetworkUpdate(state);
-        updateLocalState(state);
-        updateViewedPlayer();
-        updateGameControls(state);
-
-        if (clientResearchCoordinator != null) {
-            clientResearchCoordinator.checkAndHandle();
-        }
-
-        updateAllUI();
-        updatePlayerHighlight(gameManager.getCurrentPlayer());
-    }
-
-    private boolean validateGameState(GameState state) {
-        if (state == null) {
-            log.error("Received null GameState!");
-            return false;
-        }
-        if (state.gameManager() == null || state.gameBoard() == null) {
-            log.error("Critical error: Received incomplete GameState! Manager={}, Board={}",
-                    state.gameManager(), state.gameBoard());
-            return false;
-        }
-        return true;
-    }
-
-    private void logNetworkUpdate(GameState state) {
-        log.debug("🔄 NetUpdate: Gen={}, Phase={}, CurrentTurn={}, MyName={}",
-                state.gameManager().getGeneration(),
-                state.gameManager().getCurrentPhase(),
-                state.gameManager().getCurrentPlayer().getName(),
-                ApplicationConfiguration.getInstance().getMyPlayerName());
-    }
-
-    private void updateLocalState(GameState state) {
-        int callId = localStateCallCount.incrementAndGet();
-        log.info("🎯 updateLocalState() CALL #{} from {}", callId,
-                Thread.currentThread().getStackTrace()[2]);
-
-        this.gameManager = state.gameManager();
-        this.gameBoard = state.gameBoard();
-
-        gameManager.relink(gameBoard);
-
-        if (uiManager != null) {
-            uiManager.updateGameState(this.gameManager, this.gameBoard);
-        }
-        if (actionManager != null) {
-            actionManager.updateState(this.gameManager, this.gameBoard);
-        }
-    }
-
-    private void updateViewedPlayer() {
-        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
-
-        if (myPlayerName != null) {
-            Player myPlayer = gameManager.getPlayerByName(myPlayerName);
-            if (myPlayer != null) {
-                this.viewedPlayer = myPlayer;
-                return;
-            }
-        }
-        this.viewedPlayer = gameManager.getCurrentPlayer();
-    }
-
-    private void updateGameControls(GameState state) {
-        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        String currentPlayerName = state.gameManager().getCurrentPlayer().getName();
-
-        boolean isMyTurn = currentPlayerName.equals(myPlayerName);
-        boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
-
-        if (isMyTurn && isActionPhase) {
-            setGameControlsEnabled(true);
-            log.debug("✅ Controls ENABLED for {}", myPlayerName);
-            Platform.runLater(this::updateAllUI);
-        } else {
-            setGameControlsEnabled(false);
-            log.debug("🚫 Controls DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
-        }
-    }
-
-    public void onLocalPlayerMove(GameMove move) {
-        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-
-        if (playerType == PlayerType.HOST) {
-            NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
-            if (broadcaster != null) {
-                broadcaster.broadcast();
-            }
-        } else if (playerType == PlayerType.CLIENT) {
-            GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
-            if (client != null) {
-                client.sendMove(move);
-            }
-        }
-    }
-
-    @FXML
-    private void sendChatMessage() {
-        if (chatManager != null) {
-            chatManager.sendMessage();
-        }
+        this.networkCoordinator = new NetworkCoordinator(this);
     }
 
     public void setupGame(GameState gameState) {
@@ -223,8 +100,7 @@ public class TerraformingMarsController {
             chatManager.setupChatSystem(playerType);
         }
 
-        setupClientNetworkListeners(playerType);
-
+        networkCoordinator.setupClientListeners();
         setupInitialPlayerView();
 
         if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
@@ -232,41 +108,6 @@ public class TerraformingMarsController {
         }
 
         finalizeUISetup();
-    }
-
-    private void setupClientNetworkListeners(PlayerType playerType) {
-        if (playerType == PlayerType.CLIENT) {
-            setGameControlsEnabled(false);
-            log.info("🚫 CLIENT controls disabled on setup (waiting for host turn info)");
-
-            GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
-            if (client != null) {
-                client.addGameStateListener(this::updateFromNetwork);
-                log.info("CLIENT registered UI update listener");
-            }
-        }
-    }
-
-    private void setupInitialPlayerView() {
-        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        Player playerToShow = gameManager.getCurrentPlayer();
-
-        if (myPlayerName != null) {
-            Player myPlayer = gameManager.getPlayerByName(myPlayerName);
-            if (myPlayer != null) {
-                playerToShow = myPlayer;
-            }
-        }
-        showPlayerBoard(playerToShow);
-    }
-
-    private void finalizeUISetup() {
-        Platform.runLater(() -> gameBoardPane.maxHeightProperty().bind(
-                hexBoardPane.getScene().heightProperty().subtract(28)
-        ));
-        Platform.runLater(this::updateAllUI);
-        startMoveHistory();
-        updatePlayerHighlight(gameManager.getCurrentPlayer());
     }
 
     public void initializeComponents() {
@@ -296,6 +137,40 @@ public class TerraformingMarsController {
         this.replayManager = new ReplayManager(this);
     }
 
+    private void setupInitialPlayerView() {
+        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        Player playerToShow = gameManager.getCurrentPlayer();
+
+        if (myPlayerName != null) {
+            Player myPlayer = gameManager.getPlayerByName(myPlayerName);
+            if (myPlayer != null) {
+                playerToShow = myPlayer;
+            }
+        }
+        showPlayerBoard(playerToShow);
+    }
+
+    private void finalizeUISetup() {
+        Platform.runLater(() -> gameBoardPane.maxHeightProperty().bind(
+                hexBoardPane.getScene().heightProperty().subtract(28)
+        ));
+        Platform.runLater(this::updateAllUI);
+        startMoveHistory();
+        updatePlayerHighlight(gameManager.getCurrentPlayer());
+    }
+
+    public void updateFromNetwork(GameState state) {
+        networkCoordinator.handleNetworkUpdate(state);
+
+        if (clientResearchCoordinator != null) {
+            clientResearchCoordinator.checkAndHandle();
+        }
+    }
+
+    public void onLocalPlayerMove(GameMove move) {
+        networkCoordinator.broadcastMove(move);
+    }
+
     public void startMoveHistory() {
         if (moveHistoryTimeline == null) {
             moveHistoryTimeline = GameMoveUtils.createLastMoveTimeline(lastMoveLabel);
@@ -322,17 +197,21 @@ public class TerraformingMarsController {
         uiManager.getHexBoardDrawer().drawBoard();
     }
 
-    public void showPlayerBoard(Player player) {
-        this.viewedPlayer = player;
-        updateAllUI();
+    public void updatePlayerHighlightForCurrentPlayer() {
+        if (gameManager != null && gameManager.getCurrentPlayer() != null) {
+            updatePlayerHighlight(gameManager.getCurrentPlayer());
+        }
     }
 
-    public Window getSceneWindow() {
-        return hexBoardPane.getScene().getWindow();
-    }
+    private void updatePlayerHighlight(Player currentPlayer) {
+        for (Node node : playerListBar.getChildren()) {
+            node.getStyleClass().remove("current-player-highlight");
 
-    public void drawBoard() {
-        updateAllUI();
+            Object userData = node.getUserData();
+            if (userData != null && userData.equals(currentPlayer.getName())) {
+                node.getStyleClass().add("current-player-highlight");
+            }
+        }
     }
 
     public void setGameControlsEnabled(boolean isEnabled) {
@@ -346,10 +225,35 @@ public class TerraformingMarsController {
         }
     }
 
+    public void showPlayerBoard(Player player) {
+        this.viewedPlayer = player;
+        updateAllUI();
+    }
+
+    public Window getSceneWindow() {
+        return hexBoardPane.getScene().getWindow();
+    }
+
+    public void drawBoard() {
+        updateAllUI();
+    }
+
     public void setCancelButtonVisible(boolean visible) {
         if (cancelPlacementButton != null) {
             cancelPlacementButton.setVisible(visible);
         }
+    }
+
+    @FXML
+    private void sendChatMessage() {
+        if (chatManager != null) {
+            chatManager.sendMessage();
+        }
+    }
+
+    @FXML
+    private void replayGame() {
+        replayManager.startReplay();
     }
 
     public void startNewGame() {
@@ -375,11 +279,6 @@ public class TerraformingMarsController {
     }
 
     public void generateHtmlDocumentation() { DocumentationUtils.generateDocumentation(); }
-
-    @FXML
-    private void replayGame() {
-        replayManager.startReplay();
-    }
 
     public void updateLastMoveLabel(GameMove lastGameMove) {
         if (lastGameMove != null) {

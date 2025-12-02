@@ -14,14 +14,14 @@ public final class CardViewBuilder {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final double CARD_WIDTH = 180.0;
+    private static final double CARD_WIDTH = 160.0;
     private static final double CARD_HEIGHT = 220.0;
 
     public static void setupCardTilePane(TilePane tilePane, int minColumns, int maxColumns) {
         tilePane.setPrefTileWidth(CARD_WIDTH);
         tilePane.setPrefTileHeight(CARD_HEIGHT);
-        tilePane.setHgap(5);
-        tilePane.setVgap(5);
+        tilePane.setHgap(15);
+        tilePane.setVgap(15);
 
         tilePane.prefColumnsProperty().bind(
                 Bindings.createIntegerBinding(() -> {
