@@ -4,6 +4,7 @@ import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsControll
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
+import hr.terraforming.mars.terraformingmars.view.GameScreens;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -43,8 +44,9 @@ public class ReplayManager {
 
 
     public void startReplay() {
-        controller.pauseMoveHistory();
-        log.info("🎬 Starting replay - move history polling PAUSED");
+        if (controller.getMoveHistoryTimeline() != null) {
+            controller.getMoveHistoryTimeline().stop();
+        }
 
         if (replayTimeline != null) {
             replayTimeline.stop();
@@ -87,6 +89,7 @@ public class ReplayManager {
                 alert.setHeaderText(null);
                 alert.setContentText("The replay was played to the end, but the conditions for the end of the game were not met.");
                 alert.showAndWait();
+                GameScreens.showStartMenu();
             });
         }
         actionHandler.clearLastMoveLabel();

@@ -74,7 +74,7 @@ public class TerraformingMarsController {
     private final GameStateService gameStateService = new GameStateService();
     @Setter
     private ReplayManager replayManager;
-    private Timeline moveHistoryTimeline;
+    @Getter private Timeline moveHistoryTimeline;
     @Getter
     @FXML private ListView<String> chatListView;
     @Getter
@@ -109,13 +109,6 @@ public class TerraformingMarsController {
         if (moveHistoryTimeline == null) {
             moveHistoryTimeline = GameMoveUtils.createLastMoveTimeline(lastMoveLabel);
             moveHistoryTimeline.play();
-        }
-    }
-
-    public void pauseMoveHistory() {
-        if (moveHistoryTimeline != null && moveHistoryTimeline.getStatus() == Animation.Status.RUNNING) {
-            moveHistoryTimeline.pause();
-            log.info("✅ Move history Timeline PAUSED");
         }
     }
 
