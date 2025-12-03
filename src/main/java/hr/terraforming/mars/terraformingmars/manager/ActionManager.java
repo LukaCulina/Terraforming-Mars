@@ -4,7 +4,6 @@ import hr.terraforming.mars.terraformingmars.controller.SellPatentsController;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
-import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
@@ -12,22 +11,18 @@ import javafx.application.Platform;
 import javafx.stage.Window;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
 public class ActionManager {
 
-    @Getter
-    private final TerraformingMarsController controller;
-    @Getter
-    private GameManager gameManager;
-    @Getter
-    private GameBoard gameBoard;
-    @Getter
-    private final GameFlowManager gameFlowManager;
+    @Getter private final TerraformingMarsController controller;
+    @Getter private GameManager gameManager;
+    @Getter private GameBoard gameBoard;
+    @Getter private final GameFlowManager gameFlowManager;
     @Getter private final MoveManager moveManager;
+    private final ActionExecutor actionExecutor;
 
     public ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
                          GameFlowManager gameFlowManager) {
@@ -36,15 +31,7 @@ public class ActionManager {
         this.gameBoard = gameBoard;
         this.gameFlowManager = gameFlowManager;
         this.moveManager = new MoveManager(gameManager, gameBoard, this);
-    }
-
-    private boolean isLocalPlayerMove(Player player) {
-        if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {
-            return true;
-        }
-
-        String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        return player.getName().equals(myName);
+        this.actionExecutor = new ActionExecutor(controller, this, gameManager, gameBoard, gameFlowManager);
     }
 
     public void processMove(GameMove move) {
@@ -58,6 +45,8 @@ public class ActionManager {
         if (gameFlowManager != null) {
             gameFlowManager.updateState(newManager, newBoard);
         }
+
+        actionExecutor.updateState(newManager, newBoard);
     }
 
     public void recordAndSaveMove(GameMove move) {
@@ -67,12 +56,15 @@ public class ActionManager {
         Platform.runLater(() -> controller.updateLastMoveLabel(move));
 
         controller.onLocalPlayerMove(move);
-
     }
 
     public void performAction() {
         gameManager.incrementActionsTaken();
-        controller.updateAllUI();
+
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+        if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
+            controller.updateAllUI();
+        }
 
         if (gameManager.getActionsTakenThisTurn() >= 2) {
             log.info("Player has taken 2 actions. Automatically passing turn.");
@@ -81,147 +73,27 @@ public class ActionManager {
     }
 
     public void handlePassTurn() {
-        if (gameManager.getCurrentPhase() != GamePhase.ACTIONS) return;
-
-        String currentTurnName = gameManager.getCurrentPlayer().getName();
-
-        GameMove move = new GameMove(currentTurnName, ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
-
-        boolean allPlayersPassed = gameManager.passTurn();
-
-        recordAndSaveMove(move);
-
-        if (allPlayersPassed) {
-            PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-            if (playerType == PlayerType.HOST || playerType == PlayerType.LOCAL) {
-                gameFlowManager.handleEndOfActionPhase();
-            } else {
-                log.info("CLIENT: All players passed, waiting for server to change phase.");
-            }
-        } else {
-            controller.setViewedPlayer(gameManager.getCurrentPlayer());
-            controller.updateAllUI();
-        }
+        actionExecutor.handlePassTurn();
     }
 
     public void handlePlayCard(Card card) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        if (!currentPlayer.canPlayCard(card)) {
-            log.warn("Player {} cannot play card '{}'. Requirements not met or insufficient funds.",
-                    currentPlayer.getName(), card.getName());
-            return;
-        }
-
-        GameMove move = new GameMove(currentPlayer.getName(), ActionType.PLAY_CARD, card.getName(), LocalDateTime.now());
-
-        if (card.getTileToPlace() != null) {
-            if (isLocalPlayerMove(currentPlayer)) {
-                controller.getPlacementCoordinator().enterPlacementModeForCard(card, move);
-            } else {
-                currentPlayer.playCard(card, gameManager);
-                log.info("Network: {} played card {} (tile placement pending)", currentPlayer.getName(), card.getName());
-            }
-        } else {
-            currentPlayer.playCard(card, gameManager);
-            performAction();
-            recordAndSaveMove(move);
-        }
+        actionExecutor.handlePlayCard(card);
     }
 
     public void handleClaimMilestone(Milestone milestone) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        final int MILESTONE_COST = 8;
-
-        if (gameBoard.claimMilestone(milestone, currentPlayer)) {
-            currentPlayer.spendMC(MILESTONE_COST);
-            performAction();
-            GameMove move = new GameMove(currentPlayer.getName(), ActionType.CLAIM_MILESTONE, milestone.name(), LocalDateTime.now());
-            recordAndSaveMove(move);
-        } else {
-            log.warn("Failed attempt by {} to claim milestone '{}'.", currentPlayer.getName(), milestone.getName());
-        }
+        actionExecutor.handleClaimMilestone(milestone);
     }
 
     public void handleStandardProject(StandardProject project) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        int finalCost = CostService.getFinalProjectCost(project, currentPlayer);
-
-        if (currentPlayer.getMC() < finalCost) {
-            log.warn("{} failed to use standard project '{}': insufficient MC (has {}, needs {}).",
-                    currentPlayer.getName(), project.getName(), currentPlayer.getMC(), project.getCost());
-            return;
-        }
-
-        GameMove move = new GameMove(gameManager.getCurrentPlayer().getName(), ActionType.USE_STANDARD_PROJECT, project.name(), LocalDateTime.now());
-
-        if (project.requiresTilePlacement()) {
-            if (isLocalPlayerMove(currentPlayer)) {
-                controller.getPlacementCoordinator().enterPlacementModeForProject(project, move);
-            } else {
-                currentPlayer.spendMC(finalCost);
-                log.info("Network: {} used standard project {} (tile placement pending)", currentPlayer.getName(), project.getName());
-            }
-        } else {
-            if (project == StandardProject.SELL_PATENTS) {
-                if (currentPlayer.getHand().isEmpty()) {
-                    log.warn("{} tried to sell patents but has no cards in hand.", currentPlayer.getName());
-                    return;
-                }
-                if (isLocalPlayerMove(currentPlayer)) {
-                    openSellPatentsWindow();
-                }
-            } else {
-                currentPlayer.spendMC(finalCost);
-                project.execute(currentPlayer, gameBoard);
-                performAction();
-                recordAndSaveMove(move);
-            }
-        }
+        actionExecutor.handleStandardProject(project);
     }
 
     public void handleConvertHeat() {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-
-        if (currentPlayer.resourceProperty(ResourceType.HEAT).get() < 8) {
-            log.warn("{} failed to convert heat: insufficient resources.", currentPlayer.getName());
-            return;
-        }
-
-        log.info("{} is converting 8 heat.", currentPlayer.getName());
-
-        currentPlayer.resourceProperty(ResourceType.HEAT).set(currentPlayer.resourceProperty(ResourceType.HEAT).get() - 8);
-        gameBoard.increaseTemperature();
-        currentPlayer.increaseTR(1);
-        performAction();
-
-        GameMove move = new GameMove(currentPlayer.getName(), ActionType.CONVERT_HEAT, "Raise temperature", LocalDateTime.now());
-        recordAndSaveMove(move);
+        actionExecutor.handleConvertHeat();
     }
 
     public void handleConvertPlants() {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        int requiredPlants = currentPlayer.getGreeneryCost();
-
-        if (currentPlayer.resourceProperty(ResourceType.PLANTS).get() < requiredPlants) {
-            log.warn("{} failed to convert plants: insufficient resources.", currentPlayer.getName());
-            return;
-        }
-
-        log.info("{} is initiating greenery conversion.", currentPlayer.getName());
-
-        GameMove convertPlantsMove = new GameMove(
-                currentPlayer.getName(),
-                ActionType.CONVERT_PLANTS,
-                "Convert " + requiredPlants + " plants to greenery",
-                LocalDateTime.now()
-        );
-
-        if (isLocalPlayerMove(currentPlayer)) {
-            controller.getPlacementCoordinator().enterPlacementModeForPlant(convertPlantsMove);
-        } else {
-            currentPlayer.spendPlantsForGreenery();
-            log.info("Network: {} converting plants (waiting for PLACE_TILE)", currentPlayer.getName());
-        }
+        actionExecutor.handleConvertPlants();
     }
 
     public void openSellPatentsWindow() {

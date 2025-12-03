@@ -1,10 +1,10 @@
 package hr.terraforming.mars.terraformingmars.service;
 
+import hr.terraforming.mars.terraformingmars.enums.PlacementMode;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
+import hr.terraforming.mars.terraformingmars.enums.StandardProject;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
-import hr.terraforming.mars.terraformingmars.model.GameBoard;
-import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.model.Tile;
+import hr.terraforming.mars.terraformingmars.model.*;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
@@ -91,4 +91,68 @@ public record PlacementService(GameBoard gameBoard) {
 
         log.info("City placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
     }
+
+    // ========== COMPLEX PLACEMENT (NOVO) ==========
+
+    public void executeComplexPlacement(PlacementContext context) {
+        switch (context.mode()) {
+            case FINAL_GREENERY -> placeFinalGreenery(context.tile(), context.owner());
+            case PLANT_CONVERSION -> placePlantConversion(context.tile(), context.owner());
+            case STANDARD_PROJECT, CARD -> placeWithPayment(context);
+            default -> log.error("Unknown placement mode: {}", context.mode());
+        }
+    }
+
+    private void placeFinalGreenery(Tile tile, Player owner) {
+        int cost = owner.getGreeneryCost();
+        if (owner.resourceProperty(ResourceType.PLANTS).get() >= cost) {
+            owner.spendPlantsForGreenery();
+            placeGreenery(tile, owner);
+        } else {
+            log.warn("{} does not have enough plants (has {}, needs {}).",
+                    owner.getName(), owner.resourceProperty(ResourceType.PLANTS).get(), cost);
+        }
+    }
+
+    private void placePlantConversion(Tile tile, Player owner) {
+        placeGreenery(tile, owner);
+        owner.spendPlantsForGreenery();
+    }
+
+    private void placeWithPayment(PlacementContext context) {
+        switch (context.tileType()) {
+            case OCEAN -> placeOcean(context.tile(), context.owner());
+            case GREENERY -> placeGreenery(context.tile(), context.owner());
+            case CITY -> placeCity(context.tile(), context.owner());
+            default -> {
+                log.error("Unexpected tile type: {}", context.tileType());
+                return;
+            }
+        }
+
+        if (context.card() != null) {
+            log.info("🃏 BEFORE playCard: {} hand size = {}, hand = {}",
+                    context.owner().getName(),
+                    context.owner().getHand().size(),
+                    context.owner().getHand().stream().map(Card::getName).toList());
+            context.owner().playCard(context.card(), context.gameManager());
+            log.info("🃏 AFTER playCard: {} hand size = {}, hand = {}",
+                    context.owner().getName(),
+                    context.owner().getHand().size(),
+                    context.owner().getHand().stream().map(Card::getName).toList());
+        } else if (context.project() != null) {
+            int finalCost = CostService.getFinalProjectCost(context.project(), context.owner());
+            context.owner().spendMC(finalCost);
+        }
+    }
+
+    public record PlacementContext(
+            PlacementMode mode,
+            Tile tile,
+            Player owner,
+            GameManager gameManager,
+            TileType tileType,
+            Card card,
+            StandardProject project
+    ) {}
 }

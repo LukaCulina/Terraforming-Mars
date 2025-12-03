@@ -84,10 +84,22 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
     private void updateLocalState(GameState state) {
         log.info("🎯 updateLocalState() - updating game state from network");
 
+
+
         controller.setGameManager(state.gameManager());
         controller.setGameBoard(state.gameBoard());
 
         controller.getGameManager().relink(controller.getGameBoard());
+        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
+        Player newPlayer = state.gameManager().getPlayerByName(myPlayerName);
+
+        if (newPlayer != null) {
+            log.info("🔄 AFTER updateFromNetwork: {} hand size = {}, hand = {}",
+                    myPlayerName,
+                    newPlayer.getHand().size(),
+                    newPlayer.getHand().stream().map(Card::getName).toList());
+        }
 
         if (controller.getUiManager() != null) {
             controller.getUiManager().updateGameState(

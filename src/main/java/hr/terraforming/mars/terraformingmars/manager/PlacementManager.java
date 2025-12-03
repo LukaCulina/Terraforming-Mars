@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsControll
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
-import hr.terraforming.mars.terraformingmars.service.CostService;
+import hr.terraforming.mars.terraformingmars.service.PlacementService;
 import javafx.application.Platform;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -93,13 +93,25 @@ public class PlacementManager {
 
         recordMoves(selectedTile, placementOwner);
 
-        performPlacement(selectedTile, placementOwner);
+        PlacementService placementService = new PlacementService(gameBoard);
+        PlacementService.PlacementContext context = new PlacementService.PlacementContext(
+                placementMode, selectedTile, placementOwner, gameManager,
+                tileTypeToPlace, cardToPlace, projectToPlace
+        );
+
+        log.info("🔥 executePlacement() - placementMode = {}", placementMode);
+
+        placementService.executeComplexPlacement(context);
 
         finishPlacement();
 
+        log.info("🔥 AFTER finishPlacement() - calling performAction()? placementMode = {}", placementMode);
+
         if (placementMode != PlacementMode.FINAL_GREENERY) {
+            log.info("🔥 CALLING performAction()");
             actionManager.performAction();
         } else {
+            log.info("🔥 CALLING updateAllUI() for FINAL_GREENERY");
             mainController.updateAllUI();
         }
     }
@@ -122,15 +134,6 @@ public class PlacementManager {
         actionManager.recordAndSaveMove(placeTileMove);
     }
 
-    private void performPlacement(Tile tile, Player owner) {
-        switch (placementMode) {
-            case FINAL_GREENERY -> handleFinalGreeneryPlacement(tile, owner);
-            case PLANT_CONVERSION -> handlePlantConversion(tile, owner);
-            case STANDARD_PROJECT, CARD -> handleStandardPlacement(tile, owner);
-            default -> log.error("Unknown placement mode: {}", placementMode);
-        }
-    }
-
     public void cancelPlacement() {
         log.info("Placement canceled by user.");
 
@@ -148,6 +151,7 @@ public class PlacementManager {
 
         resetPlacementState();
         mainController.setGameControlsEnabled(true);
+
         mainController.drawBoard();
 
         var config = ApplicationConfiguration.getInstance();
@@ -159,38 +163,6 @@ public class PlacementManager {
 
         if (wasFinalGreenery && onPlacementCompleteCallback != null) {
             Platform.runLater(onPlacementCompleteCallback);
-        }
-    }
-
-    private void handleFinalGreeneryPlacement(Tile tile, Player owner) {
-        int cost = owner.getGreeneryCost();
-        if (owner.resourceProperty(ResourceType.PLANTS).get() >= cost) {
-            owner.spendPlantsForGreenery();
-            gameBoard.placeGreenery(tile, owner);
-            log.info("{} placed a final greenery tile.", owner.getName());
-        } else {
-            log.warn("{} does not have enough plants for final greenery conversion (has {}, needs {}).",
-                    owner.getName(), owner.resourceProperty(ResourceType.PLANTS).get(), cost);
-        }
-    }
-
-    private void handlePlantConversion(Tile tile, Player owner) {
-        gameBoard.placeGreenery(tile, owner);
-        owner.spendPlantsForGreenery();
-    }
-
-    private void handleStandardPlacement(Tile tile, Player owner) {
-        switch (tileTypeToPlace) {
-            case OCEAN: gameBoard.placeOcean(tile, owner); break;
-            case GREENERY: gameBoard.placeGreenery(tile, owner); break;
-            case CITY: gameBoard.placeCity(tile, owner); break;
-            default: log.error("Trying to place an unexpected tile type: {}.", tileTypeToPlace); return;
-        }
-        if (cardToPlace != null) {
-            owner.playCard(cardToPlace, gameManager);
-        } else if (projectToPlace != null) {
-            int finalCost = CostService.getFinalProjectCost(projectToPlace, owner);
-            owner.spendMC(finalCost);
         }
     }
 
