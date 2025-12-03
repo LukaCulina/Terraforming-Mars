@@ -25,8 +25,7 @@ public class GameServerThread implements Runnable{
     private ActionManager actionManager;
     private final int maxPlayers;
     private final List<ClientHandler> connectedClients = new CopyOnWriteArrayList<>();
-    @Setter
-    private Consumer<Integer> onPlayerCountChanged;
+    @Setter private Consumer<Integer> onPlayerCountChanged;
     private ServerSocket serverSocket;
     private final List<GameStateListener> localListeners = new CopyOnWriteArrayList<>();
 

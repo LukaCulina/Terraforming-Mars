@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
@@ -176,6 +177,18 @@ public class ClientHandler implements Runnable {
             Platform.runLater(() -> {
                 try {
                     actionManager.processMove(move);
+
+                    if (shouldBroadcastAfterMove(move.actionType())) {
+                        var config = ApplicationConfiguration.getInstance();
+                        var broadcaster = config.getBroadcaster();
+
+                        if (broadcaster != null) {
+                            log.info("📡 Server broadcasting after network move: {}", move.actionType());
+                            broadcaster.broadcast();
+                        } else {
+                            log.warn("No NetworkBroadcaster configured on server, cannot broadcast after {}", move.actionType());
+                        }
+                    }
                 } catch (Exception e) {
                     log.error("Error processing move on FX thread", e);
                 }
@@ -184,6 +197,7 @@ public class ClientHandler implements Runnable {
             log.warn("ActionManager is null, cannot process move");
         }
     }
+
 
     public boolean waitUntilReady(long timeoutMillis) {
         try {
@@ -226,6 +240,12 @@ public class ClientHandler implements Runnable {
             log.error("Error closing client resources", e);
         }
     }
+
+    private boolean shouldBroadcastAfterMove(ActionType type) {
+        return type == ActionType.PLACE_TILE
+                || type == ActionType.SELL_PATENTS;
+    }
+
 
     public void close() {
         cleanup();

@@ -90,6 +90,8 @@ public record MoveManager(GameManager gameManager, GameBoard gameBoard, ActionMa
                 case CITY -> gameBoard.placeCity(tile, player); // ✅
                 default -> log.warn("⚠️ Received PLACE_TILE with unhandled type: {}", move.tileType());
             }
+            log.info("✅ Server calling performAction() after PLACE_TILE for {}", player.getName());
+            actionManager.performAction();
         }
     }
 
