@@ -1,10 +1,6 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
-import hr.terraforming.mars.terraformingmars.coordinator.ClientResearchCoordinator;
-import hr.terraforming.mars.terraformingmars.coordinator.GameSetupCoordinator;
-import hr.terraforming.mars.terraformingmars.coordinator.NetworkCoordinator;
-import hr.terraforming.mars.terraformingmars.coordinator.PlacementCoordinator;
-import hr.terraforming.mars.terraformingmars.enums.PlayerType;
+import hr.terraforming.mars.terraformingmars.coordinator.*;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.ui.PlayerBoardLoader;
@@ -14,7 +10,6 @@ import hr.terraforming.mars.terraformingmars.manager.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import javafx.animation.*;
 import javafx.fxml.*;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Window;
@@ -23,7 +18,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Slf4j
 public class TerraformingMarsController {
@@ -81,12 +75,14 @@ public class TerraformingMarsController {
     @FXML private TextField chatInput;
     @Getter private NetworkCoordinator networkCoordinator;
     @Getter private GameSetupCoordinator setupCoordinator;
+    private UIUpdateCoordinator uiUpdateCoordinator; // ← NOVO
 
     @FXML
     private void initialize() {
         currentPlayerBoardController = PlayerBoardLoader.loadPlayerBoard(currentPlayerBoardContainer);
         this.networkCoordinator = new NetworkCoordinator(this);
         this.setupCoordinator = new GameSetupCoordinator(this);
+        this.uiUpdateCoordinator = new UIUpdateCoordinator();
     }
 
     public void setupGame(GameState gameState) {
@@ -113,50 +109,20 @@ public class TerraformingMarsController {
     }
 
     public void updateAllUI() {
-        if (uiManager == null || gameManager == null || viewedPlayer == null) return;
-
-        String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        boolean isMyTurn = gameManager.getCurrentPlayer().getName().equals(myName);
-        if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {
-            isMyTurn = true;
-        }
-
-        boolean isPlacing = (placementManager != null && placementManager.isPlacementMode());
-        uiManager.updateGeneralUI(viewedPlayer, isPlacing, isMyTurn);
-
-        if (currentPlayerBoardController != null) {
-            currentPlayerBoardController.setPlayer(viewedPlayer, actionManager);
-        }
-
-        uiManager.getHexBoardDrawer().drawBoard();
+        uiUpdateCoordinator.updateAllUI(viewedPlayer, gameManager, placementManager,
+                currentPlayerBoardController, actionManager, uiManager);
     }
 
     public void updatePlayerHighlightForCurrentPlayer() {
         if (gameManager != null && gameManager.getCurrentPlayer() != null) {
-            updatePlayerHighlight(gameManager.getCurrentPlayer());
-        }
-    }
-
-    private void updatePlayerHighlight(Player currentPlayer) {
-        for (Node node : playerListBar.getChildren()) {
-            node.getStyleClass().remove("current-player-highlight");
-
-            Object userData = node.getUserData();
-            if (userData != null && userData.equals(currentPlayer.getName())) {
-                node.getStyleClass().add("current-player-highlight");
-            }
+            uiUpdateCoordinator.updatePlayerHighlight(gameManager.getCurrentPlayer(), playerListBar);
         }
     }
 
     public void setGameControlsEnabled(boolean isEnabled) {
-
-        List.of(passTurnButton, convertHeatButton, convertPlantsButton,
-                        standardProjectsBox, milestonesBox)
-                .forEach(node -> { if (node != null) node.setDisable(!isEnabled); });
-
-        if (currentPlayerBoardController != null) {
-            currentPlayerBoardController.setHandInteractionEnabled(isEnabled);
-        }
+        uiUpdateCoordinator.setGameControlsEnabled(isEnabled, currentPlayerBoardController,
+                passTurnButton, convertHeatButton, convertPlantsButton,
+                standardProjectsBox, milestonesBox);
     }
 
     public void showPlayerBoard(Player player) {

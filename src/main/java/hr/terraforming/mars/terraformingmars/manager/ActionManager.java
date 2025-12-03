@@ -81,22 +81,11 @@ public class ActionManager {
     }
 
     public void handlePassTurn() {
-        String myName = hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration.getInstance().getMyPlayerName();
-        String currentTurnName = gameManager.getCurrentPlayer().getName();
-
-        log.info("🛑 [ActionManager] handlePassTurn called. MyName='{}', CurrentTurn='{}'. Am I active? {}",
-                myName, currentTurnName, currentTurnName.equals(myName));
         if (gameManager.getCurrentPhase() != GamePhase.ACTIONS) return;
 
-        GameMove move = new GameMove(currentTurnName, ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
+        String currentTurnName = gameManager.getCurrentPlayer().getName();
 
-        if (gameManager.getActionsTakenThisTurn() < 2) {
-            log.info("{} consciously passed the turn with {} actions taken.",
-                    gameManager.getCurrentPlayer().getName(), gameManager.getActionsTakenThisTurn());
-        } else {
-            log.info("Turn for {} ended automatically after 2 actions.",
-                    gameManager.getCurrentPlayer().getName());
-        }
+        GameMove move = new GameMove(currentTurnName, ActionType.PASS_TURN, "Passed turn", LocalDateTime.now());
 
         boolean allPlayersPassed = gameManager.passTurn();
 
@@ -104,11 +93,6 @@ public class ActionManager {
 
         if (allPlayersPassed) {
             PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-            log.info("🔍 All players passed! PlayerType={}, isHOST={}, isLOCAL={}, isCLIENT={}",
-                    playerType,
-                    playerType == PlayerType.HOST,
-                    playerType == PlayerType.LOCAL,
-                    playerType == PlayerType.CLIENT);
             if (playerType == PlayerType.HOST || playerType == PlayerType.LOCAL) {
                 gameFlowManager.handleEndOfActionPhase();
             } else {
