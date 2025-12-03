@@ -47,14 +47,12 @@ public class GameStateCoordinator implements GameStateListener {
         if (!nameSent) {
             client.sendPlayerName(myPlayerName);
             nameSent = true;
-            log.info("✅ Sent player name to server: {}", myPlayerName);
         }
 
         boolean allJoined = state.gameManager().getPlayers().stream()
                 .noneMatch(p -> p.getName().startsWith("Player "));
 
         if (allJoined) {
-            log.info("✅ All players joined! Going to Corporation Selection");
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
             GameScreens.showChooseCorporationScreen(state.gameManager());
         }
@@ -65,7 +63,6 @@ public class GameStateCoordinator implements GameStateListener {
                 .allMatch(p -> p.getCorporation() != null);
 
         if (allChosen) {
-            log.info("✅ All players chose corporations! Going to card draft");
             currentPhase = GameplayPhase.CARD_DRAFT;
             GameScreens.showInitialCardDraftScreen(state.gameManager());
             return;
@@ -73,7 +70,6 @@ public class GameStateCoordinator implements GameStateListener {
         Player currentPlayer = state.gameManager().getCurrentPlayer();
 
         if (currentPlayer.getCorporation() == null) {
-            log.info("✅ My turn to choose corporation!");
             GameScreens.showChooseCorporationScreen(state.gameManager());
         }
     }
@@ -82,7 +78,6 @@ public class GameStateCoordinator implements GameStateListener {
         Player currentPlayerForDraft = state.gameManager().getCurrentPlayerForDraft();
 
         if (currentPlayerForDraft == null) {
-            log.info("✅ All players chose cards! Game started");
             currentPhase = GameplayPhase.PLAYING;
 
             GameScreens.startGameWithChosenCards(state);

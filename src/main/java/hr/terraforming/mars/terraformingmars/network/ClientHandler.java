@@ -7,6 +7,7 @@ import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
 import javafx.application.Platform;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final GameManager gameManager;
+    @Setter
     private ActionManager actionManager;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -43,14 +45,11 @@ public class ClientHandler implements Runnable {
             this.in = inputStream;
             ready = true;
             readyFuture.complete(null);
-            log.info("✅ ClientHandler ready to send/receive");
 
             while (running && !socket.isClosed()) {
                 Object obj = inputStream.readObject();
                 handleMessage(obj);
             }
-
-            log.info("ClientHandler stopped gracefully");
 
         } catch (IOException | ClassNotFoundException e) {
             if (running) {
@@ -60,11 +59,6 @@ public class ClientHandler implements Runnable {
             }
         }
         cleanup();
-    }
-
-    public void setActionManager(ActionManager actionManager) {
-        this.actionManager = actionManager;
-        log.info("✅ ActionManager injected into ClientHandler");
     }
 
     private void handleMessage(Object obj) {
@@ -78,8 +72,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void handlePlayerName(PlayerNameMessage msg) {
-        log.info("✅ Received player name from client: {}", msg.playerName());
-
         for (Player p : gameManager.getPlayers()) {
             if (p.getName().startsWith("Player ")) {
                 p.setName(msg.playerName());
@@ -88,7 +80,6 @@ public class ClientHandler implements Runnable {
                 NetworkBroadcaster broadcaster = config.getBroadcaster();
                 if (broadcaster != null) {
                     broadcaster.broadcast();
-                    log.info("✅ Broadcasted after player name assignment");
                 }
                 break;
             }
@@ -96,8 +87,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void handleCorporationChoice(CorporationChoiceMessage msg) {
-        log.info("✅ Received corporation choice from client: {}", msg.corporationName());
-
         Player currentPlayer = gameManager.getCurrentPlayer();
         Corporation corp = CorporationFactory.getCorporationByName(msg.corporationName());
 
@@ -108,7 +97,6 @@ public class ClientHandler implements Runnable {
             NetworkBroadcaster broadcaster = config.getBroadcaster();
             if (broadcaster != null) {
                 broadcaster.broadcast();
-                log.info("✅ Broadcasted after corporation choice");
             }
         } else {
             log.warn("Corporation not found: {}", msg.corporationName());
@@ -116,8 +104,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void handleCardChoice(CardChoiceMessage msg) {
-        log.info("✅ Received card choice from client: {} cards", msg.cardNames().size());
-
         Player draftPlayer = gameManager.getCurrentPlayerForDraft();
         if (draftPlayer == null) {
             log.warn("No current draft player, ignoring card choice");
@@ -133,24 +119,14 @@ public class ClientHandler implements Runnable {
         draftPlayer.spendMC(cost);
         draftPlayer.getHand().addAll(boughtCards);
 
-        log.info("Processing card choice for player {} | currentPlayerIndex BEFORE advanceDraft={}",
-                draftPlayer.getName(), gameManager.getCurrentPlayer().getName());
-
         boolean morePlayers = gameManager.advanceDraftPlayer();
-
-        log.info("Draft player advanced. More players: {} | currentPlayerIndex AFTER advanceDraft={}",
-                morePlayers, gameManager.getCurrentPlayer().getName());
 
         boolean broadcastHandledExternally = false;
 
         if (!morePlayers) {
             if (gameManager.getGeneration() == 0) {
                 GameMoveUtils.saveInitialSetupMove(gameManager);
-                log.info("🎮 BEFORE startGame() | currentPlayerIndex={}",
-                        gameManager.getCurrentPlayer().getName());
                 gameManager.startGame();
-                log.info("🎮 AFTER startGame() | currentPlayerIndex={}",
-                        gameManager.getCurrentPlayer().getName());
             } else {
                 log.info("🔬 Research phase draft complete, continuing game");
                 broadcastHandledExternally = true;
@@ -165,7 +141,6 @@ public class ClientHandler implements Runnable {
             NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
             if (broadcaster != null) {
                 broadcaster.broadcast();
-                log.info("✅ Applied card choice for {} and broadcasted state", draftPlayer.getName());
             }
         } else {
             log.info("✅ Applied card choice for {} (broadcast handled by GameFlowManager)", draftPlayer.getName());
@@ -242,10 +217,8 @@ public class ClientHandler implements Runnable {
     }
 
     private boolean shouldBroadcastAfterMove(ActionType type) {
-        return type == ActionType.PLACE_TILE
-                || type == ActionType.SELL_PATENTS;
+        return type == ActionType.PLACE_TILE || type == ActionType.SELL_PATENTS;
     }
-
 
     public void close() {
         cleanup();

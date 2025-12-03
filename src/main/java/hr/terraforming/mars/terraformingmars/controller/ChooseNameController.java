@@ -68,7 +68,6 @@ public class ChooseNameController {
                 );
                 NetworkBroadcaster broadcaster = new NetworkBroadcaster(gameManager, gameBoard);
                 ApplicationConfiguration.getInstance().setBroadcaster(broadcaster);
-                log.info("✅ NetworkBroadcaster created with server");
 
                 HostGameStateCoordinator hostCoordinator = new HostGameStateCoordinator();
                 gameServer.addLocalListener(hostCoordinator);

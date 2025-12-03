@@ -131,7 +131,6 @@ public class ChooseCardsController {
             var client = config.getGameClient();
             if (client != null) {
                 client.sendCardChoice(boughtCards);
-                log.info("✅ CLIENT sent card choice ({} cards) to server", boughtCards.size());
             }
             if (!isResearchPhase) {
                 showWaitingForPlayer(player.getName());
@@ -149,7 +148,6 @@ public class ChooseCardsController {
             if (broadcaster != null) {
                 log.info("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
                 broadcaster.broadcast();
-                log.info("✅ HOST broadcasted card draft state to all clients");
             }
         }
     }
