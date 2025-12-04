@@ -28,7 +28,6 @@ public class GameFlowManager {
     public void updateState(GameManager newManager, GameBoard newBoard) {
         this.gameManager = newManager;
         this.gameBoard = newBoard;
-        log.info("GameFlowManager updated with new GameManager/GameBoard.");
     }
 
     public void handleEndOfActionPhase() {
@@ -69,13 +68,8 @@ public class GameFlowManager {
     }
 
     public void onResearchComplete() {
-        log.info("🔬 onResearchComplete() called | currentPlayerIndex={} | currentPhase={} | Thread: {}",
-                gameManager.getCurrentPlayer().getName(),
-                gameManager.getCurrentPhase(),
-                Thread.currentThread().getName());
-
         if (gameManager.getCurrentPhase() == GamePhase.ACTIONS) {
-            log.warn("⚠️ Already in ACTIONS phase, skipping duplicate beginActionPhase()");
+            log.warn("Already in ACTIONS phase, skipping duplicate beginActionPhase()");
             return;
         }
 
@@ -83,13 +77,7 @@ public class GameFlowManager {
 
         log.info("Research phase complete. Starting Action Phase.");
 
-        log.info("✅ About to call beginActionPhase() | currentPlayerIndex BEFORE={}",
-                gameManager.getCurrentPlayer().getName());
-
         gameManager.beginActionPhase();
-
-        log.info("✅ After beginActionPhase() | currentPlayerIndex AFTER={}",
-                gameManager.getCurrentPlayer().getName());
 
         controller.updateAllUI();
 

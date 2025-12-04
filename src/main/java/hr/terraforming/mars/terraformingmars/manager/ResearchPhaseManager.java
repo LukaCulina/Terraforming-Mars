@@ -31,14 +31,10 @@ public class ResearchPhaseManager {
 
     public void start() {
         this.researchPlayerIndex = 0;
-        log.info("🎬 ResearchPhaseManager starting from index 0");
         Platform.runLater(this::showScreenForNextPlayer);
     }
 
     private void showScreenForNextPlayer() {
-        log.info("🎯 showScreenForNextPlayer called: researchPlayerIndex={}, totalPlayers={} | currentPhase={}",
-                researchPlayerIndex, gameManager.getPlayers().size(), gameManager.getCurrentPhase());
-
         if (researchPlayerIndex >= gameManager.getPlayers().size()) {
             log.info("🏁 All players finished research! Calling onResearchComplete | currentPhase={}",
                     gameManager.getCurrentPhase());
@@ -47,16 +43,12 @@ public class ResearchPhaseManager {
         }
 
         Player currentPlayer = gameManager.getPlayers().get(researchPlayerIndex);
-        log.info("👤 Current player for research: {}", currentPlayer.getName());
-
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
         if (playerType != PlayerType.LOCAL && !currentPlayer.getName().equals(myPlayerName)) {
-            log.info("Waiting for {} to complete research phase", currentPlayer.getName());
             return;
         }
-        log.info("🎴 Opening modal for {}", currentPlayer.getName());
 
         List<Card> offer = gameManager.drawCards(4);
 
@@ -82,8 +74,6 @@ public class ResearchPhaseManager {
         }
 
         Player currentPlayer = gameManager.getPlayers().get(researchPlayerIndex);
-        log.info("✅ {} finished research, bought {} cards | currentPhase={}",
-                currentPlayer.getName(), boughtCards.size(), gameManager.getCurrentPhase());
 
         if (!boughtCards.isEmpty()) {
             String details = boughtCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
@@ -103,14 +93,10 @@ public class ResearchPhaseManager {
 
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
         if (currentPlayer.getName().equals(myPlayerName)) {
-            log.info("➡️ HOST calling advanceDraftPlayer() for local player {} | currentPhase={}",
-                    currentPlayer.getName(), gameManager.getCurrentPhase());
             gameManager.advanceDraftPlayer();
         }
 
         researchPlayerIndex++;
-        log.info("➡️ Moving to next player (researchPlayerIndex now: {}) | currentPhase={}",
-                researchPlayerIndex, gameManager.getCurrentPhase());
 
         Platform.runLater(this::showScreenForNextPlayer);
     }

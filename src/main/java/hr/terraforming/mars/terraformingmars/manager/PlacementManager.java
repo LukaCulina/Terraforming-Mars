@@ -66,7 +66,6 @@ public class PlacementManager {
         this.finalGreeneryPlayer = player;
         this.onPlacementCompleteCallback = callback;
 
-        log.info("Entering placement mode: {}", mode);
         mainController.drawBoard();
         mainController.setGameControlsEnabled(false);
         mainController.setCancelButtonVisible(true);
@@ -79,7 +78,6 @@ public class PlacementManager {
 
         if (placementOwner == null) {
             log.error("Placement failed: No player defined for tile placement. This should not happen.");
-
             cancelPlacement();
             return;
         }
@@ -99,19 +97,13 @@ public class PlacementManager {
                 tileTypeToPlace, cardToPlace, projectToPlace
         );
 
-        log.info("🔥 executePlacement() - placementMode = {}", placementMode);
-
         placementService.executeComplexPlacement(context);
 
         finishPlacement();
 
-        log.info("🔥 AFTER finishPlacement() - calling performAction()? placementMode = {}", placementMode);
-
         if (placementMode != PlacementMode.FINAL_GREENERY) {
-            log.info("🔥 CALLING performAction()");
             actionManager.performAction();
         } else {
-            log.info("🔥 CALLING updateAllUI() for FINAL_GREENERY");
             mainController.updateAllUI();
         }
     }
@@ -185,7 +177,6 @@ public class PlacementManager {
         if (moveInProgress != null && moveInProgress.playerName() != null) {
             Player movePlayer = gameManager.getPlayerByName(moveInProgress.playerName());
             if (movePlayer != null) {
-                log.info("Placement owner from move: {}", movePlayer.getName());
                 return movePlayer;
             }
         }

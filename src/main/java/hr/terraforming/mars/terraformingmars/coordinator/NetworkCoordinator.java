@@ -16,7 +16,6 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
             return;
         }
 
-        logNetworkUpdate(state);
         updateLocalState(state);
 
         Platform.runLater(() -> {
@@ -50,12 +49,10 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
 
         if (playerType == PlayerType.CLIENT) {
             controller.setGameControlsEnabled(false);
-            log.info("🚫 CLIENT controls disabled on setup (waiting for host turn info)");
 
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
             if (client != null) {
                 client.addGameStateListener(controller::updateFromNetwork);
-                log.info("✅ CLIENT registered network listener");
             }
         }
     }
@@ -73,33 +70,11 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
         return true;
     }
 
-    private void logNetworkUpdate(GameState state) {
-        log.debug("🔄 NetUpdate: Gen={}, Phase={}, CurrentPlayer={}, MyName={}",
-                state.gameManager().getGeneration(),
-                state.gameManager().getCurrentPhase(),
-                state.gameManager().getCurrentPlayer().getName(),
-                ApplicationConfiguration.getInstance().getMyPlayerName());
-    }
-
     private void updateLocalState(GameState state) {
-        log.info("🎯 updateLocalState() - updating game state from network");
-
-
-
         controller.setGameManager(state.gameManager());
         controller.setGameBoard(state.gameBoard());
 
         controller.getGameManager().relink(controller.getGameBoard());
-        String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
-
-        Player newPlayer = state.gameManager().getPlayerByName(myPlayerName);
-
-        if (newPlayer != null) {
-            log.info("🔄 AFTER updateFromNetwork: {} hand size = {}, hand = {}",
-                    myPlayerName,
-                    newPlayer.getHand().size(),
-                    newPlayer.getHand().stream().map(Card::getName).toList());
-        }
 
         if (controller.getUiManager() != null) {
             controller.getUiManager().updateGameState(

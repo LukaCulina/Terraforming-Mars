@@ -78,8 +78,6 @@ public class ActionExecutor {
                 controller.getPlacementCoordinator().enterPlacementModeForCard(card, move);
             } else {
                 currentPlayer.playCard(card, gameManager);
-                log.info("Network: {} played card {} (tile placement pending)",
-                        currentPlayer.getName(), card.getName());
             }
         } else {
             currentPlayer.playCard(card, gameManager);
@@ -122,8 +120,6 @@ public class ActionExecutor {
                 controller.getPlacementCoordinator().enterPlacementModeForProject(project, move);
             } else {
                 currentPlayer.spendMC(finalCost);
-                log.info("Network: {} used standard project {} (tile placement pending)",
-                        currentPlayer.getName(), project.getName());
             }
         } else {
             if (project == StandardProject.SELL_PATENTS) {
@@ -187,7 +183,6 @@ public class ActionExecutor {
             controller.getPlacementCoordinator().enterPlacementModeForPlant(convertPlantsMove);
         } else {
             currentPlayer.spendPlantsForGreenery();
-            log.info("Network: {} converting plants (waiting for PLACE_TILE)", currentPlayer.getName());
         }
     }
 }
