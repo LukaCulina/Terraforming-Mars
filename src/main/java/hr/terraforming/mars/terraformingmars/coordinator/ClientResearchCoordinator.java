@@ -56,8 +56,6 @@ public class ClientResearchCoordinator {
     private void openModal(Player player, GameManager gameManager) {
         List<Card> offer = gameManager.drawCards(4);
 
-        log.info("🎴 CLIENT: Opening research modal for {}", player.getName());
-
         ScreenLoader.showAsModal(
                 controller.getSceneWindow(),
                 "ChooseCards.fxml",
@@ -95,6 +93,5 @@ public class ClientResearchCoordinator {
         }
 
         isModalOpen = false;
-        log.info("✅ CLIENT: Research complete for {}", player.getName());
     }
 }

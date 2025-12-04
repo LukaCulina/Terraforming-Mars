@@ -82,7 +82,7 @@ public class ChooseCardsController {
 
         cardsTile.getChildren().clear();
 
-        CardViewBuilder.setupCardTilePane(cardsTile, 3, 6); // Min 3, Max 6
+        CardViewBuilder.setupCardTilePane(cardsTile, 3, 6);
 
         for (Card card : offer) {
             VBox cardNode = CardViewBuilder.createCardNode(card);

@@ -118,7 +118,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
             case CLAIM_MILESTONE -> processClaimMilestone(move, player);
             case USE_STANDARD_PROJECT -> processUseStandardProject(move, player);
             case CONVERT_HEAT -> processConvertHeat(player);
-            case CONVERT_PLANTS -> player.spendPlantsForGreenery(); // Simple enough to remain inline
+            case CONVERT_PLANTS -> player.spendPlantsForGreenery();
             case SELL_PATENTS -> processSellPatents(move, player);
             case PASS_TURN -> {
                 boolean allPlayersPassed = gameManager.passTurn();

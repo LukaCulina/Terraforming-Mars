@@ -103,7 +103,7 @@ public class GameServerThread implements Runnable{
         log.debug("📡 Broadcasting to {} clients...", connectedClients.size());
 
         for (GameStateListener listener : localListeners) {
-            log.info("   - Listener: {}", listener.getClass().getSimpleName());
+            log.info("Listener: {}", listener.getClass().getSimpleName());
         }
 
         for (ClientHandler client : connectedClients) {
@@ -113,16 +113,12 @@ public class GameServerThread implements Runnable{
         for (GameStateListener listener : localListeners) {
             Platform.runLater(() -> {
                 try {
-                    log.info("🔔 Calling listener.onGameStateReceived()");
                     listener.onGameStateReceived(state);
-                    log.info("✅ Listener callback completed");
                 } catch (Exception e) {
-                    log.error("❌ Error in local listener", e);
+                    log.error("Error in local listener", e);
                 }
             });
         }
-
-        log.info("✅ Broadcast complete");
     }
 
     public void shutdown() {

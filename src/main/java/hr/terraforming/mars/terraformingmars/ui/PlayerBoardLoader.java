@@ -25,7 +25,6 @@ public class PlayerBoardLoader {
 
             container.getChildren().setAll(boardNode);
 
-            log.info("PlayerBoard successfully loaded.");
             return controller;
 
         } catch (IOException e) {

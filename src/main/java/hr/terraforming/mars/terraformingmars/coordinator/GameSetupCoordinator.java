@@ -16,20 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 public record GameSetupCoordinator(TerraformingMarsController controller) {
 
     public void setupNewGame(GameState gameState) {
-        log.info("Setting up NEW game");
         setupGameInternal(gameState, true);
     }
 
     public void setupLoadedGame(GameState gameState) {
-        log.info("Setting up LOADED game");
         setupGameInternal(gameState, false);
     }
 
 
     private void setupGameInternal(GameState gameState, boolean shouldStartGame) {
-        log.info("Setting up game - gameBoard = {}",
-                gameState.gameBoard() != null ? "NOT NULL" : "NULL");
-
         controller.setGameManager(gameState.gameManager());
         controller.setGameBoard(gameState.gameBoard());
 
@@ -72,7 +67,6 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
         );
         controller.setActionManager(actionManager);
 
-        // Inject ActionManager u server ako je HOST
         injectActionManagerToServer(actionManager);
 
         PlacementManager placementManager = new PlacementManager(
@@ -121,9 +115,8 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
             GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
             if (server != null) {
                 server.setActionManager(actionManager);
-                log.info("✅ ActionManager injected into server and all clients");
             } else {
-                log.warn("⚠️ GameServerThread is null, cannot inject ActionManager!");
+                log.warn("GameServerThread is null, cannot inject ActionManager!");
             }
         }
     }

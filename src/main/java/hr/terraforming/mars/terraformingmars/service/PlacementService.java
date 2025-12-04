@@ -92,8 +92,6 @@ public record PlacementService(GameBoard gameBoard) {
         log.info("City placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
     }
 
-    // ========== COMPLEX PLACEMENT (NOVO) ==========
-
     public void executeComplexPlacement(PlacementContext context) {
         switch (context.mode()) {
             case FINAL_GREENERY -> placeFinalGreenery(context.tile(), context.owner());

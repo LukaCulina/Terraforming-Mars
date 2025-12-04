@@ -42,7 +42,7 @@ public final class DocumentationUtils {
                     h2 { color: #e09500; border-bottom: 1px solid #4f4f4f; padding-bottom: 5px; margin-top: 2em; }
                     h3 { color: #d1d1d1; }
                     hr { border: 1px solid #4f4f4f; margin-top: 2em;}
-                    code { background-color: #2E3A47; padding: 3px 6px; border-radius: 4px; font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace; } /* Maknuta boja teksta */
+                    code { background-color: #2E3A47; padding: 3px 6px; border-radius: 4px; font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace; }
                     .annotation { color: #FFC66D; }
                     ul { list-style-type: none; padding-left: 0; }
                     li { background-color: #262f38; margin-bottom: 8px; padding: 10px; border-radius: 4px; border-left: 3px solid #FFA500; }

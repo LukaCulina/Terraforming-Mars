@@ -75,7 +75,7 @@ public class TerraformingMarsController {
     @FXML private TextField chatInput;
     @Getter private NetworkCoordinator networkCoordinator;
     @Getter private GameSetupCoordinator setupCoordinator;
-    private UIUpdateCoordinator uiUpdateCoordinator; // ← NOVO
+    private UIUpdateCoordinator uiUpdateCoordinator;
 
     @FXML
     private void initialize() {
