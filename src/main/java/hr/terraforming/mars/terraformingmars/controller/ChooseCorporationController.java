@@ -5,7 +5,7 @@ import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.view.CorporationViewBuilder;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -120,9 +120,9 @@ public class ChooseCorporationController {
                         .allMatch(p -> p.getCorporation() != null);
 
                 if (allChosen) {
-                    GameScreens.showInitialCardDraftScreen(gameManager);
+                    ScreenNavigator.showInitialCardDraftScreen(gameManager);
                 } else {
-                    GameScreens.showChooseCorporationScreen(gameManager);
+                    ScreenNavigator.showChooseCorporationScreen(gameManager);
                 }
             }
         }

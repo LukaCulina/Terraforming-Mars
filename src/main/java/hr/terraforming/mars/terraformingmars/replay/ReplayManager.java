@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsControll
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -89,7 +89,7 @@ public class ReplayManager {
                 alert.setHeaderText(null);
                 alert.setContentText("The replay was played to the end, but the conditions for the end of the game were not met.");
                 alert.showAndWait();
-                GameScreens.showStartMenu();
+                ScreenNavigator.showStartMenu();
             });
         }
         actionHandler.clearLastMoveLabel();

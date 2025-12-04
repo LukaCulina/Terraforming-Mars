@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -18,7 +18,7 @@ public class StartMenuController {
     private void startNewGame() {
         log.info("Starting new game...");
         gameStateService.clearGameData();
-        GameScreens.showChooseModeScreen();
+        ScreenNavigator.showChooseModeScreen();
     }
 
     @FXML
@@ -33,8 +33,8 @@ public class StartMenuController {
 
             controller.getSetupCoordinator().setupLoadedGame(loadedState);
 
-            GameScreens.getMainStage().setScene(mainGameScene);
-            GameScreens.getMainStage().setTitle("Terraforming Mars - Loaded Game");
+            ScreenNavigator.getMainStage().setScene(mainGameScene);
+            ScreenNavigator.getMainStage().setTitle("Terraforming Mars - Loaded Game");
 
             Platform.runLater(() ->
                     DialogUtils.showDialog("Game loaded successfully!")

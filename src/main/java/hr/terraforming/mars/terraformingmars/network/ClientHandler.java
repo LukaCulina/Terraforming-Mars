@@ -22,8 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final GameManager gameManager;
-    @Setter
-    private ActionManager actionManager;
+    @Setter private ActionManager actionManager;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private volatile boolean ready = false;
@@ -75,31 +74,18 @@ public class ClientHandler implements Runnable {
         for (Player p : gameManager.getPlayers()) {
             if (p.getName().startsWith("Player ")) {
                 p.setName(msg.playerName());
-                log.info("✅ Assigned name '{}' to player", msg.playerName());
-                var config = ApplicationConfiguration.getInstance();
-                NetworkBroadcaster broadcaster = config.getBroadcaster();
-                if (broadcaster != null) {
-                    broadcaster.broadcast();
-                }
+                broadcastIfAvailable();
                 break;
             }
         }
     }
 
     private void handleCorporationChoice(CorporationChoiceMessage msg) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
         Corporation corp = CorporationFactory.getCorporationByName(msg.corporationName());
 
         if (corp != null) {
             gameManager.assignCorporationAndAdvance(corp);
-            log.info("✅ Assigned corporation '{}' to {}", msg.corporationName(), currentPlayer.getName());
-            var config = ApplicationConfiguration.getInstance();
-            NetworkBroadcaster broadcaster = config.getBroadcaster();
-            if (broadcaster != null) {
-                broadcaster.broadcast();
-            }
-        } else {
-            log.warn("Corporation not found: {}", msg.corporationName());
+            broadcastIfAvailable();
         }
     }
 
@@ -128,7 +114,6 @@ public class ClientHandler implements Runnable {
                 GameMoveUtils.saveInitialSetupMove(gameManager);
                 gameManager.startGame();
             } else {
-                log.info("🔬 Research phase draft complete, continuing game");
                 broadcastHandledExternally = true;
                 Platform.runLater(() -> {
                     var flowManager = actionManager.getGameFlowManager();
@@ -138,12 +123,7 @@ public class ClientHandler implements Runnable {
         }
 
         if (!broadcastHandledExternally) {
-            NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
-            if (broadcaster != null) {
-                broadcaster.broadcast();
-            }
-        } else {
-            log.info("✅ Applied card choice for {} (broadcast handled by GameFlowManager)", draftPlayer.getName());
+            broadcastIfAvailable();
         }
     }
 
@@ -152,17 +132,8 @@ public class ClientHandler implements Runnable {
             Platform.runLater(() -> {
                 try {
                     actionManager.processMove(move);
-
                     if (shouldBroadcastAfterMove(move.actionType())) {
-                        var config = ApplicationConfiguration.getInstance();
-                        var broadcaster = config.getBroadcaster();
-
-                        if (broadcaster != null) {
-                            log.info("📡 Server broadcasting after network move: {}", move.actionType());
-                            broadcaster.broadcast();
-                        } else {
-                            log.warn("No NetworkBroadcaster configured on server, cannot broadcast after {}", move.actionType());
-                        }
+                        broadcastIfAvailable();
                     }
                 } catch (Exception e) {
                     log.error("Error processing move on FX thread", e);
@@ -173,6 +144,16 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private void broadcastIfAvailable() {
+        NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
+        if (broadcaster != null) {
+            broadcaster.broadcast();
+        }
+    }
+
+    private boolean shouldBroadcastAfterMove(ActionType type) {
+        return type == ActionType.PLACE_TILE || type == ActionType.SELL_PATENTS;
+    }
 
     public boolean waitUntilReady(long timeoutMillis) {
         try {
@@ -180,7 +161,6 @@ public class ClientHandler implements Runnable {
             return true;
         } catch (Exception _) {
             Thread.currentThread().interrupt();
-            log.warn("Interrupted while waiting for ClientHandler to initialize");
             return false;
         }
     }
@@ -188,10 +168,7 @@ public class ClientHandler implements Runnable {
     public synchronized void sendGameState(GameState state) {
         log.debug("Sending game state to client with gameBoard = {}", state.gameBoard() != null ? "NOT NULL" : "NULL");
 
-        if (!ready) {
-            log.warn("ClientHandler not ready yet, skipping broadcast");
-            return;
-        }
+        if (!ready) { return; }
 
         try {
             out.writeObject(state);
@@ -203,6 +180,10 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    public void close() {
+        cleanup();
+    }
+
     private void cleanup() {
         running = false;
         ready = false;
@@ -210,17 +191,8 @@ public class ClientHandler implements Runnable {
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();
-            log.info("ClientHandler resources cleaned up");
         } catch (IOException e) {
             log.error("Error closing client resources", e);
         }
-    }
-
-    private boolean shouldBroadcastAfterMove(ActionType type) {
-        return type == ActionType.PLACE_TILE || type == ActionType.SELL_PATENTS;
-    }
-
-    public void close() {
-        cleanup();
     }
 }

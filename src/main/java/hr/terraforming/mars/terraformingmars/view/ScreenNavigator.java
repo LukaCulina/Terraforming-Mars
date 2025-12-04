@@ -13,9 +13,9 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @Slf4j
-public class GameScreens {
+public class ScreenNavigator {
 
-    private GameScreens() {
+    private ScreenNavigator() {
         throw new IllegalStateException("Utility class");
     }
 

@@ -26,7 +26,7 @@ module hr.terraforming.mars.terraformingmars {
     exports hr.terraforming.mars.terraformingmars.service;
     exports hr.terraforming.mars.terraformingmars.util;
     exports hr.terraforming.mars.terraformingmars.config;
-    exports hr.terraforming.mars.terraformingmars.model.effects;
+    exports hr.terraforming.mars.terraformingmars.effects;
     exports hr.terraforming.mars.terraformingmars.replay;
     opens hr.terraforming.mars.terraformingmars.replay to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars.jndi;

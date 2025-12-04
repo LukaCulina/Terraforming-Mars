@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.enums.GameplayPhase;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,7 @@ public class HostGameStateCoordinator implements GameStateListener {
         if (allJoined) {
             log.info("HOST: All players joined, transitioning to Corporation Selection");
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
-            GameScreens.showChooseCorporationScreen(state.gameManager());
+            ScreenNavigator.showChooseCorporationScreen(state.gameManager());
         }
     }
 
@@ -43,11 +43,11 @@ public class HostGameStateCoordinator implements GameStateListener {
         if (allChosen) {
             log.info("HOST: All players chose corporations, transitioning to Card Draft");
             currentPhase = GameplayPhase.CARD_DRAFT;
-            GameScreens.showInitialCardDraftScreen(state.gameManager());
+            ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
             return;
         }
 
-        GameScreens.showChooseCorporationScreen(state.gameManager());
+        ScreenNavigator.showChooseCorporationScreen(state.gameManager());
     }
 
     private void handleCardDraft(GameState state) {
@@ -56,9 +56,9 @@ public class HostGameStateCoordinator implements GameStateListener {
         if (currentPlayer == null) {
             log.info("HOST: Draft completed, starting game");
             currentPhase = GameplayPhase.PLAYING;
-            GameScreens.startGameWithChosenCards(state);
+            ScreenNavigator.startGameWithChosenCards(state);
         } else {
-            GameScreens.showInitialCardDraftScreen(state.gameManager());
+            ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
         }
     }
 

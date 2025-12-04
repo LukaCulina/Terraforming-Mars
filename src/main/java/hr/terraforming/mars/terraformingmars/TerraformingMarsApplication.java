@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.config.ResourceConfig;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -37,9 +37,9 @@ public class TerraformingMarsApplication extends Application {
 
         stage.setFullScreenExitHint("");
 
-        GameScreens.setMainStage(stage);
+        ScreenNavigator.setMainStage(stage);
 
-        GameScreens.showStartMenu();
+        ScreenNavigator.showStartMenu();
 
         stage.show();
     }

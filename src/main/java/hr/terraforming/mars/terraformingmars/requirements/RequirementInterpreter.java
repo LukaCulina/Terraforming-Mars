@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.model.requirements;
+package hr.terraforming.mars.terraformingmars.requirements;
 
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.enums.TagType;

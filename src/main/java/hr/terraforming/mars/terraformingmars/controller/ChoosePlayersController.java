@@ -2,7 +2,7 @@ package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.Player;
@@ -51,9 +51,9 @@ public class ChoosePlayersController {
         GameManager gameManager = new GameManager(players, gameBoard);
 
         if (playerType == PlayerType.LOCAL) {
-            GameScreens.showChooseCorporationScreen(gameManager);
+            ScreenNavigator.showChooseCorporationScreen(gameManager);
         } else if (playerType == PlayerType.HOST) {
-            GameScreens.showChooseNameScreen(gameManager, gameBoard);
+            ScreenNavigator.showChooseNameScreen(gameManager, gameBoard);
         }
     }
 
@@ -62,9 +62,9 @@ public class ChoosePlayersController {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
         if (playerType == PlayerType.LOCAL) {
-            GameScreens.showChooseModeScreen();
+            ScreenNavigator.showChooseModeScreen();
         } else if (playerType == PlayerType.HOST) {
-            GameScreens.showChooseOnlineModeScreen();
+            ScreenNavigator.showChooseOnlineModeScreen();
         }
     }
 }

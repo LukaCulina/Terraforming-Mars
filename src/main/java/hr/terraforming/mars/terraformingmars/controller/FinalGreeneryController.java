@@ -5,7 +5,7 @@ import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -50,7 +50,7 @@ public class FinalGreeneryController {
         log.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
         List<Player> rankedPlayers = gameManager.calculateFinalScores();
 
-        Platform.runLater(() -> GameScreens.showGameOverScreen(rankedPlayers));
+        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
     }
 
     private void showCurrentPlayer() {

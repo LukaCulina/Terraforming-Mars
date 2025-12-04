@@ -5,7 +5,7 @@ import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameStateCoordinator;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import lombok.extern.slf4j.Slf4j;
@@ -108,7 +108,7 @@ public class JoinGameController {
 
     @FXML
     private void handleBack() {
-        GameScreens.showChooseOnlineModeScreen();
+        ScreenNavigator.showChooseOnlineModeScreen();
     }
 
     private void showStatus(String message, boolean isError) {

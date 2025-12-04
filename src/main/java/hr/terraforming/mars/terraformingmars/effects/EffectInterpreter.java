@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.model.effects;
+package hr.terraforming.mars.terraformingmars.effects;
 
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.enums.TagType;

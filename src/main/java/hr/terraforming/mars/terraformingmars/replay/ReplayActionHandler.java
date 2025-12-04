@@ -7,7 +7,7 @@ import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import org.slf4j.Logger;
@@ -188,7 +188,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
     }
 
     public void showGameOverScreen(List<Player> rankedPlayers) {
-        Platform.runLater(() -> GameScreens.showGameOverScreen(rankedPlayers));
+        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
     }
 
     public void clearLastMoveLabel() {

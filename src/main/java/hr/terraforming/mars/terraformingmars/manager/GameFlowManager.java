@@ -5,7 +5,7 @@ import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
@@ -41,7 +41,7 @@ public class GameFlowManager {
         if (gameBoard.isFinalGeneration()) {
             log.info("This was the last generation. Starting final greenery conversion phase.");
 
-            GameScreens.startFinalGreeneryPhase(
+            ScreenNavigator.startFinalGreeneryPhase(
                     gameManager,
                     controller
             );

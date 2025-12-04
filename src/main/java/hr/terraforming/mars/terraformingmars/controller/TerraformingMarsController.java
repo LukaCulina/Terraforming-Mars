@@ -5,7 +5,7 @@ import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.ui.PlayerBoardLoader;
 import hr.terraforming.mars.terraformingmars.util.*;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import hr.terraforming.mars.terraformingmars.manager.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import javafx.animation.*;
@@ -158,7 +158,7 @@ public class TerraformingMarsController {
 
     public void startNewGame() {
         gameStateService.clearGameData();
-        GameScreens.showChooseModeScreen();
+        ScreenNavigator.showChooseModeScreen();
     }
 
     public void saveGame() {

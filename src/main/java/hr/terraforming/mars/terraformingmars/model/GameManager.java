@@ -50,7 +50,6 @@ public class GameManager implements Serializable {
 
     public void assignCorporationAndAdvance(Corporation chosenCorp) {
         getCurrentPlayer().setCorporation(chosenCorp);
-        log.info("Player {} chose corporation: {}", getCurrentPlayer().getName(), chosenCorp.name());
         this.currentPlayerIndex++;
 
         if (currentPlayerIndex >= players.size()) {
@@ -60,27 +59,20 @@ public class GameManager implements Serializable {
 
     public Player getCurrentPlayerForDraft() {
         if (cardDraftPlayerIndex >= players.size()) {
-            log.debug("getCurrentPlayerForDraft: Draft completed (index{} >= size{})",
-                    cardDraftPlayerIndex, players.size());
             return null;
         }
 
-        Player p = players.get(cardDraftPlayerIndex);
-        log.info("📋 getCurrentPlayerForDraft() → index={}, player='{}'", cardDraftPlayerIndex, p.getName());
-        return p;
+        return players.get(cardDraftPlayerIndex);
     }
 
     public boolean advanceDraftPlayer() {
-        int oldIndex = cardDraftPlayerIndex;
         cardDraftPlayerIndex++;
-        log.info("➡️ Draft player advanced: {} → {} (total players: {})", oldIndex, cardDraftPlayerIndex, players.size());
         return cardDraftPlayerIndex < players.size();
 
     }
 
     public void resetDraftPhase() {
         this.cardDraftPlayerIndex = 0;
-        log.info("🔄 Draft phase reset! cardDraftPlayerIndex = 0");
     }
 
     public List<Card> drawCards(int count) {
@@ -95,7 +87,6 @@ public class GameManager implements Serializable {
         List<Card> drawnCards = new ArrayList<>(shuffledCards.subList(0, cardsToTake));
         this.remainingCards.removeAll(drawnCards);
 
-        log.info("Drawn {} cards. Cards remaining in deck: {}.", drawnCards.size(), this.remainingCards.size());
         return drawnCards;
     }
 
@@ -117,34 +108,25 @@ public class GameManager implements Serializable {
     }
 
     private void nextPlayer() {
-        int oldIndex = this.currentPlayerIndex;
 
         if (passedPlayers.size() < players.size()) {
             do {
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
             } while (passedPlayers.contains(getCurrentPlayer()));
         }
-        log.info("🔄 nextPlayer() | OLD={} → NEW={} | CurrentPlayer={} | Thread: {}",
-                oldIndex, currentPlayerIndex, getCurrentPlayer().getName(), Thread.currentThread().getName());
     }
 
     public boolean passTurn() {
-        int oldIndex = this.currentPlayerIndex;
         Player p = getCurrentPlayer();
         if (!passedPlayers.contains(p)) {
             passedPlayers.add(p);
-
             log.info("{} has passed.", p.getName());
         }
         resetActionsTaken();
         if (passedPlayers.size() >= players.size()) {
-            log.info("⏭️ passTurn() | currentPlayerIndex UNCHANGED={} (all passed) | Thread: {}",
-                    currentPlayerIndex, Thread.currentThread().getName());
             return true;
         } else {
             nextPlayer();
-            log.info("⏭️ passTurn() | OLD currentPlayerIndex={} → NEW={} | Thread: {}",
-                    oldIndex, currentPlayerIndex, Thread.currentThread().getName());
             return false;
         }
     }
@@ -154,14 +136,12 @@ public class GameManager implements Serializable {
     }
 
     public void startNewGeneration() {
-        int oldIndex = this.currentPlayerIndex;
         generation++;
         currentPhase = GamePhase.RESEARCH;
         currentPlayerIndex = 0;
         this.actionsTakenThisTurn = 0;
         passedPlayers.clear();
-        log.info("🆕 startNewGeneration() | OLD currentPlayerIndex={} → NEW={} | Generation={} | Thread: {}",
-                oldIndex, currentPlayerIndex, generation, Thread.currentThread().getName());    }
+    }
 
     public void beginActionPhase() {
         this.currentPhase = GamePhase.ACTIONS;
@@ -173,9 +153,7 @@ public class GameManager implements Serializable {
 
     public List<Player> getPlayers() { return Collections.unmodifiableList(players); }
 
-    public GameBoard getGameBoard() {
-        return board;
-    }
+    public GameBoard getGameBoard() { return board; }
 
     public List<Player> calculateFinalScores() {
         return GamePhaseUtils.calculateFinalScores(players);
@@ -197,8 +175,6 @@ public class GameManager implements Serializable {
         this.remainingCorporations.addAll(CorporationFactory.getAllCorporations());
         this.remainingCards.clear();
         this.remainingCards.addAll(CardFactory.getAllCards());
-
-        log.info("GameManager has been reset for a new game.");
     }
 
     public void setCurrentPlayerByName(String playerName) {
@@ -212,12 +188,12 @@ public class GameManager implements Serializable {
     }
 
     public Player getPlayerByName(String playerName) {
-        for (Player player : players) {
-            if (player.getName().equals(playerName)) {
-                return player;
-            }
-        }
-        log.warn("Player with name '{}' not found!", playerName);
-        return null;
+        return players.stream()
+                .filter(p -> p.getName().equals(playerName))
+                .findFirst()
+                .orElseGet(() -> {
+                    log.warn("Player '{}' not found!", playerName);
+                    return null;
+                });
     }
 }

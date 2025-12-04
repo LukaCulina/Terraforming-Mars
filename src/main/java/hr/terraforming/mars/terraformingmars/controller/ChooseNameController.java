@@ -7,7 +7,7 @@ import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import hr.terraforming.mars.terraformingmars.network.HostGameStateCoordinator;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import lombok.extern.slf4j.Slf4j;
@@ -44,13 +44,13 @@ public class ChooseNameController {
         startServerInBackground(gameManager, gameBoard);
 
         int playerCount = ApplicationConfiguration.getInstance().getPlayerCount();
-        GameScreens.showWaitingForPlayersScreen(gameManager, playerCount);
+        ScreenNavigator.showWaitingForPlayersScreen(gameManager, playerCount);
     }
 
 
     @FXML
     private void handleBack() {
-        GameScreens.showChoosePlayersScreen();
+        ScreenNavigator.showChoosePlayersScreen();
     }
 
     private void startServerInBackground(GameManager gameManager, GameBoard gameBoard) {

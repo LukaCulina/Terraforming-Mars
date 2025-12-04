@@ -3,7 +3,7 @@ package hr.terraforming.mars.terraformingmars.model;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
-import hr.terraforming.mars.terraformingmars.model.effects.Effect;
+import hr.terraforming.mars.terraformingmars.effects.Effect;
 import lombok.Getter;
 
 import java.io.IOException;

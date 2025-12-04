@@ -1,7 +1,7 @@
 package hr.terraforming.mars.terraformingmars.controller;
 
 import hr.terraforming.mars.terraformingmars.model.GameManager;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -63,7 +63,7 @@ public class WaitingScreenController {
 
             cleanup();
 
-            GameScreens.showChooseCorporationScreen(gameManager);
+            ScreenNavigator.showChooseCorporationScreen(gameManager);
         }
     }
 

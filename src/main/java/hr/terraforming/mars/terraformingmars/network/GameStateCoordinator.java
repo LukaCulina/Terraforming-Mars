@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.enums.GameplayPhase;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.view.GameScreens;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +54,7 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (allJoined) {
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
-            GameScreens.showChooseCorporationScreen(state.gameManager());
+            ScreenNavigator.showChooseCorporationScreen(state.gameManager());
         }
     }
 
@@ -64,13 +64,13 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (allChosen) {
             currentPhase = GameplayPhase.CARD_DRAFT;
-            GameScreens.showInitialCardDraftScreen(state.gameManager());
+            ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
             return;
         }
         Player currentPlayer = state.gameManager().getCurrentPlayer();
 
         if (currentPlayer.getCorporation() == null) {
-            GameScreens.showChooseCorporationScreen(state.gameManager());
+            ScreenNavigator.showChooseCorporationScreen(state.gameManager());
         }
     }
 
@@ -80,11 +80,11 @@ public class GameStateCoordinator implements GameStateListener {
         if (currentPlayerForDraft == null) {
             currentPhase = GameplayPhase.PLAYING;
 
-            GameScreens.startGameWithChosenCards(state);
+            ScreenNavigator.startGameWithChosenCards(state);
             return;
         }
 
-        GameScreens.showInitialCardDraftScreen(state.gameManager());
+        ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
     }
 
     private void handlePlayingPhase(GameState state) {
