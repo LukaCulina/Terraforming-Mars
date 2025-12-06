@@ -3,9 +3,8 @@ package hr.terraforming.mars.terraformingmars.network;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
-import hr.terraforming.mars.terraformingmars.model.GameBoard;
-import hr.terraforming.mars.terraformingmars.model.GameManager;
-import hr.terraforming.mars.terraformingmars.model.GameState;
+import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +68,56 @@ public class GameServerThread implements Runnable{
         }
     }
 
+    public void sendToPlayer(String playerName, Object message) {
+        for (ClientHandler client : connectedClients) {
+            if (playerName.equals(client.getPlayerName())) {
+                client.sendObject(message);
+                return;
+            }
+        }
+        log.warn("Cannot send message to player {}, client not found.", playerName);
+    }
+
+    public void distributeInitialCorporations() {
+        log.info("🎲 HOST distributing corporations to all players...");
+
+        gameManager.shuffleCorporations();
+
+        for (Player player : gameManager.getPlayers()) {
+            List<Corporation> offer = gameManager.drawCorporations(2);
+
+            if (player.getName().equals(ApplicationConfiguration.getInstance().getMyPlayerName())) {
+                Platform.runLater(() ->
+                        ScreenNavigator.showChooseCorporationScreen(player, offer, gameManager)
+                );
+            }
+            else {
+                List<String> names = offer.stream().map(Corporation::name).toList();
+                sendToPlayer(player.getName(), new CorporationOfferMessage(player.getName(), names));
+            }
+        }
+    }
+
+    public void distributeInitialCards() {
+        log.info("🎴 HOST distributing initial project cards...");
+
+        gameManager.shuffleCards();
+
+        for (Player player : gameManager.getPlayers()) {
+            List<Card> offer = gameManager.drawCards(6);
+
+            if (player.getName().equals(ApplicationConfiguration.getInstance().getMyPlayerName())) {
+                Platform.runLater(() ->
+                        ScreenNavigator.showInitialCardDraftScreen(player, offer, gameManager)
+                );
+            } else {
+                List<String> names = offer.stream().map(Card::getName).toList();
+                sendToPlayer(player.getName(), new InitialCardsOfferMessage(player.getName(), names));
+            }
+        }
+    }
+
+
     private void waitForHandlerReady(ClientHandler handler) {
         boolean initialized = handler.waitUntilReady(5000);
 
@@ -91,16 +140,12 @@ public class GameServerThread implements Runnable{
     public void addLocalListener(GameStateListener listener) {
         if (listener != null) {
             this.localListeners.add(listener);
-            log.info("🔌 Listener added. Total listeners: {}", localListeners.size());
+            log.info("Listener added. Total listeners: {}", localListeners.size());
         }
     }
 
-    public void removeLocalListener(GameStateListener listener) {
-        this.localListeners.remove(listener);
-    }
-
     public void broadcastGameState(GameState state) {
-        log.debug("📡 Broadcasting to {} clients...", connectedClients.size());
+        log.debug("Broadcasting to {} clients...", connectedClients.size());
 
         for (GameStateListener listener : localListeners) {
             log.info("Listener: {}", listener.getClass().getSimpleName());
@@ -119,6 +164,11 @@ public class GameServerThread implements Runnable{
                 }
             });
         }
+    }
+
+
+    public void removeLocalListener(GameStateListener listener) {
+        this.localListeners.remove(listener);
     }
 
     public void shutdown() {

@@ -50,6 +50,10 @@ public class ChoosePlayersController {
         GameBoard gameBoard = new GameBoard();
         GameManager gameManager = new GameManager(players, gameBoard);
 
+        gameManager.shuffleCorporations();
+        gameManager.shuffleCards();
+        log.info("Deck shuffled for new game.");
+
         if (playerType == PlayerType.LOCAL) {
             ScreenNavigator.showChooseCorporationScreen(gameManager);
         } else if (playerType == PlayerType.HOST) {

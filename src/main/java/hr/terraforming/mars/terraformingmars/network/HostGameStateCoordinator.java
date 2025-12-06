@@ -32,7 +32,7 @@ public class HostGameStateCoordinator implements GameStateListener {
         if (allJoined) {
             log.info("HOST: All players joined, transitioning to Corporation Selection");
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
-            ScreenNavigator.showChooseCorporationScreen(state.gameManager());
+            ApplicationConfiguration.getInstance().getGameServer().distributeInitialCorporations();
         }
     }
 
@@ -43,11 +43,8 @@ public class HostGameStateCoordinator implements GameStateListener {
         if (allChosen) {
             log.info("HOST: All players chose corporations, transitioning to Card Draft");
             currentPhase = GameplayPhase.CARD_DRAFT;
-            ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
-            return;
+            ApplicationConfiguration.getInstance().getGameServer().distributeInitialCards();
         }
-
-        ScreenNavigator.showChooseCorporationScreen(state.gameManager());
     }
 
     private void handleCardDraft(GameState state) {
@@ -57,8 +54,6 @@ public class HostGameStateCoordinator implements GameStateListener {
             log.info("HOST: Draft completed, starting game");
             currentPhase = GameplayPhase.PLAYING;
             ScreenNavigator.startGameWithChosenCards(state);
-        } else {
-            ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
         }
     }
 

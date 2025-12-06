@@ -32,24 +32,24 @@ public class ChooseCorporationController {
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
         if (myPlayerName != null && !player.getName().equals(myPlayerName)) {
-            showWaitingForPlayer(player.getName());
+            showWaitingForPlayer();
         } else {
             showCorporationSelection(player, offer);
         }
     }
 
-    private void showWaitingForPlayer(String playerName) {
+    private void showWaitingForPlayer(/*String playerName*/) {
         chooseCorpLabel.setText("");
         chooseCorpLabel.getStyleClass().clear();
 
-        chooseCorpLabel.setText("Waiting for " + playerName + " to choose their corporation...");
+        chooseCorpLabel.setText("Corporation Selected!\nWaiting for other players to finish...");
         chooseCorpLabel.getStyleClass().add("waiting-text");
 
         corporationButtonsContainer.getChildren().clear();
         confirmButton.setVisible(false);
         confirmButton.setManaged(false);
 
-        log.info("Waiting for {} to choose corporation", playerName);
+        log.info("Transitioned to waiting screen.");
     }
 
     private void showCorporationSelection(Player player, List<Corporation> offer) {
@@ -108,21 +108,25 @@ public class ChooseCorporationController {
                 if (broadcaster != null) {
                     broadcaster.broadcast();
                 }
+                showWaitingForPlayer();
             }
             case PlayerType.CLIENT -> {
                 GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
                 if (client != null) {
                     client.sendCorporationChoice(selectedCorporation.name());
                 }
+                showWaitingForPlayer();
             }
             default -> {
-                boolean allChosen = gameManager.getPlayers().stream()
-                        .allMatch(p -> p.getCorporation() != null);
 
-                if (allChosen) {
-                    ScreenNavigator.showInitialCardDraftScreen(gameManager);
-                } else {
-                    ScreenNavigator.showChooseCorporationScreen(gameManager);
+                if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {
+                    boolean allChosen = gameManager.getPlayers().stream()
+                            .allMatch(p -> p.getCorporation() != null);
+                    if (allChosen) {
+                        ScreenNavigator.showInitialCardDraftScreen(gameManager);
+                    } else {
+                        ScreenNavigator.showChooseCorporationScreen(gameManager);
+                    }
                 }
             }
         }

@@ -7,6 +7,7 @@ import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
 import javafx.application.Platform;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +29,7 @@ public class ClientHandler implements Runnable {
     private volatile boolean ready = false;
     private final CompletableFuture<Void> readyFuture = new CompletableFuture<>();
     private volatile boolean running = true;
+    @Getter private String playerName;
 
     public ClientHandler(Socket socket, GameManager gameManager, ActionManager actionManager) {
         this.socket = socket;
@@ -71,6 +73,9 @@ public class ClientHandler implements Runnable {
     }
 
     private void handlePlayerName(PlayerNameMessage msg) {
+        this.playerName = msg.playerName();
+        log.info("Associating client handler with player: {}", playerName);
+
         for (Player p : gameManager.getPlayers()) {
             if (p.getName().startsWith("Player ")) {
                 p.setName(msg.playerName());
@@ -84,15 +89,25 @@ public class ClientHandler implements Runnable {
         Corporation corp = CorporationFactory.getCorporationByName(msg.corporationName());
 
         if (corp != null) {
-            gameManager.assignCorporationAndAdvance(corp);
+            Player p = gameManager.getPlayerByName(this.playerName);
+            if (p != null) {
+                p.setCorporation(corp);
+            }
             broadcastIfAvailable();
+            boolean allChosen = gameManager.getPlayers().stream()
+                    .allMatch(player -> player.getCorporation() != null);
+
+            if (allChosen) {
+                log.info("All of the players have chosen corporations. Distributing initial cards...");
+            }
         }
     }
 
     private void handleCardChoice(CardChoiceMessage msg) {
-        Player draftPlayer = gameManager.getCurrentPlayerForDraft();
-        if (draftPlayer == null) {
-            log.warn("No current draft player, ignoring card choice");
+        Player player = gameManager.getPlayerByName(this.playerName);
+
+        if (player == null) {
+            log.error("Unknown player sent card choice: {}", this.playerName);
             return;
         }
 
@@ -102,29 +117,32 @@ public class ClientHandler implements Runnable {
                 .toList();
 
         int cost = boughtCards.size() * 3;
-        draftPlayer.spendMC(cost);
-        draftPlayer.getHand().addAll(boughtCards);
 
-        boolean morePlayers = gameManager.advanceDraftPlayer();
+        if (player.getMC() >= cost) {
+            player.spendMC(cost);
+            player.getHand().addAll(boughtCards);
+        } else {
+            log.warn("Player {} tried to buy cards without enough MC!", this.playerName);
+            return;
+        }
 
-        boolean broadcastHandledExternally = false;
+        synchronized (gameManager) {
+            boolean morePlayers = gameManager.advanceDraftPlayer();
 
-        if (!morePlayers) {
-            if (gameManager.getGeneration() == 0) {
-                GameMoveUtils.saveInitialSetupMove(gameManager);
-                gameManager.startGame();
-            } else {
-                broadcastHandledExternally = true;
-                Platform.runLater(() -> {
-                    var flowManager = actionManager.getGameFlowManager();
-                    flowManager.onResearchComplete();
-                });
+            if (!morePlayers) {
+                if (gameManager.getGeneration() == 0) {
+                    GameMoveUtils.saveInitialSetupMove(gameManager);
+                    gameManager.startGame();
+                } else {
+                    Platform.runLater(() -> {
+                        var flowManager = actionManager.getGameFlowManager();
+                        if(flowManager != null) flowManager.onResearchComplete();
+                    });
+                }
             }
         }
 
-        if (!broadcastHandledExternally) {
-            broadcastIfAvailable();
-        }
+        broadcastIfAvailable();
     }
 
     private void handleGameMove(GameMove move) {
@@ -193,6 +211,19 @@ public class ClientHandler implements Runnable {
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException e) {
             log.error("Error closing client resources", e);
+        }
+    }
+
+    public synchronized void sendObject(Object message) {
+        if (!ready) return;
+        try {
+            out.writeObject(message);
+            out.reset();
+            out.flush();
+            log.debug("Sent object of type {} to {}", message.getClass().getSimpleName(), playerName);
+        } catch (IOException e) {
+            log.error("Failed to send object to {}", playerName, e);
+            cleanup();
         }
     }
 }

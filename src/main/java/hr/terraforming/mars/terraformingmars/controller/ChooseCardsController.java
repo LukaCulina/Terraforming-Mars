@@ -48,17 +48,17 @@ public class ChooseCardsController {
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
         if (myPlayerName != null && !player.getName().equals(myPlayerName)) {
-            showWaitingForPlayer(player.getName());
+            showWaitingForPlayer();
         } else {
             showCardSelection(player, offer);
         }
     }
 
-    private void showWaitingForPlayer(String playerName) {
+    private void showWaitingForPlayer() {
         chooseCardsLabel.setText("");
         chooseCardsLabel.getStyleClass().clear();
 
-        chooseCardsLabel.setText("Waiting for " + playerName + " to choose their cards...");
+        chooseCardsLabel.setText("Cards bought!\nWaiting for other players...");
         chooseCardsLabel.getStyleClass().add("waiting-text");
 
         remainingMCLabel.setVisible(false);
@@ -67,7 +67,7 @@ public class ChooseCardsController {
         confirmButton.setVisible(false);
         confirmButton.setManaged(false);
 
-        log.info("Waiting for {} to choose cards", playerName);
+        log.info("Transitioned to waiting screen.");
     }
 
     private void showCardSelection(Player player, List<Card> offer) {
@@ -133,7 +133,7 @@ public class ChooseCardsController {
                 client.sendCardChoice(boughtCards);
             }
             if (!isResearchPhase) {
-                showWaitingForPlayer(player.getName());
+                showWaitingForPlayer();
                 return;
             }
         }

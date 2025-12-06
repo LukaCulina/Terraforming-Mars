@@ -54,7 +54,8 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (allJoined) {
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
-            ScreenNavigator.showChooseCorporationScreen(state.gameManager());
+            log.info("All of the players have joined the game");
+
         }
     }
 
@@ -64,13 +65,7 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (allChosen) {
             currentPhase = GameplayPhase.CARD_DRAFT;
-            ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
-            return;
-        }
-        Player currentPlayer = state.gameManager().getCurrentPlayer();
-
-        if (currentPlayer.getCorporation() == null) {
-            ScreenNavigator.showChooseCorporationScreen(state.gameManager());
+            log.info("All of the players have chosen their corporation");
         }
     }
 
@@ -79,12 +74,9 @@ public class GameStateCoordinator implements GameStateListener {
 
         if (currentPlayerForDraft == null) {
             currentPhase = GameplayPhase.PLAYING;
-
+            log.info("All of the players have chosen their cards");
             ScreenNavigator.startGameWithChosenCards(state);
-            return;
         }
-
-        ScreenNavigator.showInitialCardDraftScreen(state.gameManager());
     }
 
     private void handlePlayingPhase(GameState state) {

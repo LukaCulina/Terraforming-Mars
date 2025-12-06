@@ -89,22 +89,35 @@ public class ScreenNavigator {
 
     public static void showChooseCorporationScreen(GameManager gameManager) {
         Player currentPlayer = gameManager.getCurrentPlayer();
-
         List<Corporation> offer = gameManager.getCorporationOffer();
+        showChooseCorporationScreen(currentPlayer, offer, gameManager);
+    }
 
-        ScreenLoader.showAsMainScreen(mainStage, "ChooseCorporation.fxml", "Choose for " + currentPlayer.getName(),
-                (ChooseCorporationController c) -> c.setCorporationOptions(currentPlayer, offer, gameManager));
+    public static void showChooseCorporationScreen(Player player, List<Corporation> offer, GameManager gameManager) {
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "ChooseCorporation.fxml",
+                "Choose for " + player.getName(),
+                (ChooseCorporationController c) -> c.setCorporationOptions(player, offer, gameManager)
+        );
     }
 
     public static void showInitialCardDraftScreen(GameManager gameManager) {
         Player currentPlayer = gameManager.getCurrentPlayerForDraft();
         List<Card> offer = gameManager.drawCards(STARTING_CARDS);
+        showInitialCardDraftScreen(currentPlayer, offer, gameManager);
+    }
 
-        Consumer<List<Card>> onConfirmAction = chosenCards ->
-            handleCardDraftConfirmation(chosenCards, currentPlayer, gameManager);
+    public static void showInitialCardDraftScreen(Player player, List<Card> offer, GameManager gameManager) {
+        Consumer<List<Card>> onConfirmAction =
+                chosenCards -> handleCardDraftConfirmation(chosenCards, player, gameManager);
 
-        ScreenLoader.showAsMainScreen(mainStage, "ChooseCards.fxml", "Choose Initial Cards - " + currentPlayer.getName(),
-                (ChooseCardsController c) -> c.setup(currentPlayer, offer, onConfirmAction, gameManager, false));
+        ScreenLoader.showAsMainScreen(
+                mainStage,
+                "ChooseCards.fxml",
+                "Choose Initial Cards - " + player.getName(),
+                (ChooseCardsController c) -> c.setup(player, offer, onConfirmAction, gameManager, false)
+        );
     }
 
     private static void handleCardDraftConfirmation(

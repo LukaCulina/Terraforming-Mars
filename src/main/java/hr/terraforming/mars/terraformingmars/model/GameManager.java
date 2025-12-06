@@ -39,13 +39,32 @@ public class GameManager implements Serializable {
         }
     }
 
+    public void shuffleCorporations() {
+        Collections.shuffle(this.remainingCorporations);
+        log.info("Corporations shuffled. Remaining: {}", remainingCorporations.size());
+    }
+
+    public void shuffleCards() {
+        Collections.shuffle(this.remainingCards);
+        log.info("Project cards shuffled. Remaining: {}", remainingCards.size());
+    }
+
+    public List<Corporation> drawCorporations(int count) {
+        if (remainingCorporations.isEmpty()) {
+            log.warn("No more corporations in the deck!");
+            return new ArrayList<>();
+        }
+
+        int toTake = Math.min(count, remainingCorporations.size());
+        List<Corporation> drawn = new ArrayList<>(remainingCorporations.subList(0, toTake));
+
+        remainingCorporations.removeAll(drawn);
+
+        return drawn;
+    }
+
     public List<Corporation> getCorporationOffer() {
-        List<Corporation> shuffledCorps = new ArrayList<>(remainingCorporations);
-        Collections.shuffle(shuffledCorps);
-        int count = Math.min(2, shuffledCorps.size());
-        List<Corporation> offer = new ArrayList<>(shuffledCorps.subList(0, count));
-        this.remainingCorporations.removeAll(offer);
-        return offer;
+        return drawCorporations(2);
     }
 
     public void assignCorporationAndAdvance(Corporation chosenCorp) {
@@ -81,11 +100,10 @@ public class GameManager implements Serializable {
             return new ArrayList<>();
         }
 
-        List<Card> shuffledCards = new ArrayList<>(remainingCards);
-        Collections.shuffle(shuffledCards);
-        int cardsToTake = Math.min(count, shuffledCards.size());
-        List<Card> drawnCards = new ArrayList<>(shuffledCards.subList(0, cardsToTake));
+        int cardsToTake = Math.min(count, remainingCards.size());
+        List<Card> drawnCards = new ArrayList<>(remainingCards.subList(0, cardsToTake));
         this.remainingCards.removeAll(drawnCards);
+
 
         return drawnCards;
     }
