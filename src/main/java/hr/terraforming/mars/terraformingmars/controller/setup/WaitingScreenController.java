@@ -26,8 +26,12 @@ public class WaitingScreenController {
         this.expectedPlayerCount = expectedPlayerCount;
 
         updateStatus();
-
         startPolling();
+    }
+
+
+    private void updateStatus() {
+        statusLabel.setText("Waiting for all players to join...");
     }
 
     private void startPolling() {
@@ -41,13 +45,6 @@ public class WaitingScreenController {
         pollingTimeline.play();
     }
 
-    public void cleanup() {
-        if (pollingTimeline != null) {
-            pollingTimeline.stop();
-            log.info("Polling timeline stopped");
-        }
-    }
-
     private void checkIfAllPlayersJoined() {
         int joinedCount = 0;
         for (var player : gameManager.getPlayers()) {
@@ -59,15 +56,16 @@ public class WaitingScreenController {
         playerCountLabel.setText(joinedCount + " / " + expectedPlayerCount + " players connected");
 
         if (joinedCount >= expectedPlayerCount) {
-            log.info("✅ All {} players have joined!", expectedPlayerCount);
-
+            log.info("All {} players have joined!", expectedPlayerCount);
             cleanup();
-
             ScreenNavigator.showChooseCorporationScreen(gameManager);
         }
     }
 
-    private void updateStatus() {
-        statusLabel.setText("Waiting for all players to join...");
+    public void cleanup() {
+        if (pollingTimeline != null) {
+            pollingTimeline.stop();
+            log.info("Polling timeline stopped");
+        }
     }
 }

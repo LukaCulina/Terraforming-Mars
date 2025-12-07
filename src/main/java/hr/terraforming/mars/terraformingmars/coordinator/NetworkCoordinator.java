@@ -33,13 +33,13 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
             NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
             if (broadcaster != null) {
                 broadcaster.broadcast();
-                log.debug("📡 HOST broadcasted game state");
+                log.debug("HOST broadcasted game state");
             }
         } else if (playerType == PlayerType.CLIENT) {
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
             if (client != null) {
                 client.sendMove(move);
-                log.debug("📤 CLIENT sent move: {}", move.actionType());
+                log.debug("CLIENT sent move: {}", move.actionType());
             }
         }
     }
@@ -59,11 +59,11 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
 
     private boolean validateGameState(GameState state) {
         if (state == null) {
-            log.error("❌ Received null GameState!");
+            log.error("Received null GameState!");
             return false;
         }
         if (state.gameManager() == null || state.gameBoard() == null) {
-            log.error("❌ Incomplete GameState! Manager={}, Board={}",
+            log.error("Incomplete GameState! Manager={}, Board={}",
                     state.gameManager(), state.gameBoard());
             return false;
         }
@@ -112,10 +112,10 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
 
         if (isMyTurn && isActionPhase) {
             controller.setGameControlsEnabled(true);
-            log.debug("✅ Controls ENABLED for {}", myPlayerName);
+            log.debug("Controls ENABLED for {}", myPlayerName);
         } else {
             controller.setGameControlsEnabled(false);
-            log.debug("🚫 Controls DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
+            log.debug("Controls DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
         }
     }
 
