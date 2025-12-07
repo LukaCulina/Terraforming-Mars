@@ -59,7 +59,8 @@ public class ChatManager {
             startChatPolling();
 
         } catch (Exception e) {
-            log.error("Failed to connect to chat", e);
+            log.warn("Chat service unavailable (ignoring): {}", e.getMessage());
+            chatService = null;
         }
     }
 

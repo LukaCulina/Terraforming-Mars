@@ -22,13 +22,7 @@ public class ResizeHandler {
             resizePause.playFromStart();
         };
 
-        pane.widthProperty().addListener((_, oldV, newV) -> {
-            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) triggerRedraw.run();
-        });
-
-        pane.heightProperty().addListener((_, oldV, newV) -> {
-            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) triggerRedraw.run();
-        });
+        addThresholdListener(pane, triggerRedraw);
     }
 
     public static void attachFontResizeListeners(Pane pane, Runnable callback) {
@@ -40,8 +34,21 @@ public class ResizeHandler {
             resizePause.playFromStart();
         };
 
-        pane.widthProperty().addListener((_, _, _) -> scheduleCallback.run());
-        pane.heightProperty().addListener((_, _, _) -> scheduleCallback.run());
+        addThresholdListener(pane, scheduleCallback);
+    }
+
+    private static void addThresholdListener(Pane pane, Runnable onResize) {
+        pane.widthProperty().addListener((_, oldV, newV) -> {
+            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) {
+                onResize.run();
+            }
+        });
+
+        pane.heightProperty().addListener((_, oldV, newV) -> {
+            if (Math.abs(newV.doubleValue() - oldV.doubleValue()) > 10) {
+                onResize.run();
+            }
+        });
     }
 
     public static void updateFonts(Pane pane, FontMapping... mappings) {
@@ -63,4 +70,3 @@ public class ResizeHandler {
 
     public record FontMapping(String styleClass, double scaleFactor) {}
 }
-

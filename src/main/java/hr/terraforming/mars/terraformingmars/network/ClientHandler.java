@@ -58,8 +58,9 @@ public class ClientHandler implements Runnable {
             } else {
                 log.info("Client disconnected gracefully");
             }
+        } finally {
+            cleanup();
         }
-        cleanup();
     }
 
     private void handleMessage(Object obj) {
