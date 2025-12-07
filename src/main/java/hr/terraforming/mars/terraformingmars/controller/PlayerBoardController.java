@@ -144,24 +144,48 @@ public class PlayerBoardController {
 
     private void updateTagsLegend() {
         if (player == null || tagsLegendPane == null) return;
-        tagsLegendPane.getChildren().clear();
 
-        for (TagType tag : EnumSet.allOf(TagType.class)) {
-            int count = player.countTags(tag);
-            HBox tagEntry = new HBox(5);
-            tagEntry.setAlignment(Pos.CENTER_LEFT);
+        if (tagsLegendPane.getChildren().isEmpty()) {
+            for (TagType tag : EnumSet.allOf(TagType.class)) {
+                tagsLegendPane.getChildren().add(createTagEntry(tag));
+            }
+            return;
+        }
 
-            Label countLabel = new Label(String.valueOf(count));
-            countLabel.getStyleClass().add("tag-text-label");
+        for (var node : tagsLegendPane.getChildren()) {
+            if (node instanceof HBox tagEntry) {
+                updateSingleTagEntry(tagEntry);
+            }
+        }
+    }
 
-            Region tagNode = CardViewBuilder.createTagNode(tag);
+    private HBox createTagEntry(TagType tag) {
+        HBox tagEntry = new HBox(5);
+        tagEntry.setAlignment(Pos.CENTER_LEFT);
+        tagEntry.setUserData(tag);
 
-            String tagName = tag.name().substring(0, 1).toUpperCase() + tag.name().substring(1).toLowerCase();
-            Label nameLabel = new Label(tagName);
-            nameLabel.getStyleClass().add("tag-text-label");
+        Label countLabel = new Label(String.valueOf(player.countTags(tag)));
+        countLabel.getStyleClass().add("tag-text-label");
 
-            tagEntry.getChildren().addAll(countLabel, tagNode, nameLabel);
-            tagsLegendPane.getChildren().add(tagEntry);
+        Region tagNode = CardViewBuilder.createTagNode(tag);
+
+        String tagName = tag.name().substring(0, 1).toUpperCase() + tag.name().substring(1).toLowerCase();
+        Label nameLabel = new Label(tagName);
+        nameLabel.getStyleClass().add("tag-text-label");
+
+        tagEntry.getChildren().addAll(countLabel, tagNode, nameLabel);
+        return tagEntry;
+    }
+
+    private void updateSingleTagEntry(HBox tagEntry) {
+        TagType tag = (TagType) tagEntry.getUserData();
+        if (tag == null || tagEntry.getChildren().isEmpty()) return;
+
+        if (tagEntry.getChildren().getFirst() instanceof Label countLabel) {
+            String newText = String.valueOf(player.countTags(tag));
+            if (!countLabel.getText().equals(newText)) {
+                countLabel.setText(newText);
+            }
         }
     }
 
