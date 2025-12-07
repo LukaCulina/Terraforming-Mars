@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.controller;
+package hr.terraforming.mars.terraformingmars.controller.setup;
 
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
@@ -113,10 +113,7 @@ public class JoinGameController {
 
     private void showStatus(String message, boolean isError) {
         statusLabel.setText(message);
-        if (isError) {
-            statusLabel.setStyle("-fx-text-fill: #ff4444; -fx-font-weight: bold;");
-        } else {
-            statusLabel.setStyle("-fx-text-fill: #44ff44; -fx-font-weight: bold;");
-        }
+        statusLabel.getStyleClass().removeAll("status-label-error", "status-label-ok");
+        statusLabel.getStyleClass().add(isError ? "status-label-error" : "status-label-ok");
     }
 }

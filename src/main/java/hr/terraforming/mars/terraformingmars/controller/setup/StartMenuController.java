@@ -1,5 +1,6 @@
-package hr.terraforming.mars.terraformingmars.controller;
+package hr.terraforming.mars.terraformingmars.controller.setup;
 
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;

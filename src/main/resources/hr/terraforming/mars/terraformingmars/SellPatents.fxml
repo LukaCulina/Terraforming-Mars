@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.terraforming.mars.terraformingmars.controller.SellPatentsController"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.game.SellPatentsController"
       styleClass="choose-window" alignment="CENTER" spacing="15">
 
     <Label text="Select cards to sell (1 MC each)" styleClass="choose-label"/>

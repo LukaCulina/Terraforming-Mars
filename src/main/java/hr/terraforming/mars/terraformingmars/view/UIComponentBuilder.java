@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.view;
 
-import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.Milestone;
 import hr.terraforming.mars.terraformingmars.enums.StandardProject;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;

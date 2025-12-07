@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.view.components;
+package hr.terraforming.mars.terraformingmars.view.component;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;

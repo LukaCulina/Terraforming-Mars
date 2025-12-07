@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.terraforming.mars.terraformingmars.controller.FinalGreeneryController"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.game.FinalGreeneryController"
       styleClass="choose-window" alignment="CENTER" spacing="20">
 
     <Label text="Final Greenery Conversion" styleClass="choose-label"/>

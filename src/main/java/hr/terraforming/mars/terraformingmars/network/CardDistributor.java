@@ -1,8 +1,10 @@
 package hr.terraforming.mars.terraformingmars.network;
 
-import hr.terraforming.mars.terraformingmars.controller.ChooseCardsController;
+import hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.network.message.CorporationOfferMessage;
+import hr.terraforming.mars.terraformingmars.network.message.CardOfferMessage;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
@@ -38,7 +40,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
                 Platform.runLater(() -> ScreenNavigator.showInitialCardDraftScreen(player, offer, gameManager));
             } else {
                 List<String> names = offer.stream().map(Card::getName).toList();
-                serverThread.sendToPlayer(player.getName(), new InitialCardsOfferMessage(player.getName(), names));
+                serverThread.sendToPlayer(player.getName(), new CardOfferMessage(player.getName(), names));
             }
         }
     }
@@ -62,7 +64,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
                 ));
             } else {
                 List<String> names = offer.stream().map(Card::getName).toList();
-                serverThread.sendToPlayer(player.getName(), new InitialCardsOfferMessage(player.getName(), names));
+                serverThread.sendToPlayer(player.getName(), new CardOfferMessage(player.getName(), names));
             }
         }
     }

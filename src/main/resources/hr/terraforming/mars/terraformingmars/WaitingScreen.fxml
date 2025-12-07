@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.terraforming.mars.terraformingmars.controller.WaitingScreenController"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.setup.WaitingScreenController"
       styleClass="choose-window" alignment="CENTER" spacing="30">
 
     <padding>

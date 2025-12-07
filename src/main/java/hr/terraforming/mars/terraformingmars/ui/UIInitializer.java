@@ -1,14 +1,14 @@
 package hr.terraforming.mars.terraformingmars.ui;
 
-import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.manager.UIManager;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
-import hr.terraforming.mars.terraformingmars.view.components.ActionPanelComponents;
-import hr.terraforming.mars.terraformingmars.view.components.GlobalStatusComponents;
-import hr.terraforming.mars.terraformingmars.view.components.PlayerControlComponents;
+import hr.terraforming.mars.terraformingmars.view.component.ActionPanelComponents;
+import hr.terraforming.mars.terraformingmars.view.component.GlobalStatusComponents;
+import hr.terraforming.mars.terraformingmars.view.component.PlayerControlComponents;
 
 public class UIInitializer {
 

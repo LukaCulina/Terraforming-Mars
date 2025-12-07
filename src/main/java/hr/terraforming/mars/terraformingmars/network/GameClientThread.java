@@ -1,9 +1,10 @@
 package hr.terraforming.mars.terraformingmars.network;
 
-import hr.terraforming.mars.terraformingmars.controller.ChooseCardsController;
+import hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.network.message.*;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
@@ -58,7 +59,7 @@ public class GameClientThread implements Runnable {
                 else if (receivedObject instanceof CorporationOfferMessage msg) {
                     Platform.runLater(() -> handleCorporationOffer(msg));
                 }
-                else if (receivedObject instanceof InitialCardsOfferMessage msg) {
+                else if (receivedObject instanceof CardOfferMessage msg) {
                     Platform.runLater(() -> handleInitialCardsOffer(msg));
                 }
             }
@@ -89,7 +90,7 @@ public class GameClientThread implements Runnable {
         ScreenNavigator.showChooseCorporationScreen(me, offer, gm);
     }
 
-    private void handleInitialCardsOffer(InitialCardsOfferMessage msg) {
+    private void handleInitialCardsOffer(CardOfferMessage msg) {
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
         if (!myName.equals(msg.playerName())) return;
 

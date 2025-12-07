@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.network;
+package hr.terraforming.mars.terraformingmars.network.message;
 
 import java.io.Serializable;
 

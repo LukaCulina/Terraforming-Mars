@@ -6,7 +6,7 @@ import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
-import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.HashMap;

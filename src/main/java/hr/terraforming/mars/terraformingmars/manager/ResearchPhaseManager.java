@@ -1,7 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
-import hr.terraforming.mars.terraformingmars.controller.ChooseCardsController;
-import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;

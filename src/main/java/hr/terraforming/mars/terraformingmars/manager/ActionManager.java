@@ -1,7 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
-import hr.terraforming.mars.terraformingmars.controller.SellPatentsController;
-import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.SellPatentsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;

@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.replay;
 
-import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;

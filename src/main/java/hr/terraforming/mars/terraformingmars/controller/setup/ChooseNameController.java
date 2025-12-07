@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.controller;
+package hr.terraforming.mars.terraformingmars.controller.setup;
 
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;

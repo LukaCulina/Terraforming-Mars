@@ -597,6 +597,14 @@
     -fx-padding: 10;
 }
 
+.status-label-error {
+    -fx-text-fill: #ff4444;
+}
+
+.status-label-ok {
+    -fx-text-fill: #44ff44;
+}
+
 .waiting-text {
     -fx-text-fill: #ffcc00;
     -fx-font-size: 20px;

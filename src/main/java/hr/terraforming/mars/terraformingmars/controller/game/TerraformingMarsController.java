@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.controller;
+package hr.terraforming.mars.terraformingmars.controller.game;
 
 import hr.terraforming.mars.terraformingmars.coordinator.*;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;

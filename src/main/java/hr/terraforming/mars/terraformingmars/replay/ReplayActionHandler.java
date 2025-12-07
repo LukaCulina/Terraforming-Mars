@@ -1,6 +1,9 @@
 package hr.terraforming.mars.terraformingmars.replay;
 
-import hr.terraforming.mars.terraformingmars.controller.*;
+import hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController;
+import hr.terraforming.mars.terraformingmars.controller.game.FinalGreeneryController;
+import hr.terraforming.mars.terraformingmars.controller.game.SellPatentsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.GameManager;

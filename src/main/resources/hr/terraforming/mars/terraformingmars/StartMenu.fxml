@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.terraforming.mars.terraformingmars.controller.StartMenuController"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.setup.StartMenuController"
       styleClass="choose-window" alignment="CENTER" spacing="20">
 
     <Label text="TERRAFORMING MARS" styleClass="start-title"/>

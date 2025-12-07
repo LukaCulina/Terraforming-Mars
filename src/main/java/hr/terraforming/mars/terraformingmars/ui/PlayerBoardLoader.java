@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.ui;
 
-import hr.terraforming.mars.terraformingmars.controller.PlayerBoardController;
+import hr.terraforming.mars.terraformingmars.controller.game.PlayerBoardController;
 import hr.terraforming.mars.terraformingmars.exception.FxmlLoadException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

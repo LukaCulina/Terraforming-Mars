@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.view;
 
-import hr.terraforming.mars.terraformingmars.controller.*;
+import hr.terraforming.mars.terraformingmars.controller.game.*;
+import hr.terraforming.mars.terraformingmars.controller.setup.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
 import hr.terraforming.mars.terraformingmars.util.ScreenLoader;

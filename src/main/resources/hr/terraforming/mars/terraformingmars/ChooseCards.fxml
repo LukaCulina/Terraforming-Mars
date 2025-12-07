@@ -8,7 +8,7 @@
 <?import javafx.scene.control.ScrollPane?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.terraforming.mars.terraformingmars.controller.ChooseCardsController"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController"
       styleClass="choose-window" alignment="CENTER" spacing="15">
 
     <Label fx:id="chooseCardsLabel" styleClass="choose-label"/>

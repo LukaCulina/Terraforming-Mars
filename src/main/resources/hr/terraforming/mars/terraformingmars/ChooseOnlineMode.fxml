@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.terraforming.mars.terraformingmars.controller.ChooseOnlineModeController"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.setup.ChooseOnlineModeController"
       styleClass="choose-window" alignment="CENTER" spacing="20">
 
     <Label text="What would you like to do?" styleClass="choose-label"/>

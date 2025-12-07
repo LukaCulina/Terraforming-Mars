@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.coordinator;
 
-import hr.terraforming.mars.terraformingmars.controller.PlayerBoardController;
+import hr.terraforming.mars.terraformingmars.controller.game.PlayerBoardController;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.GameManager;

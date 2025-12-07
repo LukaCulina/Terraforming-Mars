@@ -16,13 +16,11 @@ module hr.terraforming.mars.terraformingmars {
     opens hr.terraforming.mars.terraformingmars.factory to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars.enums;
     opens hr.terraforming.mars.terraformingmars.enums to javafx.fxml;
-    exports hr.terraforming.mars.terraformingmars.controller;
-    opens hr.terraforming.mars.terraformingmars.controller to javafx.fxml;
     opens hr.terraforming.mars.terraformingmars.view to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars.view;
     opens hr.terraforming.mars.terraformingmars.manager to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars.manager;
-    exports hr.terraforming.mars.terraformingmars.view.components;
+    exports hr.terraforming.mars.terraformingmars.view.component;
     exports hr.terraforming.mars.terraformingmars.service;
     exports hr.terraforming.mars.terraformingmars.util;
     exports hr.terraforming.mars.terraformingmars.config;
@@ -34,4 +32,8 @@ module hr.terraforming.mars.terraformingmars {
     exports hr.terraforming.mars.terraformingmars.chat to java.rmi;
     exports hr.terraforming.mars.terraformingmars.coordinator;
     opens hr.terraforming.mars.terraformingmars.coordinator to javafx.fxml;
+    exports hr.terraforming.mars.terraformingmars.controller.setup;
+    opens hr.terraforming.mars.terraformingmars.controller.setup to javafx.fxml;
+    opens hr.terraforming.mars.terraformingmars.controller.game to javafx.fxml;
+    exports hr.terraforming.mars.terraformingmars.controller.game;
 }

@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
-import hr.terraforming.mars.terraformingmars.controller.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.Milestone;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
@@ -10,9 +10,9 @@ import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.view.UIComponentBuilder;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
-import hr.terraforming.mars.terraformingmars.view.components.ActionPanelComponents;
-import hr.terraforming.mars.terraformingmars.view.components.GlobalStatusComponents;
-import hr.terraforming.mars.terraformingmars.view.components.PlayerControlComponents;
+import hr.terraforming.mars.terraformingmars.view.component.ActionPanelComponents;
+import hr.terraforming.mars.terraformingmars.view.component.GlobalStatusComponents;
+import hr.terraforming.mars.terraformingmars.view.component.PlayerControlComponents;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
