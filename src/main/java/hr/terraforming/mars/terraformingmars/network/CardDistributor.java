@@ -1,0 +1,92 @@
+package hr.terraforming.mars.terraformingmars.network;
+
+import hr.terraforming.mars.terraformingmars.controller.ChooseCardsController;
+import hr.terraforming.mars.terraformingmars.manager.ActionManager;
+import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
+import javafx.application.Platform;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
+@Slf4j
+public record CardDistributor(GameManager gameManager, GameServerThread serverThread, ActionManager actionManager) {
+
+    public void distributeInitialCorporations() {
+        log.info("HOST distributing corporations to all players...");
+        gameManager.shuffleCorporations();
+
+        for (Player player : gameManager.getPlayers()) {
+            List<Corporation> offer = gameManager.drawCorporations(2);
+            if (isLocalHost(player)) {
+                Platform.runLater(() -> ScreenNavigator.showChooseCorporationScreen(player, offer, gameManager));
+            } else {
+                List<String> names = offer.stream().map(Corporation::name).toList();
+                serverThread.sendToPlayer(player.getName(), new CorporationOfferMessage(player.getName(), names));
+            }
+        }
+    }
+
+    public void distributeInitialCards() {
+        log.info("HOST distributing initial project cards...");
+        gameManager.shuffleCards();
+
+        for (Player player : gameManager.getPlayers()) {
+            List<Card> offer = gameManager.drawCards(6);
+            if (isLocalHost(player)) {
+                Platform.runLater(() -> ScreenNavigator.showInitialCardDraftScreen(player, offer, gameManager));
+            } else {
+                List<String> names = offer.stream().map(Card::getName).toList();
+                serverThread.sendToPlayer(player.getName(), new InitialCardsOfferMessage(player.getName(), names));
+            }
+        }
+    }
+
+    public void distributeResearchCards() {
+        log.info("HOST distributing Research Phase cards...");
+        for (Player player : gameManager.getPlayers()) {
+            List<Card> offer = gameManager.drawCards(4);
+
+            if (offer.isEmpty()) {
+                if (actionManager != null && actionManager.getGameFlowManager() != null) {
+                    Platform.runLater(() -> actionManager.getGameFlowManager().onResearchComplete());
+                }
+                continue;
+            }
+
+            if (isLocalHost(player)) {
+                Platform.runLater(() -> ScreenLoader.showAsModal(
+                        ScreenNavigator.getMainStage(), "ChooseCards.fxml", "Research Phase", 0.7, 0.8,
+                        (ChooseCardsController c) -> c.setup(player, offer, cards -> handleHostConfirmation(player, cards), gameManager, true)
+                ));
+            } else {
+                List<String> names = offer.stream().map(Card::getName).toList();
+                serverThread.sendToPlayer(player.getName(), new InitialCardsOfferMessage(player.getName(), names));
+            }
+        }
+    }
+
+    private void handleHostConfirmation(Player player, List<Card> boughtCards) {
+        log.info("HOST confirming research cards. Count: {}", boughtCards.size());
+        int cost = boughtCards.size() * 3;
+        if (player.getMC() >= cost) {
+            player.spendMC(cost);
+            player.getHand().addAll(boughtCards);
+        }
+
+        synchronized (gameManager) {
+            boolean morePlayers = gameManager.advanceDraftPlayer();
+            if (!morePlayers) {
+                log.info("HOST finished last. Triggering next phase (ACTIONS).");
+                if (actionManager != null && actionManager.getGameFlowManager() != null) {
+                    actionManager.getGameFlowManager().onResearchComplete();
+                }
+            }
+        }
+    }
+
+    private boolean isLocalHost(Player player) {
+        return player.getName().equals(ApplicationConfiguration.getInstance().getMyPlayerName());
+    }
+}

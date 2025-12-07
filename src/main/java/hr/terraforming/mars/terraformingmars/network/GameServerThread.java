@@ -4,7 +4,6 @@ import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.*;
-import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 @Slf4j
-public class GameServerThread implements Runnable{
+public class GameServerThread implements Runnable {
 
     private final GameManager gameManager;
     private final GameBoard gameBoard;
@@ -27,6 +26,8 @@ public class GameServerThread implements Runnable{
     @Setter private Consumer<Integer> onPlayerCountChanged;
     private ServerSocket serverSocket;
     private final List<GameStateListener> localListeners = new CopyOnWriteArrayList<>();
+
+    private CardDistributor cardDistributor;
 
     public GameServerThread(GameManager gameManager, GameBoard gameBoard, ActionManager actionManager, int maxPlayers) {
         this.gameManager = gameManager;
@@ -39,9 +40,7 @@ public class GameServerThread implements Runnable{
     public void run() {
         try {
             int port = ConfigurationReader.getIntegerValue(ConfigurationKey.SERVER_PORT);
-
             serverSocket = new ServerSocket(port);
-
             log.info("Server started on port {}, waiting for {} players...", port, maxPlayers - 1);
 
             while (connectedClients.size() < maxPlayers - 1) {
@@ -52,15 +51,17 @@ public class GameServerThread implements Runnable{
                 connectedClients.add(handler);
                 new Thread(handler).start();
 
-                waitForHandlerReady(handler);
+                if (handler.waitUntilReady(5000)) {
+                    log.debug("ClientHandler ready");
+                } else {
+                    log.error("ClientHandler failed to initialize");
+                }
 
                 if (onPlayerCountChanged != null) {
                     Platform.runLater(() -> onPlayerCountChanged.accept(connectedClients.size()));
                 }
-
                 broadcastGameState(new GameState(gameManager, gameBoard));
             }
-
             log.info("All players connected, game can start!");
 
         } catch (IOException e) {
@@ -79,93 +80,50 @@ public class GameServerThread implements Runnable{
     }
 
     public void distributeInitialCorporations() {
-        log.info("🎲 HOST distributing corporations to all players...");
-
-        gameManager.shuffleCorporations();
-
-        for (Player player : gameManager.getPlayers()) {
-            List<Corporation> offer = gameManager.drawCorporations(2);
-
-            if (player.getName().equals(ApplicationConfiguration.getInstance().getMyPlayerName())) {
-                Platform.runLater(() ->
-                        ScreenNavigator.showChooseCorporationScreen(player, offer, gameManager)
-                );
-            }
-            else {
-                List<String> names = offer.stream().map(Corporation::name).toList();
-                sendToPlayer(player.getName(), new CorporationOfferMessage(player.getName(), names));
-            }
-        }
+        ensureDistributor();
+        cardDistributor.distributeInitialCorporations();
     }
 
     public void distributeInitialCards() {
-        log.info("🎴 HOST distributing initial project cards...");
-
-        gameManager.shuffleCards();
-
-        for (Player player : gameManager.getPlayers()) {
-            List<Card> offer = gameManager.drawCards(6);
-
-            if (player.getName().equals(ApplicationConfiguration.getInstance().getMyPlayerName())) {
-                Platform.runLater(() ->
-                        ScreenNavigator.showInitialCardDraftScreen(player, offer, gameManager)
-                );
-            } else {
-                List<String> names = offer.stream().map(Card::getName).toList();
-                sendToPlayer(player.getName(), new InitialCardsOfferMessage(player.getName(), names));
-            }
-        }
+        ensureDistributor();
+        cardDistributor.distributeInitialCards();
     }
 
+    public void distributeResearchCards() {
+        ensureDistributor();
+        cardDistributor.distributeResearchCards();
+    }
 
-    private void waitForHandlerReady(ClientHandler handler) {
-        boolean initialized = handler.waitUntilReady(5000);
-
-        if (!initialized) {
-            log.error("ClientHandler failed to initialize after 5000 ms");
-        } else {
-            log.debug("ClientHandler ready");
+    private void ensureDistributor() {
+        if (cardDistributor == null) {
+            this.cardDistributor = new CardDistributor(gameManager, this, actionManager);
         }
     }
 
     public void setActionManager(ActionManager actionManager) {
         this.actionManager = actionManager;
-        log.info("✅ ActionManager injected into GameServerThread");
-
+        log.info("ActionManager injected into GameServerThread");
         for (ClientHandler client : connectedClients) {
             client.setActionManager(actionManager);
         }
+        this.cardDistributor = new CardDistributor(gameManager, this, actionManager);
     }
 
     public void addLocalListener(GameStateListener listener) {
         if (listener != null) {
             this.localListeners.add(listener);
-            log.info("Listener added. Total listeners: {}", localListeners.size());
         }
     }
 
     public void broadcastGameState(GameState state) {
         log.debug("Broadcasting to {} clients...", connectedClients.size());
-
-        for (GameStateListener listener : localListeners) {
-            log.info("Listener: {}", listener.getClass().getSimpleName());
-        }
-
         for (ClientHandler client : connectedClients) {
             client.sendGameState(state);
         }
-
         for (GameStateListener listener : localListeners) {
-            Platform.runLater(() -> {
-                try {
-                    listener.onGameStateReceived(state);
-                } catch (Exception e) {
-                    log.error("Error in local listener", e);
-                }
-            });
+            Platform.runLater(() -> listener.onGameStateReceived(state));
         }
     }
-
 
     public void removeLocalListener(GameStateListener listener) {
         this.localListeners.remove(listener);
@@ -173,12 +131,8 @@ public class GameServerThread implements Runnable{
 
     public void shutdown() {
         try {
-            if (serverSocket != null) {
-                serverSocket.close();
-            }
-            for (ClientHandler client : connectedClients) {
-                client.close();
-            }
+            if (serverSocket != null) serverSocket.close();
+            for (ClientHandler client : connectedClients) client.close();
         } catch (IOException e) {
             log.error("Error shutting down server", e);
         }

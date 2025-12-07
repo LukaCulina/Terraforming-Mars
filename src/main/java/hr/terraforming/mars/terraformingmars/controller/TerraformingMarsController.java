@@ -49,21 +49,14 @@ public class TerraformingMarsController {
     @Getter
     @FXML private VBox chatBoxContainer;
 
-    @Setter
-    @Getter private PlacementManager placementManager;
-    @Setter
-    @Getter private UIManager uiManager;
-    @Setter
-    @Getter private ActionManager actionManager;
+    @Setter @Getter private PlacementManager placementManager;
+    @Setter @Getter private UIManager uiManager;
+    @Setter @Getter private ActionManager actionManager;
     @Setter @Getter public GameManager gameManager;
     @Setter @Getter private GameBoard gameBoard;
-    @Setter
-    @Getter private ChatManager chatManager;
+    @Setter @Getter private ChatManager chatManager;
     @Getter private PlayerBoardController currentPlayerBoardController;
-    @Setter
-    @Getter private PlacementCoordinator placementCoordinator;
-    @Setter
-    private ClientResearchCoordinator clientResearchCoordinator;
+    @Setter @Getter private PlacementCoordinator placementCoordinator;
     @Setter private Player viewedPlayer = null;
     private final GameStateService gameStateService = new GameStateService();
     @Setter
@@ -91,10 +84,6 @@ public class TerraformingMarsController {
 
     public void updateFromNetwork(GameState state) {
         networkCoordinator.handleNetworkUpdate(state);
-
-        if (clientResearchCoordinator != null) {
-            clientResearchCoordinator.checkAndHandle();
-        }
     }
 
     public void onLocalPlayerMove(GameMove move) {

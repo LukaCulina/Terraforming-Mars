@@ -58,13 +58,25 @@ public class GameFlowManager {
         controller.setViewedPlayer(gameManager.getCurrentPlayer());
         controller.updateAllUI();
 
-        ResearchPhaseManager researchManager = new ResearchPhaseManager(
-                gameManager,
-                controller.getSceneWindow(),
-                controller,
-                this::onResearchComplete
-        );
-        researchManager.start();
+        var config = ApplicationConfiguration.getInstance();
+        var playerType = config.getPlayerType();
+
+        switch (playerType) {
+            case HOST -> {
+                log.info("HOST: Starting distributed research phase.");
+                config.getGameServer().distributeResearchCards();
+            }
+            case CLIENT -> log.info("CLIENT: Waiting for research cards from host...");
+            case LOCAL -> {
+                log.info("LOCAL: Starting local research phase manager.");
+                new ResearchPhaseManager(
+                        gameManager,
+                        controller.getSceneWindow(),
+                        controller,
+                        this::onResearchComplete
+                ).start();
+            }
+        }
     }
 
     public void onResearchComplete() {

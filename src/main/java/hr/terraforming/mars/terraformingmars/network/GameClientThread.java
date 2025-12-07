@@ -1,8 +1,10 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.controller.ChooseCardsController;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.model.*;
+import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
@@ -101,9 +103,23 @@ public class GameClientThread implements Runnable {
         GameManager gm = lastGameState.gameManager();
         Player me = gm.getPlayerByName(myName);
 
-        ScreenNavigator.showInitialCardDraftScreen(me, offer, gm);
-    }
+        boolean isResearch = gm.getGeneration() > 1 || offer.size() <= 4;
 
+        Platform.runLater(() -> {
+            if (isResearch) {
+                ScreenLoader.showAsModal(
+                        ScreenNavigator.getMainStage(),
+                        "ChooseCards.fxml",
+                        "Research Phase",
+                        0.7, 0.8,
+                        (ChooseCardsController c) ->
+                                c.setup(me, offer, null, gm, true)
+                );
+            } else {
+                ScreenNavigator.showInitialCardDraftScreen(me, offer, gm);
+            }
+        });
+    }
 
     public void addGameStateListener(GameStateListener listener) {
         synchronized (listeners) {

@@ -132,23 +132,30 @@ public class ChooseCardsController {
             if (client != null) {
                 client.sendCardChoice(boughtCards);
             }
-            if (!isResearchPhase) {
-                showWaitingForPlayer();
-                return;
-            }
-        }
-
-        if (onConfirm != null) {
-            onConfirm.accept(boughtCards);
-            closeWindow();
         }
 
         if (playerType == PlayerType.HOST) {
+            if (onConfirm != null) {
+                onConfirm.accept(boughtCards);
+            }
+
             NetworkBroadcaster broadcaster = config.getBroadcaster();
             if (broadcaster != null) {
                 log.info("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
                 broadcaster.broadcast();
             }
+        }
+
+        if (playerType == PlayerType.LOCAL && onConfirm != null) {
+            onConfirm.accept(boughtCards);
+            closeWindow();
+            return;
+        }
+
+        if (isResearchPhase) {
+            closeWindow();
+        } else {
+            showWaitingForPlayer();
         }
     }
 

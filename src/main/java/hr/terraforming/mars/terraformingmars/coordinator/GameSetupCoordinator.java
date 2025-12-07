@@ -85,8 +85,6 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
                 controller.getChatBoxContainer()
         ));
 
-        controller.setClientResearchCoordinator(new ClientResearchCoordinator(controller));
-
         controller.getCancelPlacementButton().setOnAction(
                 _ -> placementManager.cancelPlacement()
         );
