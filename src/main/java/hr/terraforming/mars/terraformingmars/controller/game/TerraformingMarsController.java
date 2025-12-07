@@ -48,6 +48,10 @@ public class TerraformingMarsController {
     @FXML private Label lastMoveLabel;
     @Getter
     @FXML private VBox chatBoxContainer;
+    @Getter
+    @FXML private ListView<String> chatListView;
+    @Getter
+    @FXML private TextField chatInput;
 
     @Setter @Getter private PlacementManager placementManager;
     @Setter @Getter private UIManager uiManager;
@@ -57,18 +61,14 @@ public class TerraformingMarsController {
     @Setter @Getter private ChatManager chatManager;
     @Getter private PlayerBoardController currentPlayerBoardController;
     @Setter @Getter private PlacementCoordinator placementCoordinator;
+    @Getter private NetworkCoordinator networkCoordinator;
+    @Getter private GameSetupCoordinator setupCoordinator;
+    private UIUpdateCoordinator uiUpdateCoordinator;
     @Setter private Player viewedPlayer = null;
     private final GameStateService gameStateService = new GameStateService();
     @Setter
     private ReplayManager replayManager;
     @Getter private Timeline moveHistoryTimeline;
-    @Getter
-    @FXML private ListView<String> chatListView;
-    @Getter
-    @FXML private TextField chatInput;
-    @Getter private NetworkCoordinator networkCoordinator;
-    @Getter private GameSetupCoordinator setupCoordinator;
-    private UIUpdateCoordinator uiUpdateCoordinator;
 
     @FXML
     private void initialize() {
@@ -164,7 +164,9 @@ public class TerraformingMarsController {
         }
     }
 
-    public void generateHtmlDocumentation() { DocumentationUtils.generateDocumentation(); }
+    public void generateHtmlDocumentation() {
+        DocumentationUtils.generateDocumentation();
+    }
 
     public void updateLastMoveLabel(GameMove lastGameMove) {
         if (lastGameMove != null) {

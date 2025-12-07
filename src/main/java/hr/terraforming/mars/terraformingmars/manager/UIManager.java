@@ -124,6 +124,9 @@ public class UIManager {
                     boolean disable = isPlacing || !canAfford || !isActionPhase || !canPerformAction;
                     if (project == StandardProject.AQUIFER) {
                         disable = disable || !gameBoard.canPlaceOcean();
+                    } else if (project == StandardProject.SELL_PATENTS) {
+                        boolean hasCardsInHand = !currentPlayer.getHand().isEmpty();
+                        disable = disable || !hasCardsInHand;
                     }
                     btn.setDisable(disable);
                 }
