@@ -76,7 +76,7 @@ public class PlayerBoardController {
         energyLabel.textProperty().bind(player.resourceProperty(ResourceType.ENERGY).asString());
         heatLabel.textProperty().bind(player.resourceProperty(ResourceType.HEAT).asString());
 
-        mcProductionLabel.textProperty().bind(player.productionProperty(ResourceType.MEGACREDITS).asString());
+        mcProductionLabel.textProperty().bind(player.productionProperty(ResourceType.MEGA_CREDITS).asString());
         steelProductionLabel.textProperty().bind(player.productionProperty(ResourceType.STEEL).asString());
         titaniumProductionLabel.textProperty().bind(player.productionProperty(ResourceType.TITANIUM).asString());
         plantsProductionLabel.textProperty().bind(player.productionProperty(ResourceType.PLANTS).asString());

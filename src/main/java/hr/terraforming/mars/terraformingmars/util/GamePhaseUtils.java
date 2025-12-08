@@ -18,7 +18,7 @@ public class GamePhaseUtils {
     public static void executeProduction(List<Player> players) {
         log.info("Production Phase Started");
         for (Player p : players) {
-            int income = p.getTR() + p.productionProperty(ResourceType.MEGACREDITS).get();
+            int income = p.getTR() + p.productionProperty(ResourceType.MEGA_CREDITS).get();
             p.addMC(income);
 
             int energy = p.resourceProperty(ResourceType.ENERGY).get();
@@ -26,7 +26,7 @@ public class GamePhaseUtils {
             p.resourceProperty(ResourceType.ENERGY).set(0);
 
             p.getProductionMap().forEach((type, amount) -> {
-                if (type != ResourceType.MEGACREDITS) {
+                if (type != ResourceType.MEGA_CREDITS) {
                     p.addResource(type, amount.get());
                 }
             });

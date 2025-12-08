@@ -86,7 +86,7 @@ public record PlacementService(GameBoard gameBoard) {
     public void placeCity(Tile onTile, Player forPlayer) {
         onTile.setType(TileType.CITY);
         onTile.setOwner(forPlayer);
-        forPlayer.increaseProduction(ResourceType.MEGACREDITS, 1);
+        forPlayer.increaseProduction(ResourceType.MEGA_CREDITS, 1);
         gameBoard.notifyUI();
 
         log.info("City placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());

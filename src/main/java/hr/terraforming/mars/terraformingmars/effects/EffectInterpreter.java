@@ -29,7 +29,7 @@ public class EffectInterpreter {
                     ResourceType resource = ResourceType.valueOf((String) data.get(RESOURCE));
                     int amount = ((Double) data.get(AMOUNT)).intValue();
                     yield (player, _) -> {
-                        if (resource == ResourceType.MEGACREDITS) {
+                        if (resource == ResourceType.MEGA_CREDITS) {
                             player.addMC(amount);
                         } else {
                             player.addResource(resource, amount);

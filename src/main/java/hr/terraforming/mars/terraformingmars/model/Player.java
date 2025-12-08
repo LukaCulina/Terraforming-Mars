@@ -116,7 +116,7 @@ public class Player implements Serializable {
                 if (corpName.equals("Interplanetary Cinematics") && card.getTags().contains(TagType.SPACE)) {
                     addMC(2);
                 } else if (corpName.equals("Saturn Systems") && card.getTags().contains(TagType.JOVIAN)) {
-                    increaseProduction(ResourceType.MEGACREDITS, 1);
+                    increaseProduction(ResourceType.MEGA_CREDITS, 1);
                 }
             }
 
