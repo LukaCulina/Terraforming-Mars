@@ -1,10 +1,8 @@
 package hr.terraforming.mars.terraformingmars.controller.game;
 
-import hr.terraforming.mars.terraformingmars.enums.ActionType;
-import hr.terraforming.mars.terraformingmars.model.GameManager;
-import hr.terraforming.mars.terraformingmars.model.GameMove;
-import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
+import hr.terraforming.mars.terraformingmars.model.GameManager;
+import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -14,27 +12,25 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 
 @Slf4j
 public class FinalGreeneryController {
 
-    @FXML
-    private Label infoLabel;
-    @FXML
-    private Label playerNameLabel;
-    @FXML
-    private Label plantsLabel;
-    @FXML
-    private Label greeneryCostLabel;
-    @FXML
-    private Button convertButton;
-    @FXML
-    private Button finishButton;
+    @FXML private Label infoLabel;
+    @FXML private Label playerNameLabel;
+    @FXML private Label plantsLabel;
+    @FXML private Label greeneryCostLabel;
+    @FXML private Button convertButton;
+    @FXML private Button finishButton;
+
     private GameManager gameManager;
     private List<Player> players;
     private int currentPlayerIndex = 0;
+    private Player currentPlayer;
     private TerraformingMarsController mainController;
+    private Runnable onComplete;
     private Stage stage;
 
     public void setup(GameManager gameManager, TerraformingMarsController mainController) {
@@ -46,11 +42,18 @@ public class FinalGreeneryController {
         showCurrentPlayer();
     }
 
-    public void onFinalGreeneryPhaseComplete() {
-        log.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
-        List<Player> rankedPlayers = gameManager.calculateFinalScores();
+    public void setupSinglePlayer(Player player, GameManager gameManager,
+                                  TerraformingMarsController mainController,
+                                  Runnable onComplete) {
+        this.currentPlayer = player;
+        this.gameManager = gameManager;
+        this.mainController = mainController;
+        this.onComplete = onComplete;
 
-        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
+        Platform.runLater(() -> {
+            this.stage = (Stage) convertButton.getScene().getWindow();
+            updateUI();
+        });
     }
 
     private void showCurrentPlayer() {
@@ -60,27 +63,29 @@ public class FinalGreeneryController {
             return;
         }
 
-        Player currentPlayer = players.get(currentPlayerIndex);
-
-        String details = currentPlayer.getName() + "," + currentPlayer.resourceProperty(ResourceType.PLANTS).get() + "," + currentPlayer.getGreeneryCost();
-        GameMove showModal = new GameMove(
-                "System",
-                ActionType.OPEN_FINAL_GREENERY_MODAL,
-                details,
-                java.time.LocalDateTime.now()
-        );
-        mainController.getActionManager().recordAndSaveMove(showModal);
-
-        infoLabel.setText("Player " + (currentPlayerIndex + 1) + "/" + players.size());
-        playerNameLabel.setText(currentPlayer.getName());
+        this.currentPlayer = players.get(currentPlayerIndex);
         updateUI();
     }
 
+    private void onFinalGreeneryPhaseComplete() {
+        log.info("Final greenery conversion phase is complete. Proceeding to calculate final scores.");
+        List<Player> rankedPlayers = gameManager.calculateFinalScores();
+        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
+    }
+
     private void updateUI() {
-        Player currentPlayer = players.get(currentPlayerIndex);
+        if (currentPlayer == null) return;
+
         int plants = currentPlayer.resourceProperty(ResourceType.PLANTS).get();
         int cost = currentPlayer.getGreeneryCost();
 
+        if (players != null) {
+            infoLabel.setText("Player " + (currentPlayerIndex + 1) + "/" + players.size());
+        } else {
+            infoLabel.setText("Final Greenery Phase");
+        }
+
+        playerNameLabel.setText(currentPlayer.getName());
         plantsLabel.setText("🌿 Plants: " + plants);
         greeneryCostLabel.setText("(Cost: " + cost + ")");
 
@@ -89,14 +94,17 @@ public class FinalGreeneryController {
 
     @FXML
     private void handleConvertGreenery() {
-        Player currentPlayer = players.get(currentPlayerIndex);
+        if (currentPlayer == null) return;
 
-        mainController.getPlacementCoordinator().enterPlacementModeForFinalGreenery(currentPlayer, () -> {
-            if (this.stage != null) {
-                this.stage.show();
-                updateUI();
-            }
-        });
+        mainController.getPlacementCoordinator().enterPlacementModeForFinalGreenery(
+                currentPlayer,
+                () -> {
+                    if (this.stage != null) {
+                        this.stage.show();
+                        updateUI();
+                    }
+                }
+        );
 
         if (this.stage != null) {
             this.stage.hide();
@@ -105,14 +113,22 @@ public class FinalGreeneryController {
 
     @FXML
     private void handleFinish() {
-        log.info("{} has finished their greenery conversion.", players.get(currentPlayerIndex).getName());
+        log.info("{} has finished their greenery conversion.", currentPlayer.getName());
+
+        if (onComplete != null) {
+            closeWindow();
+            onComplete.run();
+            return;
+        }
 
         currentPlayerIndex++;
         showCurrentPlayer();
     }
 
     private void closeWindow() {
-        if (playerNameLabel != null && playerNameLabel.getScene() != null) {
+        if (stage != null) {
+            stage.close();
+        } else if (playerNameLabel != null && playerNameLabel.getScene() != null) {
             Stage windowToClose = (Stage) playerNameLabel.getScene().getWindow();
             if (windowToClose != null) {
                 windowToClose.close();

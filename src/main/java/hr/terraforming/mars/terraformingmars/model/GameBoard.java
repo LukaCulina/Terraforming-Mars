@@ -174,4 +174,24 @@ public class GameBoard implements Serializable {
                 .findFirst()
                 .orElse(null);
     }
+
+    // Debug setteri - dodaj ih u GameBoard klasu
+
+    public void setTemperature(int temp) {
+        this.temperature = temp;
+        checkEndGameTrigger();
+        notifyUI();
+    }
+
+    public void setOxygenLevel(int oxygen) {
+        this.oxygenLevel = oxygen;
+        checkEndGameTrigger();
+        notifyUI();
+    }
+
+    public void setOceansPlaced(int oceans) {
+        this.oceansPlaced = oceans;
+        checkEndGameTrigger();
+        notifyUI();
+    }
 }

@@ -100,12 +100,6 @@ public class PlacementManager {
         placementService.executeComplexPlacement(context);
 
         finishPlacement();
-
-        if (placementMode != PlacementMode.FINAL_GREENERY) {
-            actionManager.performAction();
-        } else {
-            mainController.updateAllUI();
-        }
     }
 
     private void recordMoves(Tile tile, Player owner) {
@@ -151,6 +145,10 @@ public class PlacementManager {
         if (broadcaster != null) {
             broadcaster.broadcast();
             log.info("HOST broadcasted GameState AFTER placement");
+        }
+
+        if (!wasFinalGreenery) {
+            actionManager.performAction();
         }
 
         if (wasFinalGreenery && onPlacementCompleteCallback != null) {

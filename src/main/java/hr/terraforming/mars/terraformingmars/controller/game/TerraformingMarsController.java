@@ -76,6 +76,46 @@ public class TerraformingMarsController {
         this.networkCoordinator = new NetworkCoordinator(this);
         this.setupCoordinator = new GameSetupCoordinator(this);
         this.uiUpdateCoordinator = new UIUpdateCoordinator();
+        addDebugButtons();
+
+    }
+
+    private void addDebugButtons() {
+        HBox debugBox = new HBox(5);
+        debugBox.setStyle("-fx-padding: 5;");
+
+        Button triggerFinalBtn = new Button("🎯 Trigger Final Gen");
+        triggerFinalBtn.setOnAction(e -> debugTriggerFinalGeneration());
+
+        debugBox.getChildren().add(triggerFinalBtn);
+
+        // Dodaj u bottomGrid ili playerInterface
+        if (bottomGrid != null) {
+            bottomGrid.add(debugBox, 0, bottomGrid.getRowCount());
+        }
+    }
+
+
+    @FXML
+    private void debugTriggerFinalGeneration() {
+        if (gameBoard != null) {
+            gameBoard.setTemperature(GameBoard.MAX_TEMPERATURE);
+            gameBoard.setOxygenLevel(GameBoard.MAX_OXYGEN);
+            gameBoard.setOceansPlaced(GameBoard.MAX_OCEANS);
+            log.info("🎯 DEBUG: All parameters set to MAX - Final Generation triggered!");
+            updateAllUI();
+            broadcastIfHost();
+        }
+    }
+
+    private void broadcastIfHost() {
+        var config = ApplicationConfiguration.getInstance();
+        if (config.getPlayerType() == hr.terraforming.mars.terraformingmars.enums.PlayerType.HOST) {
+            var broadcaster = config.getBroadcaster();
+            if (broadcaster != null) {
+                broadcaster.broadcast();
+            }
+        }
     }
 
     public void setupGame(GameState gameState) {

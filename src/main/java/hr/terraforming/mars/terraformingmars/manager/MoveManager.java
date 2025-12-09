@@ -64,6 +64,8 @@ public record MoveManager(GameManager gameManager, GameBoard gameBoard, ActionMa
 
             case OPEN_SELL_PATENTS_MODAL -> log.info("Network: {} opened sell patents modal", move.playerName());
 
+            case FINISH_FINAL_GREENERY -> handleFinishFinalGreenery(move);
+
             default -> log.warn("Unhandled action type: {}", move.actionType());
         }
     }
@@ -97,6 +99,20 @@ public record MoveManager(GameManager gameManager, GameBoard gameBoard, ActionMa
 
             actionManager.performAction();
             log.info("{} sold: {}", player.getName(), move.details());
+        }
+    }
+
+    private void handleFinishFinalGreenery(GameMove move) {
+        log.info("Processing FINISH_FINAL_GREENERY from {}", move.playerName());
+
+        var controller = ApplicationConfiguration.getInstance().getActiveGameController();
+        if (controller != null && controller.getActionManager() != null) {
+            var flowManager = controller.getActionManager().getGameFlowManager();
+            if (flowManager != null && flowManager.getFinalGreeneryManager() != null) {
+                flowManager.getFinalGreeneryManager().finishForCurrentPlayer();
+            } else {
+                log.warn("FinalGreeneryPhaseManager is null on HOST");
+            }
         }
     }
 }

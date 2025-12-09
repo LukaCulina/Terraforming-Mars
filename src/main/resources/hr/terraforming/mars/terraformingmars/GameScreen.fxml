@@ -91,6 +91,8 @@
                     <padding>
                         <Insets left="5.0" right="5.0" />
                     </padding>
+                    <!-- Debug kontrole -->
+                    <Button text="🎯 Trigger Final Gen" onAction="#debugTriggerFinalGeneration" />
                 </VBox>
             </left>
         </BorderPane>

@@ -125,6 +125,14 @@ public class GameServerThread implements Runnable {
         }
     }
 
+    public void broadcastToAll(Object message) {
+        log.info("Broadcasting {} to all {} clients",
+                message.getClass().getSimpleName(), connectedClients.size());
+        for (ClientHandler client : connectedClients) {
+            client.sendObject(message);
+        }
+    }
+
     public void removeLocalListener(GameStateListener listener) {
         this.localListeners.remove(listener);
     }

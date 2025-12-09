@@ -2,14 +2,18 @@ package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
+import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import javafx.application.Platform;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -18,6 +22,7 @@ public class GameFlowManager {
     private final TerraformingMarsController controller;
     private GameManager gameManager;
     private GameBoard gameBoard;
+    @Getter private FinalGreeneryPhaseManager finalGreeneryManager;
 
     public GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
         this.controller = controller;
@@ -40,12 +45,50 @@ public class GameFlowManager {
         if (gameBoard.isFinalGeneration()) {
             log.info("This was the last generation. Starting final greenery conversion phase.");
 
-            ScreenNavigator.startFinalGreeneryPhase(
-                    gameManager,
-                    controller
-            );
-        } else {
+            gameManager.resetDraftPhase();
+
+            var config = ApplicationConfiguration.getInstance();
+            PlayerType playerType = config.getPlayerType();
+
+            switch (playerType) {
+                case HOST, CLIENT -> {
+                    log.info("ONLINE: Starting Final Greenery phase manager.");
+                    this.finalGreeneryManager = new FinalGreeneryPhaseManager(
+                            gameManager,
+                            controller.getSceneWindow(),
+                            controller,
+                            this::onFinalGreeneryComplete
+                    );
+                    finalGreeneryManager.start();
+                }
+                case LOCAL -> {
+                    log.info("LOCAL: Starting Final Greenery phase manager.");
+                    this.finalGreeneryManager = new FinalGreeneryPhaseManager(
+                            gameManager,
+                            controller.getSceneWindow(),
+                            controller,
+                            this::onFinalGreeneryComplete
+                    );
+                    finalGreeneryManager.start();
+                }
+            }
+        }
+        else {
             startNewGeneration();
+        }
+    }
+
+    private void onFinalGreeneryComplete() {
+        log.info("Final Greenery phase complete. Calculating final scores.");
+
+        List<Player> rankedPlayers = gameManager.calculateFinalScores();
+
+        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
+
+        var cfg = ApplicationConfiguration.getInstance();
+        if (cfg.getPlayerType() == PlayerType.HOST && cfg.getBroadcaster() != null) {
+            cfg.getBroadcaster().broadcast();
+            log.info("HOST broadcasted final GameState after scoring");
         }
     }
 
