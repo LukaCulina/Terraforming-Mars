@@ -85,7 +85,7 @@
             <Button styleClass="card-buttons" fx:id="showPlayedButton" text="Played Cards" onAction="#showPlayedCardsView" />
         </HBox>
 
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="transparent-scroll-pane">
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" styleClass="transparent-scroll-pane">
             <TilePane fx:id="cardsDisplayArea" hgap="10" vgap="5" styleClass="cards-tile-pane" />
         </ScrollPane>
     </VBox>

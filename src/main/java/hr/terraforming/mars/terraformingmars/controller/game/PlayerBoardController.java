@@ -3,6 +3,7 @@ package hr.terraforming.mars.terraformingmars.controller.game;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
+import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
@@ -62,7 +63,14 @@ public class PlayerBoardController {
         if (player == null) return;
 
         updatePlayerInfo();
-        updateCardsDisplay();
+        String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+        if (player.getName().equals(myName)) {
+            updateCardsDisplay();
+        } else {
+            cardsDisplayArea.getChildren().clear();
+            showHandButton.setVisible(false);
+            showPlayedButton.setVisible(false);
+        }
     }
 
     private void updatePlayerInfo() {
