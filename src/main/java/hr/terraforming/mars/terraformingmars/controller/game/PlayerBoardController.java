@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.controller.game;
 
+import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.enums.TagType;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
@@ -63,13 +64,20 @@ public class PlayerBoardController {
         if (player == null) return;
 
         updatePlayerInfo();
-        String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
-        if (player.getName().equals(myName)) {
+
+        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
+        if (playerType == PlayerType.LOCAL) {
             updateCardsDisplay();
         } else {
-            cardsDisplayArea.getChildren().clear();
-            showHandButton.setVisible(false);
-            showPlayedButton.setVisible(false);
+            String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+            if (player.getName().equals(myName)) {
+                updateCardsDisplay();
+            } else {
+                cardsDisplayArea.getChildren().clear();
+                showHandButton.setVisible(false);
+                showPlayedButton.setVisible(false);
+            }
         }
     }
 
