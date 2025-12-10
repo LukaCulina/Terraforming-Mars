@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.ui;
 
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import javafx.animation.PauseTransition;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -61,7 +62,7 @@ public class ResizeHandler {
             String style = String.format("-fx-font-size: %.2fpx;", fontSize);
 
             pane.lookupAll(mapping.styleClass).forEach(node -> {
-                if (node instanceof javafx.scene.text.Text || node instanceof Label) {
+                if (node instanceof javafx.scene.text.Text || node instanceof Label || node instanceof Button) {
                     (node).setStyle(style);
                 }
             });

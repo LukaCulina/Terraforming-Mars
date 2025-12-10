@@ -2,17 +2,35 @@ package hr.terraforming.mars.terraformingmars.controller.game;
 
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
+import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 import java.util.Comparator;
 import java.util.List;
 
 public class GameOverController {
 
+    @FXML private VBox gameOver;
     @FXML private Label winnerLabel;
     @FXML private GridPane scoresGrid;
+
+    @FXML
+    public void initialize() {
+        ResizeHandler.attachFontResizeListeners(gameOver, this::updateFontSizes);
+    }
+
+    private void updateFontSizes() {
+        ResizeHandler.updateFonts(
+                gameOver,
+                new ResizeHandler.FontMapping(".main-title", 0.05),
+                new ResizeHandler.FontMapping(".choose-label", 0.035),
+                new ResizeHandler.FontMapping(".header-label", 0.03),
+                new ResizeHandler.FontMapping(".normal-label", 0.025)
+        );
+    }
 
     public void setFinalScores(List<Player> players) {
         players.sort(Comparator.comparingInt(Player::getFinalScore).reversed()
