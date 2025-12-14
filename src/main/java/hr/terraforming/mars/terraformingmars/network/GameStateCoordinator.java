@@ -25,10 +25,10 @@ public class GameStateCoordinator implements GameStateListener {
     @Override
     public void onGameStateReceived(GameState state) {
         int callId = callCount.incrementAndGet();
-        log.info("🎯 CALL #{} from THREAD: {}", callId, Thread.currentThread().getName());
+        log.info("CALL #{} from THREAD: {}", callId, Thread.currentThread().getName());
 
         Platform.runLater(() -> {
-            log.info("🎯 PLATFORM CALL #{} - START", callId);
+            log.info("PLATFORM CALL #{} - START", callId);
 
             String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
@@ -38,7 +38,7 @@ public class GameStateCoordinator implements GameStateListener {
                 case CARD_DRAFT -> handleCardDraftPhase(state);
                 case PLAYING -> handlePlayingPhase(state);
             }
-            log.info("🎯 PLATFORM CALL #{} - END", callId);
+            log.info("PLATFORM CALL #{} - END", callId);
 
         });
     }

@@ -13,16 +13,14 @@ import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 public record ReplayActionHandler(TerraformingMarsController controller, ReplayLoader loader) {
-
-    private static final Logger logger = LoggerFactory.getLogger(ReplayActionHandler.class);
 
     void executeReplayMove(GameMove move) {
         GameManager gameManager = controller.getGameManager();
@@ -106,7 +104,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
                 .findFirst().orElse(null);
 
         if (player == null) {
-            logger.error("Replay Error: Player {} not found.", move.playerName());
+            log.error("Replay Error: Player {} not found.", move.playerName());
             return;
         }
 
@@ -129,7 +127,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
                     controller.setViewedPlayer(gameManager.getCurrentPlayer());
                 }
             }
-            default -> logger.error("Unknown ActionType in replay: {}.", move.actionType());
+            default -> log.error("Unknown ActionType in replay: {}.", move.actionType());
         }
     }
 
@@ -141,7 +139,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
                 case OCEAN -> gameBoard.placeOcean(tileToPlaceOn, player);
                 case GREENERY -> gameBoard.placeGreenery(tileToPlaceOn, player);
                 case CITY -> gameBoard.placeCity(tileToPlaceOn, player);
-                default -> logger.warn("Replay: Invalid tile type {} for placement.", move.tileType());
+                default -> log.warn("Replay: Invalid tile type {} for placement.", move.tileType());
             }
         }
     }
@@ -159,7 +157,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
             player.spendMC(8);
             controller.getGameBoard().claimMilestone(milestone, player);
         } catch (IllegalArgumentException e) {
-            logger.error("Replay Error: Invalid Milestone name '{}' in game move.", move.details(), e);
+            log.error("Replay Error: Invalid Milestone name '{}' in game move.", move.details(), e);
         }
     }
 
@@ -182,7 +180,7 @@ public record ReplayActionHandler(TerraformingMarsController controller, ReplayL
             String numberStr = move.details().replaceAll("\\D", "");
             player.addMC(Integer.parseInt(numberStr));
         } catch (NumberFormatException _) {
-            logger.warn("Could not parse number of sold patents from details: {}", move.details());
+            log.warn("Could not parse number of sold patents from details: {}", move.details());
         }
     }
 

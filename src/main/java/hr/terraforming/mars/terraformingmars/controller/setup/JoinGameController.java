@@ -70,14 +70,12 @@ public class JoinGameController {
         log.info("Attempting to connect to server {}:{} as '{}'", serverIp, port, playerName);
         showStatus("Connecting to server...", false);
 
-        connectToServer(serverIp, port, playerName);
+        connectToServer(serverIp, port);
     }
 
-    private void connectToServer(String serverIp, int port, String playerName) {
+    private void connectToServer(String serverIp, int port) {
         new Thread(() -> {
             try {
-                ApplicationConfiguration.getInstance().setMyPlayerName(playerName);
-
                 GameClientThread client = new GameClientThread(serverIp, port);
                 ApplicationConfiguration.getInstance().setGameClient(client);
 
