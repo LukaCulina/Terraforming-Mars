@@ -99,7 +99,10 @@ public class ActionManager {
     public void openSellPatentsWindow() {
         Consumer<List<Card>> onSaleCompleteAction = soldCards -> {
 
-            String details = soldCards.stream().map(Card::getName).reduce((a,b) -> a + "," + b).orElse("");
+            int count = soldCards.size();
+            String patent = (count == 1) ? "patent" : "patents";
+            String details = "Sold: " + count + " " + patent + " for " + count + " MC";
+
             GameMove showModal = new GameMove(
                     gameManager.getCurrentPlayer().getName(),
                     ActionType.OPEN_SELL_PATENTS_MODAL,

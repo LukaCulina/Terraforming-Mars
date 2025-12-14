@@ -63,13 +63,12 @@ public class ReplayManager {
         controller.updateAllUI();
 
         AtomicInteger moveIndex = new AtomicInteger(0);
+
         replayTimeline = new Timeline(new KeyFrame(Duration.seconds(1), _ -> {
             if (moveIndex.get() < movesToReplay.size()) {
                 GameMove move = movesToReplay.get(moveIndex.getAndIncrement());
-                Platform.runLater(() -> {
-                    actionHandler.executeReplayMove(move);
-                    controller.updateAllUI();
-                });
+                actionHandler.executeReplayMove(move);
+                controller.updateAllUI();
             }
         }));
 
