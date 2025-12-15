@@ -76,8 +76,8 @@ public record NetworkCoordinator(TerraformingMarsController controller) {
 
         controller.getGameManager().relink(controller.getGameBoard());
 
-        if (controller.getUiManager() != null) {
-            controller.getUiManager().updateHexBoardDrawer();
+        if (controller.getGameScreenManager() != null) {
+            controller.getGameScreenManager().updateHexBoardDrawer();
         }
     }
 

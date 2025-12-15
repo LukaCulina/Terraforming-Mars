@@ -7,7 +7,7 @@ import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
-import hr.terraforming.mars.terraformingmars.ui.UIInitializer;
+import hr.terraforming.mars.terraformingmars.ui.GameScreenInitializer;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
@@ -82,15 +82,15 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
                 _ -> placementManager.cancelPlacement()
         );
 
-        UIManager uiManager = UIInitializer.initUI(
+        GameScreenManager gameScreenManager = GameScreenInitializer.initUI(
                 controller,
                 actionManager
         );
-        controller.setUiManager(uiManager);
+        controller.setGameScreenManager(gameScreenManager);
 
         ResizeHandler.attachResizeListeners(
                 controller.getHexBoardPane(),
-                uiManager.getHexBoardDrawer()
+                gameScreenManager.getHexBoardDrawer()
         );
 
         controller.getGameBoard().setOnGlobalParametersChanged(controller::updateAllUI);

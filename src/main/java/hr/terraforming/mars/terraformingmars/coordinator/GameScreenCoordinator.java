@@ -5,7 +5,7 @@ import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.manager.PlacementManager;
-import hr.terraforming.mars.terraformingmars.manager.UIManager;
+import hr.terraforming.mars.terraformingmars.manager.GameScreenManager;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import javafx.scene.Node;
@@ -15,12 +15,12 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-public class UIUpdateCoordinator {
+public class GameScreenCoordinator {
 
     public void updateAllUI(Player viewedPlayer, GameManager gameManager, PlacementManager placementManager,
                             PlayerBoardController playerBoardController, ActionManager actionManager,
-                            UIManager uiManager) {
-        if (gameManager == null || viewedPlayer == null || uiManager == null) return;
+                            GameScreenManager gameScreenManager) {
+        if (gameManager == null || viewedPlayer == null || gameScreenManager == null) return;
 
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
         boolean isMyTurn = gameManager.getCurrentPlayer().getName().equals(myName);
@@ -29,13 +29,13 @@ public class UIUpdateCoordinator {
         }
 
         boolean isPlacing = (placementManager != null && placementManager.isPlacementMode());
-        uiManager.updateGeneralUI(viewedPlayer, isPlacing, isMyTurn);
+        gameScreenManager.updateGeneralUI(viewedPlayer, isPlacing, isMyTurn);
 
         if (playerBoardController != null) {
             playerBoardController.setPlayer(viewedPlayer, actionManager);
         }
 
-        uiManager.getHexBoardDrawer().drawBoard();
+        gameScreenManager.getHexBoardDrawer().drawBoard();
     }
 
 

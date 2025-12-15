@@ -54,7 +54,7 @@ public class TerraformingMarsController {
     @FXML private TextField chatInput;
 
     @Setter @Getter private PlacementManager placementManager;
-    @Setter @Getter private UIManager uiManager;
+    @Setter @Getter private GameScreenManager gameScreenManager;
     @Setter @Getter private ActionManager actionManager;
     @Setter @Getter public GameManager gameManager;
     @Setter @Getter private GameBoard gameBoard;
@@ -62,7 +62,7 @@ public class TerraformingMarsController {
     @Getter private PlayerBoardController currentPlayerBoardController;
     @Getter private NetworkCoordinator networkCoordinator;
     @Getter private GameSetupCoordinator setupCoordinator;
-    private UIUpdateCoordinator uiUpdateCoordinator;
+    private GameScreenCoordinator gameScreenCoordinator;
     @Setter private Player viewedPlayer = null;
     private final GameStateService gameStateService = new GameStateService();
     @Setter
@@ -74,7 +74,7 @@ public class TerraformingMarsController {
         currentPlayerBoardController = PlayerBoardLoader.loadPlayerBoard(currentPlayerBoardContainer);
         this.networkCoordinator = new NetworkCoordinator(this);
         this.setupCoordinator = new GameSetupCoordinator(this);
-        this.uiUpdateCoordinator = new UIUpdateCoordinator();
+        this.gameScreenCoordinator = new GameScreenCoordinator();
         addDebugButtons();
 
     }
@@ -137,18 +137,18 @@ public class TerraformingMarsController {
     }
 
     public void updateAllUI() {
-        uiUpdateCoordinator.updateAllUI(viewedPlayer, gameManager, placementManager,
-                currentPlayerBoardController, actionManager, uiManager);
+        gameScreenCoordinator.updateAllUI(viewedPlayer, gameManager, placementManager,
+                currentPlayerBoardController, actionManager, gameScreenManager);
     }
 
     public void updatePlayerHighlightForCurrentPlayer() {
         if (gameManager != null && gameManager.getCurrentPlayer() != null) {
-            uiUpdateCoordinator.updatePlayerHighlight(gameManager.getCurrentPlayer(), playerListBar);
+            gameScreenCoordinator.updatePlayerHighlight(gameManager.getCurrentPlayer(), playerListBar);
         }
     }
 
     public void setGameControlsEnabled(boolean isEnabled) {
-        uiUpdateCoordinator.setGameControlsEnabled(isEnabled, currentPlayerBoardController,
+        gameScreenCoordinator.setGameControlsEnabled(isEnabled, currentPlayerBoardController,
                 passTurnButton, convertHeatButton, convertPlantsButton,
                 standardProjectsBox, milestonesBox);
     }

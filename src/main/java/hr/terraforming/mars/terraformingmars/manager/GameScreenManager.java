@@ -20,7 +20,7 @@ import lombok.Getter;
 
 import java.util.Map;
 
-public class UIManager {
+public class GameScreenManager {
 
     @Getter
     private final HexBoardDrawer hexBoardDrawer;
@@ -31,9 +31,9 @@ public class UIManager {
     private final ActionPanelComponents actionPanels;
     private final PlayerControlComponents playerControls;
 
-    public UIManager(TerraformingMarsController controller, ActionManager actionManager,
-                     HexBoardDrawer hexBoardDrawer, GlobalStatusComponents globalStatus,
-                     ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
+    public GameScreenManager(TerraformingMarsController controller, ActionManager actionManager,
+                             HexBoardDrawer hexBoardDrawer, GlobalStatusComponents globalStatus,
+                             ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
         this.controller = controller;
         this.actionManager = actionManager;
         this.hexBoardDrawer = hexBoardDrawer;

@@ -2,20 +2,20 @@ package hr.terraforming.mars.terraformingmars.ui;
 
 import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
-import hr.terraforming.mars.terraformingmars.manager.UIManager;
+import hr.terraforming.mars.terraformingmars.manager.GameScreenManager;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import hr.terraforming.mars.terraformingmars.view.component.ActionPanelComponents;
 import hr.terraforming.mars.terraformingmars.view.component.GlobalStatusComponents;
 import hr.terraforming.mars.terraformingmars.view.component.PlayerControlComponents;
 
-public class UIInitializer {
+public class GameScreenInitializer {
 
-    private UIInitializer() {
+    private GameScreenInitializer() {
         throw new IllegalStateException("Utility class");
     }
 
-    public static UIManager initUI(TerraformingMarsController controller,
-                                   ActionManager actionManager) {
+    public static GameScreenManager initUI(TerraformingMarsController controller,
+                                           ActionManager actionManager) {
 
         HexBoardDrawer hexBoardDrawer = new HexBoardDrawer(
                 controller.getHexBoardPane(),
@@ -44,7 +44,7 @@ public class UIInitializer {
                 controller.convertPlantsButton
         );
 
-        UIManager ui = new UIManager(
+        GameScreenManager ui = new GameScreenManager(
                 controller, actionManager, hexBoardDrawer,
                 statusComp, actionPanel, controls
         );
