@@ -1,7 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.game.FinalGreeneryController;
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.FinalGreeneryOfferMessage;
@@ -21,10 +21,10 @@ public class FinalGreeneryPhaseManager {
     private final Window ownerWindow;
     private final Runnable onComplete;
     private int currentPlayerIndex = 0;
-    private final TerraformingMarsController controller;
+    private final GameScreenController controller;
 
     public FinalGreeneryPhaseManager(GameManager gameManager, Window ownerWindow,
-                                     TerraformingMarsController controller, Runnable onComplete) {
+                                     GameScreenController controller, Runnable onComplete) {
         this.gameManager = gameManager;
         this.ownerWindow = ownerWindow;
         this.controller = controller;

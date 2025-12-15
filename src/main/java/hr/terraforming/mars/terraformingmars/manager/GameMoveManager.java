@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public record MoveManager(ActionManager actionManager) {
+public record GameMoveManager(ActionManager actionManager) {
 
     private GameManager gm() {
         return actionManager.getController().getGameManager();

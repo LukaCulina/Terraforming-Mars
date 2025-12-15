@@ -21,7 +21,7 @@
 <?import javafx.scene.control.ScrollPane?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController">
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.game.GameScreenController">
     <MenuBar>
         <Menu mnemonicParsing="false" text="Game">
             <MenuItem mnemonicParsing="false" text="New" onAction="#startNewGame"/>

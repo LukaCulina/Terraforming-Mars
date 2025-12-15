@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
-public class TerraformingMarsController {
+public class GameScreenController {
 
     @Getter
     @FXML private AnchorPane hexBoardPane;
@@ -71,7 +71,7 @@ public class TerraformingMarsController {
 
     @FXML
     private void initialize() {
-        currentPlayerBoardController = PlayerBoardLoader.loadPlayerBoard(currentPlayerBoardContainer);
+        currentPlayerBoardController = PlayerBoardLoader.load(currentPlayerBoardContainer);
         this.networkCoordinator = new NetworkCoordinator(this);
         this.setupCoordinator = new GameSetupCoordinator(this);
         this.gameScreenCoordinator = new GameScreenCoordinator();

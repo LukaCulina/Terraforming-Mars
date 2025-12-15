@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class PlacementManager {
     private GameMove moveInProgress;
 
-    private final TerraformingMarsController mainController;
+    private final GameScreenController mainController;
     private final GameBoard gameBoard;
     private final GameManager gameManager;
     private final ActionManager actionManager;
@@ -28,7 +28,7 @@ public class PlacementManager {
     private Player finalGreeneryPlayer = null;
     private Runnable onPlacementCompleteCallback = null;
 
-    public PlacementManager(TerraformingMarsController mainController, GameManager gameManager, GameBoard gameBoard,ActionManager actionManager) {
+    public PlacementManager(GameScreenController mainController, GameManager gameManager, GameBoard gameBoard, ActionManager actionManager) {
         this.mainController = mainController;
         this.gameManager = gameManager;
         this.gameBoard = gameBoard;

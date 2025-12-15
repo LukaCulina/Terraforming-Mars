@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.coordinator;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
@@ -9,7 +9,7 @@ import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public record NetworkCoordinator(TerraformingMarsController controller) {
+public record NetworkCoordinator(GameScreenController controller) {
 
     public void handleNetworkUpdate(GameState state) {
         if (!validateGameState(state)) {

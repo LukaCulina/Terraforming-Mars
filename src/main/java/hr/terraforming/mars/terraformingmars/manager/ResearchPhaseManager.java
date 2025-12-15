@@ -1,7 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController;
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
@@ -20,9 +20,9 @@ public class ResearchPhaseManager {
     private final Window ownerWindow;
     private final Runnable onResearchComplete;
     private int researchPlayerIndex = 0;
-    private final TerraformingMarsController controller;
+    private final GameScreenController controller;
 
-    public ResearchPhaseManager(GameManager gameManager, Window ownerWindow, TerraformingMarsController controller,Runnable onResearchComplete) {
+    public ResearchPhaseManager(GameManager gameManager, Window ownerWindow, GameScreenController controller, Runnable onResearchComplete) {
         this.gameManager = gameManager;
         this.ownerWindow = ownerWindow;
         this.controller = controller;

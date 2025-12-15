@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
@@ -9,13 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 
 @Slf4j
-public class ActionExecutor {
+public class ExecutionManager {
 
-    private final TerraformingMarsController controller;
+    private final GameScreenController controller;
     private final ActionManager actionManager;
     private final GameFlowManager gameFlowManager;
 
-    public ActionExecutor(TerraformingMarsController controller, ActionManager actionManager, GameFlowManager gameFlowManager) {
+    public ExecutionManager(GameScreenController controller, ActionManager actionManager, GameFlowManager gameFlowManager) {
         this.controller = controller;
         this.actionManager = actionManager;
         this.gameFlowManager = gameFlowManager;

@@ -1,7 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.game.SellPatentsController;
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
@@ -17,17 +17,17 @@ import java.util.function.Consumer;
 @Slf4j
 public class ActionManager {
 
-    @Getter private final TerraformingMarsController controller;
+    @Getter private final GameScreenController controller;
     @Getter private final GameFlowManager gameFlowManager;
-    @Getter private final MoveManager moveManager;
-    private final ActionExecutor actionExecutor;
+    @Getter private final GameMoveManager gameMoveManager;
+    private final ExecutionManager executionManager;
 
-    public ActionManager(TerraformingMarsController controller,
+    public ActionManager(GameScreenController controller,
                          GameFlowManager gameFlowManager) {
         this.controller = controller;
         this.gameFlowManager = gameFlowManager;
-        this.moveManager = new MoveManager( this);
-        this.actionExecutor = new ActionExecutor(controller, this, gameFlowManager);
+        this.gameMoveManager = new GameMoveManager( this);
+        this.executionManager = new ExecutionManager(controller, this, gameFlowManager);
     }
 
     private GameManager gm() {
@@ -35,7 +35,7 @@ public class ActionManager {
     }
 
     public void processMove(GameMove move) {
-        moveManager.processMove(move);
+        gameMoveManager.processMove(move);
     }
 
     public void recordAndSaveMove(GameMove move) {
@@ -62,27 +62,27 @@ public class ActionManager {
     }
 
     public void handlePassTurn() {
-        actionExecutor.handlePassTurn();
+        executionManager.handlePassTurn();
     }
 
     public void handlePlayCard(Card card) {
-        actionExecutor.handlePlayCard(card);
+        executionManager.handlePlayCard(card);
     }
 
     public void handleClaimMilestone(Milestone milestone) {
-        actionExecutor.handleClaimMilestone(milestone);
+        executionManager.handleClaimMilestone(milestone);
     }
 
     public void handleStandardProject(StandardProject project) {
-        actionExecutor.handleStandardProject(project);
+        executionManager.handleStandardProject(project);
     }
 
     public void handleConvertHeat() {
-        actionExecutor.handleConvertHeat();
+        executionManager.handleConvertHeat();
     }
 
     public void handleConvertPlants() {
-        actionExecutor.handleConvertPlants();
+        executionManager.handleConvertPlants();
     }
 
     public void openSellPatentsWindow() {

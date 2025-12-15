@@ -3,7 +3,7 @@ package hr.terraforming.mars.terraformingmars.replay;
 import hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController;
 import hr.terraforming.mars.terraformingmars.controller.game.FinalGreeneryController;
 import hr.terraforming.mars.terraformingmars.controller.game.SellPatentsController;
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public record ReplayActionHandler(TerraformingMarsController controller, ReplayLoader loader) {
+public record ReplayActionHandler(GameScreenController controller, ReplayLoader loader) {
 
     void executeReplayMove(GameMove move) {
         GameManager gameManager = controller.getGameManager();

@@ -15,7 +15,7 @@ public class PlayerBoardLoader {
         throw new IllegalStateException("Utility class");
     }
 
-    public static PlayerBoardController loadPlayerBoard(VBox container) {
+    public static PlayerBoardController load(VBox container) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     PlayerBoardLoader.class.getResource("/hr/terraforming/mars/terraformingmars/PlayerBoard.fxml")

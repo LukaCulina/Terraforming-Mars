@@ -1,19 +1,19 @@
 package hr.terraforming.mars.terraformingmars.coordinator;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.manager.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
-import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
+import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
 import hr.terraforming.mars.terraformingmars.ui.GameScreenInitializer;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public record GameSetupCoordinator(TerraformingMarsController controller) {
+public record GameSetupCoordinator(GameScreenController controller) {
 
     public void setupNewGame(GameState gameState) {
         setupGameInternal(gameState, true);
@@ -88,7 +88,7 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
         );
         controller.setGameScreenManager(gameScreenManager);
 
-        ResizeHandler.attachResizeListeners(
+        GameScreenResizer.attachResizeListeners(
                 controller.getHexBoardPane(),
                 gameScreenManager.getHexBoardDrawer()
         );

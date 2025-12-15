@@ -2,7 +2,7 @@ package hr.terraforming.mars.terraformingmars.controller.game;
 
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
+import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
@@ -19,16 +19,16 @@ public class GameOverController {
 
     @FXML
     public void initialize() {
-        ResizeHandler.attachFontResizeListeners(gameOver, this::updateFontSizes);
+        GameScreenResizer.attachFontResizeListeners(gameOver, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
-        ResizeHandler.updateFonts(
+        GameScreenResizer.updateFonts(
                 gameOver,
-                new ResizeHandler.FontMapping(".main-title", 0.05),
-                new ResizeHandler.FontMapping(".choose-label", 0.035),
-                new ResizeHandler.FontMapping(".header-label", 0.03),
-                new ResizeHandler.FontMapping(".normal-label", 0.025)
+                new GameScreenResizer.FontMapping(".main-title", 0.05),
+                new GameScreenResizer.FontMapping(".choose-label", 0.035),
+                new GameScreenResizer.FontMapping(".header-label", 0.03),
+                new GameScreenResizer.FontMapping(".normal-label", 0.025)
         );
     }
 

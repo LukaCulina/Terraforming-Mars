@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.Milestone;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
@@ -25,13 +25,13 @@ public class GameScreenManager {
     @Getter
     private final HexBoardDrawer hexBoardDrawer;
 
-    private final TerraformingMarsController controller;
+    private final GameScreenController controller;
     private final ActionManager actionManager;
     private final GlobalStatusComponents globalStatus;
     private final ActionPanelComponents actionPanels;
     private final PlayerControlComponents playerControls;
 
-    public GameScreenManager(TerraformingMarsController controller, ActionManager actionManager,
+    public GameScreenManager(GameScreenController controller, ActionManager actionManager,
                              HexBoardDrawer hexBoardDrawer, GlobalStatusComponents globalStatus,
                              ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
         this.controller = controller;
@@ -51,7 +51,7 @@ public class GameScreenManager {
         }
     }
 
-    public void initializeUIComponents(TerraformingMarsController controller, BorderPane gameBoardPane, BorderPane playerInterface, GridPane bottomGrid, StackPane temperaturePane) {
+    public void initializeUIComponents(GameScreenController controller, BorderPane gameBoardPane, BorderPane playerInterface, GridPane bottomGrid, StackPane temperaturePane) {
         UIComponentBuilder componentBuilder = new UIComponentBuilder(controller, actionManager, gm());
         componentBuilder.createPlayerButtons(playerControls.playerListBar());
         componentBuilder.createMilestoneButtons(actionPanels.milestonesBox());

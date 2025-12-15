@@ -3,7 +3,7 @@ package hr.terraforming.mars.terraformingmars.controller.game;
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
+import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -32,28 +32,28 @@ public class FinalGreeneryController {
     private List<Player> players;
     private int currentPlayerIndex = 0;
     private Player currentPlayer;
-    private TerraformingMarsController mainController;
+    private GameScreenController mainController;
     private Runnable onComplete;
     private Stage stage;
 
     @FXML
     public void initialize() {
-        ResizeHandler.attachFontResizeListeners(finalGreenery, this::updateFontSizes);
+        GameScreenResizer.attachFontResizeListeners(finalGreenery, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
-        ResizeHandler.updateFonts(
+        GameScreenResizer.updateFonts(
                 finalGreenery,
-                new ResizeHandler.FontMapping(".choose-label", 0.05),
-                new ResizeHandler.FontMapping(".info-label", 0.025),
-                new ResizeHandler.FontMapping(".player-name-label", 0.035),
-                new ResizeHandler.FontMapping(".details-label", 0.025),
-                new ResizeHandler.FontMapping(".confirm-button", 0.025),
-                new ResizeHandler.FontMapping(".player-button", 0.025)
+                new GameScreenResizer.FontMapping(".choose-label", 0.05),
+                new GameScreenResizer.FontMapping(".info-label", 0.025),
+                new GameScreenResizer.FontMapping(".player-name-label", 0.035),
+                new GameScreenResizer.FontMapping(".details-label", 0.025),
+                new GameScreenResizer.FontMapping(".confirm-button", 0.025),
+                new GameScreenResizer.FontMapping(".player-button", 0.025)
         );
     }
 
-    public void setup(GameManager gameManager, TerraformingMarsController mainController) {
+    public void setup(GameManager gameManager, GameScreenController mainController) {
         this.players = gameManager.getPlayers();
         this.mainController = mainController;
         this.gameManager = gameManager;
@@ -63,7 +63,7 @@ public class FinalGreeneryController {
     }
 
     public void setupSinglePlayer(Player player, GameManager gameManager,
-                                  TerraformingMarsController mainController,
+                                  GameScreenController mainController,
                                   Runnable onComplete) {
         this.currentPlayer = player;
         this.gameManager = gameManager;

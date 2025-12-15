@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.model;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
 import hr.terraforming.mars.terraformingmars.network.GameServerThread;
@@ -20,7 +20,7 @@ public class ApplicationConfiguration {
     private GameClientThread gameClient;
     private NetworkBroadcaster broadcaster;
 
-    private TerraformingMarsController activeGameController;
+    private GameScreenController activeGameController;
 
     private ApplicationConfiguration() {
         this.playerType = PlayerType.LOCAL;

@@ -8,9 +8,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-public class ResizeHandler {
+public class GameScreenResizer {
 
-    private ResizeHandler() {
+    private GameScreenResizer() {
         throw new IllegalStateException("Utility class");
     }
 

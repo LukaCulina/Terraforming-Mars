@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.ui;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.manager.GameScreenManager;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
@@ -14,7 +14,7 @@ public class GameScreenInitializer {
         throw new IllegalStateException("Utility class");
     }
 
-    public static GameScreenManager initUI(TerraformingMarsController controller,
+    public static GameScreenManager initUI(GameScreenController controller,
                                            ActionManager actionManager) {
 
         HexBoardDrawer hexBoardDrawer = new HexBoardDrawer(

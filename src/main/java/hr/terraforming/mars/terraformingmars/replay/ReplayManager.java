@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.replay;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameMove;
 import hr.terraforming.mars.terraformingmars.model.Player;
@@ -18,12 +18,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class ReplayManager {
 
-    private final TerraformingMarsController controller;
+    private final GameScreenController controller;
     private final ReplayLoader loader;
     private final ReplayActionHandler actionHandler;
     private Timeline replayTimeline;
 
-    public ReplayManager(TerraformingMarsController controller) {
+    public ReplayManager(GameScreenController controller) {
         this.controller = controller;
         this.loader = new ReplayLoader();
         this.actionHandler = new ReplayActionHandler(controller, loader);

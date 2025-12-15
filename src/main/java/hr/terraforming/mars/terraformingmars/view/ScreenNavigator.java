@@ -142,7 +142,7 @@ public class ScreenNavigator {
 
     public static void startGameWithChosenCards(GameState gameState) {
         var result = ScreenLoader.loadFxml("GameScreen.fxml");
-        TerraformingMarsController mainController = (TerraformingMarsController) result.controller();
+        GameScreenController mainController = (GameScreenController) result.controller();
         Scene mainGameScene = ScreenLoader.createScene(result.root());
         ApplicationConfiguration.getInstance().setActiveGameController(mainController);
 

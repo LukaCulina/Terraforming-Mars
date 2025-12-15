@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
@@ -7,7 +8,6 @@ import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import javafx.application.Platform;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import java.util.Map;
 @Slf4j
 public class GameFlowManager {
 
-    private final TerraformingMarsController controller;
+    private final GameScreenController controller;
     @Getter private FinalGreeneryPhaseManager finalGreeneryManager;
 
-    public GameFlowManager(TerraformingMarsController controller) {
+    public GameFlowManager(GameScreenController controller) {
         this.controller = controller;
     }
 

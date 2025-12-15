@@ -7,7 +7,7 @@ import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.ui.ResizeHandler;
+import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -46,15 +46,15 @@ public class PlayerBoardController {
 
     @FXML
     public void initialize() {
-        ResizeHandler.attachFontResizeListeners(playerBoard, this::updateFontSizes);
+        GameScreenResizer.attachFontResizeListeners(playerBoard, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
-        ResizeHandler.updateFonts(
+        GameScreenResizer.updateFonts(
                 playerBoard,
-                new ResizeHandler.FontMapping(".meter-text", 0.035),
-                new ResizeHandler.FontMapping(".resource-text", 0.03),
-                new ResizeHandler.FontMapping(".tag-text-label", 0.025)
+                new GameScreenResizer.FontMapping(".meter-text", 0.035),
+                new GameScreenResizer.FontMapping(".resource-text", 0.03),
+                new GameScreenResizer.FontMapping(".tag-text-label", 0.025)
         );
     }
 

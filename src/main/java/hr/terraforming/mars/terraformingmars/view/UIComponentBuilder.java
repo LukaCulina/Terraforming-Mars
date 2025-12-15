@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.view;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.Milestone;
 import hr.terraforming.mars.terraformingmars.enums.StandardProject;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
@@ -13,7 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public record UIComponentBuilder(TerraformingMarsController controller, ActionManager actionManager,
+public record UIComponentBuilder(GameScreenController controller, ActionManager actionManager,
                                  GameManager gameManager) {
 
     public void createPlayerButtons(HBox playerListBar) {

@@ -1,6 +1,6 @@
 package hr.terraforming.mars.terraformingmars.controller.setup;
 
-import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
+import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;
@@ -29,7 +29,7 @@ public class StartMenuController {
 
         if (loadedState != null) {
             var result = ScreenLoader.loadFxml("GameScreen.fxml");
-            TerraformingMarsController controller = (TerraformingMarsController) result.controller();
+            GameScreenController controller = (GameScreenController) result.controller();
             Scene mainGameScene = ScreenLoader.createScene(result.root());
 
             controller.getSetupCoordinator().setupLoadedGame(loadedState);
