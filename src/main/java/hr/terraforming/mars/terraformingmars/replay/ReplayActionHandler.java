@@ -9,7 +9,7 @@ import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
-import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
+import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -29,7 +29,7 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
             case OPEN_CHOOSE_CARDS_MODAL -> {
                 Platform.runLater(() -> {
                     List<String> names = Arrays.asList(move.details().split(","));
-                    ScreenLoader.showAsModal(
+                    ScreenUtils.showAsModal(
                             controller.getSceneWindow(),
                             "ChooseCards.fxml",
                             "Research (Replay)",
@@ -50,7 +50,7 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
                     if (playerForReplay != null) {
                         List<Card> handBeforeSale = new ArrayList<>(playerForReplay.getHand());
 
-                        ScreenLoader.showAsModal(
+                        ScreenUtils.showAsModal(
                                 controller.getSceneWindow(),
                                 "SellPatents.fxml",
                                 "Sell Patents (Replay)",
@@ -67,7 +67,7 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
                     String playerName = parts[0];
                     int plants = Integer.parseInt(parts[1]);
                     int cost = Integer.parseInt(parts[2]);
-                    ScreenLoader.showAsModal(
+                    ScreenUtils.showAsModal(
                             controller.getSceneWindow(),
                             "FinalGreeneryScreen.fxml",
                             "Final Greenery (Replay)",

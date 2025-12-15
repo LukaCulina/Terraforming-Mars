@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class HexGridHelper {
+public class HexGridUtils {
 
-    private HexGridHelper() {
+    private HexGridUtils() {
         throw new IllegalStateException("Utility class");
     }
 

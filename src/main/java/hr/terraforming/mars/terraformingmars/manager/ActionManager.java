@@ -5,7 +5,7 @@ import hr.terraforming.mars.terraformingmars.controller.game.GameScreenControlle
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.thread.SaveNewGameMoveThread;
-import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
+import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.application.Platform;
 import javafx.stage.Window;
@@ -114,7 +114,7 @@ public class ActionManager {
 
         Window owner = controller.getHexBoardPane().getScene().getWindow();
 
-        ScreenLoader.showAsModal(
+        ScreenUtils.showAsModal(
                 owner,
                 "SellPatents.fxml",
                 "Sell Patents",

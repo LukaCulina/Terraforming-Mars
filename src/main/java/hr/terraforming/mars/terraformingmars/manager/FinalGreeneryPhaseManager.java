@@ -6,7 +6,7 @@ import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.FinalGreeneryOfferMessage;
 import hr.terraforming.mars.terraformingmars.network.message.GameOverMessage;
-import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
+import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.stage.Window;
@@ -101,7 +101,7 @@ public class FinalGreeneryPhaseManager {
     }
 
     private void openModalForPlayer(Player player) {
-        ScreenLoader.showAsModal(
+        ScreenUtils.showAsModal(
                 ownerWindow,
                 "FinalGreeneryScreen.fxml",
                 "Final Greenery Conversion - " + player.getName(),

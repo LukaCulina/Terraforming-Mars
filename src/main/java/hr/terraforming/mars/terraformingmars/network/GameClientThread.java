@@ -7,7 +7,7 @@ import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.*;
-import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
+import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
@@ -116,7 +116,7 @@ public class GameClientThread implements Runnable {
 
         Platform.runLater(() -> {
             if (isResearch) {
-                ScreenLoader.showAsModal(
+                ScreenUtils.showAsModal(
                         ScreenNavigator.getMainStage(),
                         "ChooseCards.fxml",
                         "Research Phase",
@@ -159,7 +159,7 @@ public class GameClientThread implements Runnable {
 
         log.info("CLIENT received FinalGreeneryOffer, opening modal for {}", myName);
 
-        Platform.runLater(() -> ScreenLoader.showAsModal(
+        Platform.runLater(() -> ScreenUtils.showAsModal(
                 controller.getSceneWindow(),
                 "FinalGreeneryScreen.fxml",
                 "Final Greenery Conversion",

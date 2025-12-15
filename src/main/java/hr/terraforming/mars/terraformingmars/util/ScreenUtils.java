@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 @Slf4j
-public class ScreenLoader {
+public class ScreenUtils {
 
-    private ScreenLoader() {
+    private ScreenUtils() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -36,14 +36,14 @@ public class ScreenLoader {
 
     public static void setConfig(ResourceConfig resourceConfig) {
         if (config != null) {
-            throw new IllegalStateException("ScreenLoader configuration has already been set.");
+            throw new IllegalStateException("ScreenUtils configuration has already been set.");
         }
         config = resourceConfig;
     }
 
     private static void ensureConfigured() {
         if (config == null) {
-            throw new IllegalStateException("ScreenLoader has not been configured. Please call setConfig() at startup.");
+            throw new IllegalStateException("ScreenUtils has not been configured. Please call setConfig() at startup.");
         }
     }
 
@@ -51,7 +51,7 @@ public class ScreenLoader {
         ensureConfigured();
         try {
             String fullFxmlPath = config.fxmlBasePath() + fxmlFile;
-            FXMLLoader loader = new FXMLLoader(ScreenLoader.class.getResource(fullFxmlPath));
+            FXMLLoader loader = new FXMLLoader(ScreenUtils.class.getResource(fullFxmlPath));
             Parent root = loader.load();
             T controller = loader.getController();
             return new FxmlResult<>(root, controller);
@@ -64,7 +64,7 @@ public class ScreenLoader {
         ensureConfigured();
         Scene scene = new Scene(root);
 
-        var css = ScreenLoader.class.getResource(config.cssPath());
+        var css = ScreenUtils.class.getResource(config.cssPath());
 
         if (css == null) {
             throw new IllegalStateException("CSS file not found: " + config.cssPath());

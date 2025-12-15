@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.controller.game.*;
 import hr.terraforming.mars.terraformingmars.controller.setup.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
-import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
+import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -29,7 +29,7 @@ public class ScreenNavigator {
     private static final double HEIGHT_PERCENTAGE = 0.5;
 
     public static void showStartMenu() {
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "StartMenu.fxml",
                 "Terraforming Mars - Main Menu",
@@ -40,7 +40,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseModeScreen() {
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "ChooseMode.fxml",
                 "Choose Mode",
@@ -49,7 +49,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseOnlineModeScreen() {
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "ChooseOnlineMode.fxml",
                 "Choose Online Mode",
@@ -58,7 +58,7 @@ public class ScreenNavigator {
     }
 
     public static void showJoinGameScreen() {
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "JoinGame.fxml",
                 "Join Game",
@@ -67,7 +67,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseNameScreen(GameManager gameManager, GameBoard gameBoard) {
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "ChooseName.fxml",
                 "Choose a name",
@@ -76,7 +76,7 @@ public class ScreenNavigator {
     }
 
     public static void showWaitingForPlayersScreen(GameManager gameManager, int expectedPlayerCount) {
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "WaitingScreen.fxml",
                 "Waiting for Players",
@@ -85,7 +85,7 @@ public class ScreenNavigator {
     }
 
     public static void showChoosePlayersScreen() {
-        ScreenLoader.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
+        ScreenUtils.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
     }
 
     public static void showChooseCorporationScreen(GameManager gameManager) {
@@ -95,7 +95,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseCorporationScreen(Player player, List<Corporation> offer, GameManager gameManager) {
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "ChooseCorporation.fxml",
                 "Choose for " + player.getName(),
@@ -113,7 +113,7 @@ public class ScreenNavigator {
         Consumer<List<Card>> onConfirmAction =
                 chosenCards -> handleCardDraftConfirmation(chosenCards, player, gameManager);
 
-        ScreenLoader.showAsMainScreen(
+        ScreenUtils.showAsMainScreen(
                 mainStage,
                 "ChooseCards.fxml",
                 "Choose Initial Cards - " + player.getName(),
@@ -141,9 +141,9 @@ public class ScreenNavigator {
     }
 
     public static void startGameWithChosenCards(GameState gameState) {
-        var result = ScreenLoader.loadFxml("GameScreen.fxml");
+        var result = ScreenUtils.loadFxml("GameScreen.fxml");
         GameScreenController mainController = (GameScreenController) result.controller();
-        Scene mainGameScene = ScreenLoader.createScene(result.root());
+        Scene mainGameScene = ScreenUtils.createScene(result.root());
         ApplicationConfiguration.getInstance().setActiveGameController(mainController);
 
         mainController.setupGame(gameState);
@@ -153,7 +153,7 @@ public class ScreenNavigator {
     }
 
     public static void showGameOverScreen(List<Player> rankedPlayers) {
-        ScreenLoader.showAsModal(mainStage, "GameOver.fxml", "Game Over - Final Score",
+        ScreenUtils.showAsModal(mainStage, "GameOver.fxml", "Game Over - Final Score",
                 WIDTH_PERCENTAGE, HEIGHT_PERCENTAGE, (GameOverController c) -> c.setFinalScores(rankedPlayers));
     }
 }

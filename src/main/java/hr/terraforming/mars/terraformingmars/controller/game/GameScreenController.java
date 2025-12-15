@@ -84,7 +84,7 @@ public class GameScreenController {
         debugBox.setStyle("-fx-padding: 5;");
 
         Button triggerFinalBtn = new Button("🎯 Trigger Final Gen");
-        triggerFinalBtn.setOnAction(e -> debugTriggerFinalGeneration());
+        triggerFinalBtn.setOnAction(_ -> debugTriggerFinalGeneration());
 
         debugBox.getChildren().add(triggerFinalBtn);
 

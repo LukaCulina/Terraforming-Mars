@@ -2,7 +2,7 @@ package hr.terraforming.mars.terraformingmars;
 
 import hr.terraforming.mars.terraformingmars.config.ResourceConfig;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
-import hr.terraforming.mars.terraformingmars.util.ScreenLoader;
+import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Application;
@@ -21,7 +21,7 @@ public class TerraformingMarsApplication extends Application {
                 "/hr/terraforming/mars/terraformingmars/data/cards.json"
         );
 
-        ScreenLoader.setConfig(config);
+        ScreenUtils.setConfig(config);
         CardFactory.setConfig(config);
         CardFactory.loadAllCards();
 

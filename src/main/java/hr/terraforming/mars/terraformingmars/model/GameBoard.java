@@ -3,7 +3,7 @@ package hr.terraforming.mars.terraformingmars.model;
 import hr.terraforming.mars.terraformingmars.enums.Milestone;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
 import hr.terraforming.mars.terraformingmars.service.PlacementService;
-import hr.terraforming.mars.terraformingmars.util.HexGridHelper;
+import hr.terraforming.mars.terraformingmars.util.HexGridUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +60,7 @@ public class GameBoard implements Serializable {
     }
 
     private void initBoard() {
-        int[] hexesInRow = HexGridHelper.getHexesInRow();
+        int[] hexesInRow = HexGridUtils.getHexesInRow();
         for (int row = 0; row < hexesInRow.length; row++) {
             int hexesThisRow = hexesInRow[row];
             for (int col = 0; col < hexesThisRow; col++) {
@@ -109,7 +109,7 @@ public class GameBoard implements Serializable {
         return OCEAN_COORDINATES.contains(row + "," + col);
     }
 
-    public int[] getHexesInRow() { return HexGridHelper.getHexesInRow(); }
+    public int[] getHexesInRow() { return HexGridUtils.getHexesInRow(); }
 
     public boolean increaseOxygen() {
         if (getOxygenLevel() < MAX_OXYGEN) {
@@ -165,7 +165,7 @@ public class GameBoard implements Serializable {
     }
 
     public List<Tile> getAdjacentTiles(Tile centerTile) {
-        return HexGridHelper.getAdjacentTiles(centerTile, this.tiles);
+        return HexGridUtils.getAdjacentTiles(centerTile, this.tiles);
     }
 
     public Tile getTileAt(int row, int col) {
