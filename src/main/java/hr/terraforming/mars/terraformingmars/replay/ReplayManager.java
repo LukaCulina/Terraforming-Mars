@@ -37,7 +37,11 @@ public class ReplayManager {
 
         controller.setGameBoard(newReplayBoard);
         controller.getGameManager().resetForNewGame(newReplayBoard);
-        controller.getUiManager().updateGameState(controller.getGameManager(), newReplayBoard);
+
+        if (controller.getUiManager() != null) {
+            controller.getUiManager().updateHexBoardDrawer();
+        }
+
         controller.setViewedPlayer(controller.getGameManager().getCurrentPlayer());
         controller.updateAllUI();
     }

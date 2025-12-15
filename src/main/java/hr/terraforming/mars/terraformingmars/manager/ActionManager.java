@@ -18,35 +18,24 @@ import java.util.function.Consumer;
 public class ActionManager {
 
     @Getter private final TerraformingMarsController controller;
-    @Getter private GameManager gameManager;
-    @Getter private GameBoard gameBoard;
     @Getter private final GameFlowManager gameFlowManager;
     @Getter private final MoveManager moveManager;
     private final ActionExecutor actionExecutor;
 
-    public ActionManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard,
+    public ActionManager(TerraformingMarsController controller,
                          GameFlowManager gameFlowManager) {
         this.controller = controller;
-        this.gameManager = gameManager;
-        this.gameBoard = gameBoard;
         this.gameFlowManager = gameFlowManager;
-        this.moveManager = new MoveManager(gameManager, gameBoard, this);
-        this.actionExecutor = new ActionExecutor(controller, this, gameManager, gameBoard, gameFlowManager);
+        this.moveManager = new MoveManager( this);
+        this.actionExecutor = new ActionExecutor(controller, this, gameFlowManager);
+    }
+
+    private GameManager gm() {
+        return controller.getGameManager();
     }
 
     public void processMove(GameMove move) {
         moveManager.processMove(move);
-    }
-
-    public void updateState(GameManager newManager, GameBoard newBoard) {
-        this.gameManager = newManager;
-        this.gameBoard = newBoard;
-
-        if (gameFlowManager != null) {
-            gameFlowManager.updateState(newManager, newBoard);
-        }
-
-        actionExecutor.updateState(newManager, newBoard);
     }
 
     public void recordAndSaveMove(GameMove move) {
@@ -59,14 +48,14 @@ public class ActionManager {
     }
 
     public void performAction() {
-        gameManager.incrementActionsTaken();
+        gm().incrementActionsTaken();
 
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
         if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
             controller.updateAllUI();
         }
 
-        if (gameManager.getActionsTakenThisTurn() >= 2) {
+        if (gm().getActionsTakenThisTurn() >= 2) {
             log.info("Player has taken 2 actions. Automatically passing turn.");
             handlePassTurn();
         }
@@ -104,7 +93,7 @@ public class ActionManager {
             String details = "Sold: " + count + " " + patent + " for " + count + " MC";
 
             GameMove showModal = new GameMove(
-                    gameManager.getCurrentPlayer().getName(),
+                    gm().getCurrentPlayer().getName(),
                     ActionType.OPEN_SELL_PATENTS_MODAL,
                     details,
                     java.time.LocalDateTime.now()
@@ -112,7 +101,7 @@ public class ActionManager {
             recordAndSaveMove(showModal);
 
             GameMove move = new GameMove(
-                    gameManager.getCurrentPlayer().getName(),
+                    gm().getCurrentPlayer().getName(),
                     ActionType.SELL_PATENTS,
                     details,
                     java.time.LocalDateTime.now()
@@ -130,7 +119,7 @@ public class ActionManager {
                 "SellPatents.fxml",
                 "Sell Patents",
                 0.5, 0.7,
-                (SellPatentsController c) -> c.initData(gameManager.getCurrentPlayer(), onSaleCompleteAction)
+                (SellPatentsController c) -> c.initData(gm().getCurrentPlayer(), onSaleCompleteAction)
         );
     }
 }

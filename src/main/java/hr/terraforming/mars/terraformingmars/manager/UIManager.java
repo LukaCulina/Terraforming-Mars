@@ -25,18 +25,16 @@ public class UIManager {
     @Getter
     private final HexBoardDrawer hexBoardDrawer;
 
-    private GameBoard gameBoard;
-    private GameManager gameManager;
+    private final TerraformingMarsController controller;
     private final ActionManager actionManager;
     private final GlobalStatusComponents globalStatus;
     private final ActionPanelComponents actionPanels;
     private final PlayerControlComponents playerControls;
 
-    public UIManager(GameBoard gameBoard, GameManager gameManager, ActionManager actionManager,
+    public UIManager(TerraformingMarsController controller, ActionManager actionManager,
                      HexBoardDrawer hexBoardDrawer, GlobalStatusComponents globalStatus,
                      ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
-        this.gameBoard = gameBoard;
-        this.gameManager = gameManager;
+        this.controller = controller;
         this.actionManager = actionManager;
         this.hexBoardDrawer = hexBoardDrawer;
         this.globalStatus = globalStatus;
@@ -44,16 +42,17 @@ public class UIManager {
         this.playerControls = playerControls;
     }
 
-    public void updateGameState(GameManager newManager, GameBoard newBoard) {
-        this.gameManager = newManager;
-        this.gameBoard = newBoard;
-        if (this.hexBoardDrawer != null) {
-            this.hexBoardDrawer.setGameBoard(newBoard);
+    private GameManager gm() { return controller.getGameManager(); }
+    private GameBoard board() { return controller.getGameBoard(); }
+
+    public void updateHexBoardDrawer() {
+        if (hexBoardDrawer != null) {
+            hexBoardDrawer.setGameBoard(board());
         }
     }
 
     public void initializeUIComponents(TerraformingMarsController controller, BorderPane gameBoardPane, BorderPane playerInterface, GridPane bottomGrid, StackPane temperaturePane) {
-        UIComponentBuilder componentBuilder = new UIComponentBuilder(controller, actionManager, gameManager);
+        UIComponentBuilder componentBuilder = new UIComponentBuilder(controller, actionManager, gm());
         componentBuilder.createPlayerButtons(playerControls.playerListBar());
         componentBuilder.createMilestoneButtons(actionPanels.milestonesBox());
         componentBuilder.createStandardProjectButtons(actionPanels.standardProjectsBox());
@@ -93,28 +92,28 @@ public class UIManager {
     }
 
     private void updateGlobalParameters() {
-        globalStatus.generationLabel().setText("Generation: " + gameManager.getGeneration());
-        globalStatus.phaseLabel().setText("Phase: " + gameManager.getCurrentPhase().toString());
+        globalStatus.generationLabel().setText("Generation: " + gm().getGeneration());
+        globalStatus.phaseLabel().setText("Phase: " + gm().getCurrentPhase().toString());
 
-        double oxygenProgress = (double) gameBoard.getOxygenLevel() / GameBoard.MAX_OXYGEN;
+        double oxygenProgress = (double) board().getOxygenLevel() / GameBoard.MAX_OXYGEN;
         globalStatus.oxygenProgressBar().setProgress(oxygenProgress);
-        globalStatus.oxygenLabel().setText(String.format("%d%%", gameBoard.getOxygenLevel()));
+        globalStatus.oxygenLabel().setText(String.format("%d%%", board().getOxygenLevel()));
 
-        double tempProgress = (double) (gameBoard.getTemperature() - GameBoard.MIN_TEMPERATURE) / (GameBoard.MAX_TEMPERATURE - GameBoard.MIN_TEMPERATURE);
+        double tempProgress = (double) (board().getTemperature() - GameBoard.MIN_TEMPERATURE) / (GameBoard.MAX_TEMPERATURE - GameBoard.MIN_TEMPERATURE);
         globalStatus.temperatureProgressBar().setProgress(tempProgress);
-        globalStatus.temperatureLabel().setText(String.format("%d°C", gameBoard.getTemperature()));
+        globalStatus.temperatureLabel().setText(String.format("%d°C", board().getTemperature()));
 
         if (globalStatus.oceansLabel() != null) {
-            int oceans = gameBoard.getOceansPlaced();
+            int oceans = board().getOceansPlaced();
             int maxOceans = GameBoard.MAX_OCEANS;
             globalStatus.oceansLabel().setText(String.format("%d / %d", oceans, maxOceans));
         }
     }
 
     private void updateStandardProjectButtonsState(boolean isPlacing) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
-        boolean canPerformAction = gameManager.getActionsTakenThisTurn() < 2;
+        Player currentPlayer = gm().getCurrentPlayer();
+        boolean isActionPhase = gm().getCurrentPhase() == GamePhase.ACTIONS;
+        boolean canPerformAction = gm().getActionsTakenThisTurn() < 2;
 
         actionPanels.standardProjectsBox().getChildren().forEach(node -> {
             if (node instanceof Button btn) {
@@ -123,7 +122,7 @@ public class UIManager {
                     boolean canAfford = currentPlayer.getMC() >= project.getCost();
                     boolean disable = isPlacing || !canAfford || !isActionPhase || !canPerformAction;
                     if (project == StandardProject.AQUIFER) {
-                        disable = disable || !gameBoard.canPlaceOcean();
+                        disable = disable || !board().canPlaceOcean();
                     } else if (project == StandardProject.SELL_PATENTS) {
                         boolean hasCardsInHand = !currentPlayer.getHand().isEmpty();
                         disable = disable || !hasCardsInHand;
@@ -135,9 +134,9 @@ public class UIManager {
     }
 
     private void updateMilestoneButtonsState(boolean isPlacing) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
-        Map<Milestone, Player> claimed = gameBoard.getClaimedMilestones();
+        Player currentPlayer = gm().getCurrentPlayer();
+        boolean isActionPhase = gm().getCurrentPhase() == GamePhase.ACTIONS;
+        Map<Milestone, Player> claimed = board().getClaimedMilestones();
 
         actionPanels.milestonesBox().getChildren().forEach(node -> {
             if (node instanceof Button btn) {
@@ -161,7 +160,7 @@ public class UIManager {
     }
 
     private void updatePlayerButtonsHighlight(Player viewedPlayer) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
+        Player currentPlayer = gm().getCurrentPlayer();
         for (Node node : playerControls.playerListBar().getChildren()) {
             if (node instanceof Button btn) {
                 String buttonPlayerName = btn.getText();
@@ -178,9 +177,9 @@ public class UIManager {
     }
 
     private void updateConvertButtonsState(boolean isPlacing, boolean isMyTurn) {
-        Player currentPlayer = gameManager.getCurrentPlayer();
-        boolean isActionPhase = gameManager.getCurrentPhase() == GamePhase.ACTIONS;
-        boolean canPerformAction = gameManager.getActionsTakenThisTurn() < 2;
+        Player currentPlayer = gm().getCurrentPlayer();
+        boolean isActionPhase = gm().getCurrentPhase() == GamePhase.ACTIONS;
+        boolean canPerformAction = gm().getActionsTakenThisTurn() < 2;
         boolean controlsActive = isMyTurn && isActionPhase && canPerformAction && !isPlacing;
 
         Button convertHeatBtn = playerControls.convertHeatButton();
@@ -188,7 +187,7 @@ public class UIManager {
 
         if (convertHeatBtn != null) {
             boolean canAffordHeat = currentPlayer.resourceProperty(ResourceType.HEAT).get() >= 8;
-            boolean isTemperatureMaxed = gameBoard.getTemperature() >= GameBoard.MAX_TEMPERATURE;
+            boolean isTemperatureMaxed = board().getTemperature() >= GameBoard.MAX_TEMPERATURE;
             convertHeatBtn.setDisable(!controlsActive || !canAffordHeat || isTemperatureMaxed);
         }
 

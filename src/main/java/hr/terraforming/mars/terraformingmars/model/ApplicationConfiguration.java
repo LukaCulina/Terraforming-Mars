@@ -15,9 +15,12 @@ public class ApplicationConfiguration {
     private PlayerType playerType;
     private int playerCount;
     private String myPlayerName;
+
     private GameServerThread gameServer;
     private GameClientThread gameClient;
     private NetworkBroadcaster broadcaster;
+
+    private TerraformingMarsController activeGameController;
 
     private ApplicationConfiguration() {
         this.playerType = PlayerType.LOCAL;
@@ -30,5 +33,4 @@ public class ApplicationConfiguration {
         }
         return instance;
     }
-    private TerraformingMarsController activeGameController;
 }

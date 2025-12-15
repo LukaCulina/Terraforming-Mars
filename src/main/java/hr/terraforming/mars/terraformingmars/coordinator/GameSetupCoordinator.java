@@ -61,8 +61,6 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
 
         ActionManager actionManager = new ActionManager(
                 controller,
-                controller.getGameManager(),
-                controller.getGameBoard(),
                 gameFlowManager
         );
         controller.setActionManager(actionManager);
@@ -91,8 +89,6 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
 
         UIManager uiManager = UIInitializer.initUI(
                 controller,
-                controller.getGameBoard(),
-                controller.getGameManager(),
                 actionManager
         );
         controller.setUiManager(uiManager);

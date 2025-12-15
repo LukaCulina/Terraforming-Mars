@@ -3,8 +3,6 @@ package hr.terraforming.mars.terraformingmars.ui;
 import hr.terraforming.mars.terraformingmars.controller.game.TerraformingMarsController;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.manager.UIManager;
-import hr.terraforming.mars.terraformingmars.model.GameBoard;
-import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import hr.terraforming.mars.terraformingmars.view.component.ActionPanelComponents;
 import hr.terraforming.mars.terraformingmars.view.component.GlobalStatusComponents;
@@ -17,13 +15,11 @@ public class UIInitializer {
     }
 
     public static UIManager initUI(TerraformingMarsController controller,
-                                   GameBoard gameBoard,
-                                   GameManager gameManager,
                                    ActionManager actionManager) {
 
         HexBoardDrawer hexBoardDrawer = new HexBoardDrawer(
                 controller.getHexBoardPane(),
-                gameBoard,
+                controller.getGameBoard(),
                 controller.getPlacementManager()
         );
 
@@ -49,8 +45,8 @@ public class UIInitializer {
         );
 
         UIManager ui = new UIManager(
-                gameBoard, gameManager, actionManager,
-                hexBoardDrawer, statusComp, actionPanel, controls
+                controller, actionManager, hexBoardDrawer,
+                statusComp, actionPanel, controls
         );
 
         ui.initializeUIComponents(

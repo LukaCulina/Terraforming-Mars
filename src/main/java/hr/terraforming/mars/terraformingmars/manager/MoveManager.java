@@ -12,12 +12,24 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public record MoveManager(GameManager gameManager, GameBoard gameBoard, ActionManager actionManager) {
+public record MoveManager(ActionManager actionManager) {
+
+    private GameManager gm() {
+        return actionManager.getController().getGameManager();
+    }
+
+    private GameBoard board() {
+        return actionManager.getController().getGameBoard();
+    }
+
+    private GameFlowManager gameFlow() {
+        return actionManager.getGameFlowManager();
+    }
 
     public void processMove(GameMove move) {
 
         if (move.actionType() != ActionType.OPEN_CHOOSE_CARDS_MODAL) {
-            gameManager.setCurrentPlayerByName(move.playerName());
+            gm().setCurrentPlayerByName(move.playerName());
         }
 
         switch (move.actionType()) {
@@ -75,14 +87,14 @@ public record MoveManager(GameManager gameManager, GameBoard gameBoard, ActionMa
             return;
         }
 
-        Player player = gameManager.getPlayerByName(move.playerName());
-        Tile tile = gameBoard.getTileAt(move.row(), move.col());
+        Player player = gm().getPlayerByName(move.playerName());
+        Tile tile = board().getTileAt(move.row(), move.col());
 
         if (tile != null && player != null) {
             switch (move.tileType()) {
-                case OCEAN -> gameBoard.placeOcean(tile, player);
-                case GREENERY -> gameBoard.placeGreenery(tile, player);
-                case CITY -> gameBoard.placeCity(tile, player);
+                case OCEAN -> board().placeOcean(tile, player);
+                case GREENERY -> board().placeGreenery(tile, player);
+                case CITY -> board().placeCity(tile, player);
                 default -> log.warn("Received PLACE_TILE with unhandled type: {}", move.tileType());
             }
             actionManager.performAction();
@@ -90,7 +102,7 @@ public record MoveManager(GameManager gameManager, GameBoard gameBoard, ActionMa
     }
 
     private void handleSellPatents(GameMove move) {
-        Player player = gameManager.getPlayerByName(move.playerName());
+        Player player = gm().getPlayerByName(move.playerName());
         if (player != null && !player.getHand().isEmpty()) {
             List<String> soldCardNames = Arrays.asList(move.details().split(","));
 
@@ -105,14 +117,12 @@ public record MoveManager(GameManager gameManager, GameBoard gameBoard, ActionMa
     private void handleFinishFinalGreenery(GameMove move) {
         log.info("Processing FINISH_FINAL_GREENERY from {}", move.playerName());
 
-        var controller = ApplicationConfiguration.getInstance().getActiveGameController();
-        if (controller != null && controller.getActionManager() != null) {
-            var flowManager = controller.getActionManager().getGameFlowManager();
-            if (flowManager != null && flowManager.getFinalGreeneryManager() != null) {
-                flowManager.getFinalGreeneryManager().finishForCurrentPlayer();
-            } else {
-                log.warn("FinalGreeneryPhaseManager is null on HOST");
-            }
+        FinalGreeneryPhaseManager finalGreeneryMgr = gameFlow().getFinalGreeneryManager();
+
+        if (finalGreeneryMgr != null) {
+            finalGreeneryMgr.finishForCurrentPlayer();
+        } else {
+            log.error("FinalGreeneryPhaseManager is null - cannot finish final greenery!");
         }
     }
 }
