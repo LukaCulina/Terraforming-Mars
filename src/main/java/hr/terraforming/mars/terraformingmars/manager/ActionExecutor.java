@@ -73,7 +73,7 @@ public class ActionExecutor {
 
         if (card.getTileToPlace() != null) {
             if (isLocalPlayerMove(currentPlayer)) {
-                controller.getPlacementCoordinator().enterPlacementModeForCard(card, move);
+                controller.getPlacementManager().enterPlacementModeForCard(card, move);
             } else {
                 currentPlayer.playCard(card, gm());
             }
@@ -115,7 +115,7 @@ public class ActionExecutor {
 
         if (project.requiresTilePlacement()) {
             if (isLocalPlayerMove(currentPlayer)) {
-                controller.getPlacementCoordinator().enterPlacementModeForProject(project, move);
+                controller.getPlacementManager().enterPlacementModeForProject(project, move);
             } else {
                 currentPlayer.spendMC(finalCost);
             }
@@ -178,7 +178,7 @@ public class ActionExecutor {
         );
 
         if (isLocalPlayerMove(currentPlayer)) {
-            controller.getPlacementCoordinator().enterPlacementModeForPlant(convertPlantsMove);
+            controller.getPlacementManager().enterPlacementModeForPlant(convertPlantsMove);
         } else {
             currentPlayer.spendPlantsForGreenery();
         }

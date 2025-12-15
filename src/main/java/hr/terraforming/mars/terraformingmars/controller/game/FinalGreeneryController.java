@@ -116,7 +116,7 @@ public class FinalGreeneryController {
     private void handleConvertGreenery() {
         if (currentPlayer == null) return;
 
-        mainController.getPlacementCoordinator().enterPlacementModeForFinalGreenery(
+        mainController.getPlacementManager().enterPlacementModeForFinalGreenery(
                 currentPlayer,
                 () -> {
                     if (this.stage != null) {

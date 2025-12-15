@@ -60,7 +60,6 @@ public class TerraformingMarsController {
     @Setter @Getter private GameBoard gameBoard;
     @Setter @Getter private ChatManager chatManager;
     @Getter private PlayerBoardController currentPlayerBoardController;
-    @Setter @Getter private PlacementCoordinator placementCoordinator;
     @Getter private NetworkCoordinator networkCoordinator;
     @Getter private GameSetupCoordinator setupCoordinator;
     private UIUpdateCoordinator uiUpdateCoordinator;

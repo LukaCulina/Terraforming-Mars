@@ -75,8 +75,6 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
         );
         controller.setPlacementManager(placementManager);
 
-        controller.setPlacementCoordinator(new PlacementCoordinator(placementManager));
-
         controller.setChatManager(new ChatManager(
                 controller.getChatListView(),
                 controller.getChatInput(),
