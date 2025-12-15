@@ -20,32 +20,31 @@ import java.util.Map;
 public class GameFlowManager {
 
     private final TerraformingMarsController controller;
-    private GameManager gameManager;
-    private GameBoard gameBoard;
     @Getter private FinalGreeneryPhaseManager finalGreeneryManager;
 
-    public GameFlowManager(TerraformingMarsController controller, GameManager gameManager, GameBoard gameBoard) {
+    public GameFlowManager(TerraformingMarsController controller) {
         this.controller = controller;
-        this.gameManager = gameManager;
-        this.gameBoard = gameBoard;
     }
 
-    public void updateState(GameManager newManager, GameBoard newBoard) {
-        this.gameManager = newManager;
-        this.gameBoard = newBoard;
+    private GameManager gm() {
+        return controller.getGameManager();
+    }
+
+    private GameBoard board() {
+        return controller.getGameBoard();
     }
 
     public void handleEndOfActionPhase() {
         log.info("All players have passed. Starting Production Phase.");
 
-        gameManager.doProduction();
+        gm().doProduction();
 
         controller.updateAllUI();
 
-        if (gameBoard.isFinalGeneration()) {
+        if (board().isFinalGeneration()) {
             log.info("This was the last generation. Starting final greenery conversion phase.");
 
-            gameManager.resetDraftPhase();
+            gm().resetDraftPhase();
 
             var config = ApplicationConfiguration.getInstance();
             PlayerType playerType = config.getPlayerType();
@@ -54,7 +53,7 @@ public class GameFlowManager {
                 case HOST, CLIENT -> {
                     log.info("ONLINE: Starting Final Greenery phase manager.");
                     this.finalGreeneryManager = new FinalGreeneryPhaseManager(
-                            gameManager,
+                            gm(),
                             controller.getSceneWindow(),
                             controller,
                             this::onFinalGreeneryComplete
@@ -64,7 +63,7 @@ public class GameFlowManager {
                 case LOCAL -> {
                     log.info("LOCAL: Starting Final Greenery phase manager.");
                     this.finalGreeneryManager = new FinalGreeneryPhaseManager(
-                            gameManager,
+                            gm(),
                             controller.getSceneWindow(),
                             controller,
                             this::onFinalGreeneryComplete
@@ -81,7 +80,7 @@ public class GameFlowManager {
     private void onFinalGreeneryComplete() {
         log.info("Final Greenery phase complete. Calculating final scores.");
 
-        List<Player> rankedPlayers = gameManager.calculateFinalScores();
+        List<Player> rankedPlayers = gm().calculateFinalScores();
 
         Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
 
@@ -95,10 +94,10 @@ public class GameFlowManager {
     private void startNewGeneration() {
         log.info("Production phase is over. Starting a new generation.");
 
-        gameManager.startNewGeneration();
-        gameManager.resetDraftPhase();
+        gm().startNewGeneration();
+        gm().resetDraftPhase();
 
-        controller.setViewedPlayer(gameManager.getCurrentPlayer());
+        controller.setViewedPlayer(gm().getCurrentPlayer());
         controller.updateAllUI();
 
         var config = ApplicationConfiguration.getInstance();
@@ -113,7 +112,7 @@ public class GameFlowManager {
             case LOCAL -> {
                 log.info("LOCAL: Starting local research phase manager.");
                 new ResearchPhaseManager(
-                        gameManager,
+                        gm(),
                         controller.getSceneWindow(),
                         controller,
                         this::onResearchComplete
@@ -123,16 +122,16 @@ public class GameFlowManager {
     }
 
     public void onResearchComplete() {
-        if (gameManager.getCurrentPhase() == GamePhase.ACTIONS) {
+        if (gm().getCurrentPhase() == GamePhase.ACTIONS) {
             log.warn("Already in ACTIONS phase, skipping duplicate beginActionPhase()");
             return;
         }
 
-        createAndSaveResearchPhaseSnapshot(gameManager);
+        createAndSaveResearchPhaseSnapshot(gm());
 
         log.info("Research phase complete. Starting Action Phase.");
 
-        gameManager.beginActionPhase();
+        gm().beginActionPhase();
 
         controller.updateAllUI();
 

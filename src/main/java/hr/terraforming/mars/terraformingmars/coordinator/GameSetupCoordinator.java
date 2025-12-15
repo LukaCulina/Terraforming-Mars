@@ -23,7 +23,6 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
         setupGameInternal(gameState, false);
     }
 
-
     private void setupGameInternal(GameState gameState, boolean shouldStartGame) {
         controller.setGameManager(gameState.gameManager());
         controller.setGameBoard(gameState.gameBoard());
@@ -54,9 +53,7 @@ public record GameSetupCoordinator(TerraformingMarsController controller) {
 
     private void initializeComponents() {
         GameFlowManager gameFlowManager = new GameFlowManager(
-                controller,
-                controller.getGameManager(),
-                controller.getGameBoard()
+                controller
         );
 
         ActionManager actionManager = new ActionManager(

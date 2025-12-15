@@ -1,22 +1,21 @@
-package hr.terraforming.mars.terraformingmars.util;
+package hr.terraforming.mars.terraformingmars.service;
 
 import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
-public class GamePhaseUtils {
+public class ProductionService {
 
-    private GamePhaseUtils() {
-        throw new IllegalStateException("Utility Class");
+    private ProductionService() {
+        throw new IllegalStateException("Service class - use static methods");
     }
 
     public static void executeProduction(List<Player> players) {
         log.info("Production Phase Started");
+
         for (Player p : players) {
             int income = p.getTR() + p.productionProperty(ResourceType.MEGA_CREDITS).get();
             p.addMC(income);
@@ -30,22 +29,11 @@ public class GamePhaseUtils {
                     p.addResource(type, amount.get());
                 }
             });
+
+            log.debug("{}: Produced {} MC, {} resources",
+                    p.getName(), income, p.getProductionMap().size());
         }
+
         log.info("Production Finished");
-    }
-
-    public static List<Player> calculateFinalScores(List<Player> players) {
-        log.info("=== FINAL SCORING ===");
-        for (Player p : players) {
-            p.calculateTilePoints();
-            log.info("{} - Final Score: {}", p.getName(), p.getFinalScore());
-        }
-
-        List<Player> rankedPlayers = new ArrayList<>(players);
-        rankedPlayers.sort(
-                Comparator.comparingInt(Player::getFinalScore).reversed()
-                        .thenComparing(Player::getMC, Comparator.reverseOrder())
-        );
-        return rankedPlayers;
     }
 }

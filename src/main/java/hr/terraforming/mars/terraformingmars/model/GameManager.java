@@ -5,15 +5,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import hr.terraforming.mars.terraformingmars.factory.CardFactory;
-import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
-import hr.terraforming.mars.terraformingmars.util.GamePhaseUtils;
+import hr.terraforming.mars.terraformingmars.service.DeckService;
+import hr.terraforming.mars.terraformingmars.service.ProductionService;
+import hr.terraforming.mars.terraformingmars.service.ScoringService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameManager implements Serializable {
-    
+
     private final List<Player> players;
     private int currentPlayerIndex = 0;
     @Getter private GamePhase currentPhase;
@@ -22,13 +22,11 @@ public class GameManager implements Serializable {
     private transient GameBoard board;
     private int cardDraftPlayerIndex = 0;
     @Getter private int actionsTakenThisTurn = 0;
-    private final List<Corporation> remainingCorporations;
-    private final List<Card> remainingCards;
+    private final DeckService deckService;
 
     public GameManager(List<Player> players, GameBoard gameBoard) {
         this.players = new ArrayList<>(players);
-        this.remainingCorporations = new ArrayList<>(CorporationFactory.getAllCorporations());
-        this.remainingCards = new ArrayList<>(CardFactory.getAllCards());
+        this.deckService = new DeckService();
         relink(gameBoard);
     }
 
@@ -40,31 +38,23 @@ public class GameManager implements Serializable {
     }
 
     public void shuffleCorporations() {
-        Collections.shuffle(this.remainingCorporations);
-        log.info("Corporations shuffled. Remaining: {}", remainingCorporations.size());
+        deckService.shuffleCorporations();
     }
 
     public void shuffleCards() {
-        Collections.shuffle(this.remainingCards);
-        log.info("Project cards shuffled. Remaining: {}", remainingCards.size());
+        deckService.shuffleCards();
     }
 
     public List<Corporation> drawCorporations(int count) {
-        if (remainingCorporations.isEmpty()) {
-            log.warn("No more corporations in the deck!");
-            return new ArrayList<>();
-        }
-
-        int toTake = Math.min(count, remainingCorporations.size());
-        List<Corporation> drawn = new ArrayList<>(remainingCorporations.subList(0, toTake));
-
-        remainingCorporations.removeAll(drawn);
-
-        return drawn;
+        return deckService.drawCorporations(count);
     }
 
     public List<Corporation> getCorporationOffer() {
-        return drawCorporations(2);
+        return deckService.getCorporationOffer();
+    }
+
+    public List<Card> drawCards(int count) {
+        return deckService.drawCards(count);
     }
 
     public void assignCorporationAndAdvance(Corporation chosenCorp) {
@@ -92,20 +82,6 @@ public class GameManager implements Serializable {
 
     public void resetDraftPhase() {
         this.cardDraftPlayerIndex = 0;
-    }
-
-    public List<Card> drawCards(int count) {
-        if (remainingCards.isEmpty()) {
-            log.warn("There are no more cards in the draw pile.");
-            return new ArrayList<>();
-        }
-
-        int cardsToTake = Math.min(count, remainingCards.size());
-        List<Card> drawnCards = new ArrayList<>(remainingCards.subList(0, cardsToTake));
-        this.remainingCards.removeAll(drawnCards);
-
-
-        return drawnCards;
     }
 
     public void incrementActionsTaken() {
@@ -150,7 +126,7 @@ public class GameManager implements Serializable {
     }
 
     public void doProduction() {
-        GamePhaseUtils.executeProduction(players);
+        ProductionService.executeProduction(players);
     }
 
     public void startNewGeneration() {
@@ -174,7 +150,7 @@ public class GameManager implements Serializable {
     public GameBoard getGameBoard() { return board; }
 
     public List<Player> calculateFinalScores() {
-        return GamePhaseUtils.calculateFinalScores(players);
+        return ScoringService.calculateFinalScores(players);
     }
 
     public void resetForNewGame(GameBoard newBoard) {
@@ -189,10 +165,7 @@ public class GameManager implements Serializable {
         this.actionsTakenThisTurn = 0;
         this.passedPlayers.clear();
         this.cardDraftPlayerIndex = 0;
-        this.remainingCorporations.clear();
-        this.remainingCorporations.addAll(CorporationFactory.getAllCorporations());
-        this.remainingCards.clear();
-        this.remainingCards.addAll(CardFactory.getAllCards());
+        deckService.reset();
     }
 
     public void setCurrentPlayerByName(String playerName) {
