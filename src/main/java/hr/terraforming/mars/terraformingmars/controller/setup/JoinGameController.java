@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.network.GameClientThread;
-import hr.terraforming.mars.terraformingmars.network.GameStateCoordinator;
+import hr.terraforming.mars.terraformingmars.network.PlayerGameStateCoordinator;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -79,7 +79,7 @@ public class JoinGameController {
                 GameClientThread client = new GameClientThread(serverIp, port);
                 ApplicationConfiguration.getInstance().setGameClient(client);
 
-                GameStateCoordinator coordinator = new GameStateCoordinator(client);
+                PlayerGameStateCoordinator coordinator = new PlayerGameStateCoordinator(client);
                 client.addGameStateListener(coordinator);
 
                 new Thread(client).start();

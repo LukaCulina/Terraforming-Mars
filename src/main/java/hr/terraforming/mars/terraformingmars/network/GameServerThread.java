@@ -26,8 +26,8 @@ public class GameServerThread implements Runnable {
     @Setter private Consumer<Integer> onPlayerCountChanged;
     private ServerSocket serverSocket;
     private final List<GameStateListener> localListeners = new CopyOnWriteArrayList<>();
-
     private CardDistributor cardDistributor;
+    private volatile boolean running = true;
 
     public GameServerThread(GameManager gameManager, GameBoard gameBoard, ActionManager actionManager, int maxPlayers) {
         this.gameManager = gameManager;
@@ -43,7 +43,7 @@ public class GameServerThread implements Runnable {
             serverSocket = new ServerSocket(port);
             log.info("Server started on port {}, waiting for {} players...", port, maxPlayers - 1);
 
-            while (connectedClients.size() < maxPlayers - 1) {
+            while (running && connectedClients.size() < maxPlayers - 1) {
                 Socket clientSocket = serverSocket.accept();
                 log.info("Client connected: {}", clientSocket.getInetAddress());
 
@@ -65,7 +65,11 @@ public class GameServerThread implements Runnable {
             log.info("All players connected, game can start!");
 
         } catch (IOException e) {
-            log.error("Server error", e);
+            if (running) {
+                log.error("Server error", e);
+            } else {
+                log.info("Server stopped");
+            }
         }
     }
 
@@ -133,14 +137,24 @@ public class GameServerThread implements Runnable {
         }
     }
 
-    public void removeLocalListener(GameStateListener listener) {
-        this.localListeners.remove(listener);
-    }
-
     public void shutdown() {
+        log.info("🛑 GameServerThread shutting down...");
+        running = false;
+
         try {
-            if (serverSocket != null) serverSocket.close();
-            for (ClientHandler client : connectedClients) client.close();
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+
+            for (ClientHandler client : connectedClients) {
+                client.close();
+            }
+
+            connectedClients.clear();
+            localListeners.clear();
+            cardDistributor = null;
+
+            log.info("✅ GameServerThread shutdown complete");
         } catch (IOException e) {
             log.error("Error shutting down server", e);
         }

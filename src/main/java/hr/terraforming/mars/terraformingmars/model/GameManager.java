@@ -9,6 +9,7 @@ import hr.terraforming.mars.terraformingmars.service.DeckService;
 import hr.terraforming.mars.terraformingmars.service.ProductionService;
 import hr.terraforming.mars.terraformingmars.service.ScoringService;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,7 +17,7 @@ public class GameManager implements Serializable {
 
     private final List<Player> players;
     private int currentPlayerIndex = 0;
-    @Getter private GamePhase currentPhase;
+    @Setter @Getter private GamePhase currentPhase;
     @Getter private int generation = 0;
     private final List<Player> passedPlayers = new ArrayList<>();
     private transient GameBoard board;

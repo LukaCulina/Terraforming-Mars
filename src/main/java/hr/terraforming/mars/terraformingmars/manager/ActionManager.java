@@ -57,7 +57,11 @@ public class ActionManager {
 
         if (gm().getActionsTakenThisTurn() >= 2) {
             log.info("Player has taken 2 actions. Automatically passing turn.");
-            handlePassTurn();
+            if (gm().getCurrentPhase() == GamePhase.ACTIONS) {
+                handlePassTurn();
+            } else {
+                log.info("Skipping auto-pass - phase: {}", gm().getCurrentPhase());
+            }
         }
     }
 

@@ -118,6 +118,7 @@ public class GameFlowManager {
                         this::onResearchComplete
                 ).start();
             }
+            default -> log.warn("Unknown or null PlayerType in startNewGeneration(): {}", playerType);
         }
     }
 

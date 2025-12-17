@@ -25,12 +25,12 @@ public class ClientHandler implements Runnable {
     private final CompletableFuture<Void> readyFuture = new CompletableFuture<>();
     private volatile boolean running = true;
     @Getter private String playerName;
-    private ClientGameMessageHandler messageHandler;
+    private ClientMessageHandler messageHandler;
 
     public ClientHandler(Socket socket, GameManager gameManager, ActionManager actionManager) {
         this.socket = socket;
         this.gameManager = gameManager;
-        this.messageHandler = new ClientGameMessageHandler(
+        this.messageHandler = new ClientMessageHandler(
                 gameManager,
                 actionManager,
                 this::broadcastIfAvailable
@@ -38,7 +38,7 @@ public class ClientHandler implements Runnable {
     }
 
     public void setActionManager(ActionManager actionManager) {
-        this.messageHandler = new ClientGameMessageHandler(
+        this.messageHandler = new ClientMessageHandler(
                 gameManager,
                 actionManager,
                 this::broadcastIfAvailable

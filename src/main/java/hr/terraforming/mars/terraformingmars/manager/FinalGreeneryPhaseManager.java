@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.game.FinalGreeneryController;
 import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
+import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.FinalGreeneryOfferMessage;
@@ -32,6 +33,7 @@ public class FinalGreeneryPhaseManager {
     }
 
     public void start() {
+        gameManager.setCurrentPhase(GamePhase.FINAL_GREENERY);
         this.currentPlayerIndex = 0;
         Platform.runLater(this::showScreenForNextPlayer);
     }
@@ -46,7 +48,9 @@ public class FinalGreeneryPhaseManager {
     }
 
     private void handleAllPlayersFinished() {
-        log.info("🏁 All players finished Final Greenery!");
+        log.info("All players have finished Final Greenery!");
+
+        gameManager.setCurrentPhase(GamePhase.GAME_OVER);
 
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 

@@ -185,6 +185,7 @@ public class GameScreenController {
     }
 
     public void startNewGame() {
+        GameSessionManager.resetForNewGame();
         gameStateService.clearGameData();
         ScreenNavigator.showChooseModeScreen();
     }

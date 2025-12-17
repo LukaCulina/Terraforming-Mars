@@ -16,7 +16,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class PlayerBoardController {
 
@@ -41,7 +40,7 @@ public class PlayerBoardController {
     @FXML private Button showHandButton;
     @FXML private Button showPlayedButton;
     private Player player;
-    private Consumer<Card> cardPlayHandler;
+    private ActionManager actionManager;
     private boolean isShowingHand = true;
 
     @FXML
@@ -60,7 +59,7 @@ public class PlayerBoardController {
 
     public void setPlayer(Player player, ActionManager actionManager) {
         this.player = player;
-        this.cardPlayHandler = actionManager::handlePlayCard;
+        this.actionManager = actionManager;
         if (player == null) return;
 
         updatePlayerInfo();
@@ -126,8 +125,8 @@ public class PlayerBoardController {
             if (isShowingHand) {
                 boolean canPlay = player.canPlayCard(card);
 
-                if (canPlay && cardPlayHandler != null) {
-                    cardNode.setOnMouseClicked(_ -> cardPlayHandler.accept(card));
+                if (canPlay && actionManager != null) {
+                    cardNode.setOnMouseClicked(_ -> actionManager.handlePlayCard(card));
                     cardNode.getStyleClass().remove(disabledClass);
                     cardNode.setDisable(false);
                 } else {
