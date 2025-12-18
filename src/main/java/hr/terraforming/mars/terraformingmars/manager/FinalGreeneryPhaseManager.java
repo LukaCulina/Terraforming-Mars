@@ -4,6 +4,7 @@ import hr.terraforming.mars.terraformingmars.controller.game.FinalGreeneryContro
 import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
 import hr.terraforming.mars.terraformingmars.enums.PlayerType;
+import hr.terraforming.mars.terraformingmars.enums.ResourceType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.FinalGreeneryOfferMessage;
 import hr.terraforming.mars.terraformingmars.network.message.GameOverMessage;
@@ -105,6 +106,16 @@ public class FinalGreeneryPhaseManager {
     }
 
     private void openModalForPlayer(Player player) {
+        int plants = player.resourceProperty(ResourceType.PLANTS).get();
+        int cost = player.getGreeneryCost();
+
+        if (plants < cost) {
+            log.info("Player {} has insufficient plants ({} < {}) - auto-skipping Final Greenery",
+                    player.getName(), plants, cost);
+            finishForCurrentPlayer();
+            return;
+        }
+
         ScreenUtils.showAsModal(
                 ownerWindow,
                 "FinalGreeneryScreen.fxml",
