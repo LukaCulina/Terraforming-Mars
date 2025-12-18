@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
 
+<?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hr.terraforming.mars.terraformingmars.controller.game.GameOverController"
       fx:id="gameOver" styleClass="choose-window" alignment="CENTER" spacing="20">
@@ -11,9 +12,25 @@
     <Label text="GAME OVER" styleClass="main-title"/>
     <Label fx:id="winnerLabel" styleClass="choose-label"/>
 
-    <GridPane fx:id="scoresGrid" hgap="20" vgap="10" alignment="CENTER">
+    <GridPane fx:id="scoresGrid" hgap="40" vgap="15" alignment="CENTER" styleClass="game-over-grid">
+        <Label text="Rank" styleClass="header-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <Label text="Player" styleClass="header-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="TR" styleClass="header-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        <Label text="Milestones" styleClass="header-label" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+        <Label text="Board" styleClass="header-label" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+        <Label text="Cards" styleClass="header-label" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
+        <Label text="Total" styleClass="header-label" GridPane.columnIndex="6" GridPane.rowIndex="0"/>
         <padding>
             <Insets top="20" bottom="20"/>
         </padding>
     </GridPane>
+
+    <Button
+            text="Back to Main Menu"
+            onAction="#onBackToMainMenu"
+            styleClass="confirm-button">
+        <VBox.margin>
+            <Insets top="40"/>
+        </VBox.margin>
+    </Button>
 </VBox>

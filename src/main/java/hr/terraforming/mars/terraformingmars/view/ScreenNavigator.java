@@ -20,13 +20,10 @@ public class ScreenNavigator {
         throw new IllegalStateException("Utility class");
     }
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private static Stage mainStage;
     private static final int STARTING_CARDS = 6;
     private static final int CARD_COST = 3;
-    private static final double WIDTH_PERCENTAGE = 0.4;
-    private static final double HEIGHT_PERCENTAGE = 0.5;
 
     public static void showStartMenu() {
         ScreenUtils.showAsMainScreen(
@@ -153,7 +150,10 @@ public class ScreenNavigator {
     }
 
     public static void showGameOverScreen(List<Player> rankedPlayers) {
-        ScreenUtils.showAsModal(mainStage, "GameOver.fxml", "Game Over - Final Score",
-                WIDTH_PERCENTAGE, HEIGHT_PERCENTAGE, (GameOverController c) -> c.setFinalScores(rankedPlayers));
+        ScreenUtils.showAsMainScreen(
+                mainStage,
+                "GameOver.fxml",
+                "Game Over - Final Score",
+                 (GameOverController c) -> c.setFinalScores(rankedPlayers));
     }
 }

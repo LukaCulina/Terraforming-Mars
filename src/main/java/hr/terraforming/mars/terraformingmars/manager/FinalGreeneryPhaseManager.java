@@ -109,7 +109,7 @@ public class FinalGreeneryPhaseManager {
                 ownerWindow,
                 "FinalGreeneryScreen.fxml",
                 "Final Greenery Conversion - " + player.getName(),
-                0.4, 0.5,
+                0.5, 0.6,
                 (FinalGreeneryController c) -> c.setupSinglePlayer(
                         player, gameManager, controller, this::finishForCurrentPlayer
                 )

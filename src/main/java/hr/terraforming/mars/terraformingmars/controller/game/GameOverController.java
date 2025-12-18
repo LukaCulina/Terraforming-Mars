@@ -1,16 +1,20 @@
 package hr.terraforming.mars.terraformingmars.controller.game;
 
+import hr.terraforming.mars.terraformingmars.manager.GameSessionManager;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
+import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Comparator;
 import java.util.List;
 
+@Slf4j
 public class GameOverController {
 
     @FXML private VBox gameOver;
@@ -28,7 +32,8 @@ public class GameOverController {
                 new GameScreenResizer.FontMapping(".main-title", 0.05),
                 new GameScreenResizer.FontMapping(".choose-label", 0.035),
                 new GameScreenResizer.FontMapping(".header-label", 0.03),
-                new GameScreenResizer.FontMapping(".normal-label", 0.025)
+                new GameScreenResizer.FontMapping(".normal-label", 0.025),
+                new GameScreenResizer.FontMapping(".confirm-button", 0.03)
         );
     }
 
@@ -39,21 +44,9 @@ public class GameOverController {
         Player winner = players.getFirst();
         winnerLabel.setText("Winner: " + winner.getName() + " with " + winner.getFinalScore() + " victory points!");
 
-        addGridHeader();
         for (int i = 0; i < players.size(); i++) {
             addPlayerRow(i + 1, players.get(i));
         }
-    }
-
-    private void addGridHeader() {
-        int col = 0;
-        scoresGrid.add(createHeaderLabel("Rank"), col++, 0);
-        scoresGrid.add(createHeaderLabel("Player"), col++, 0);
-        scoresGrid.add(createHeaderLabel("TR"), col++, 0);
-        scoresGrid.add(createHeaderLabel("Milestones"), col++, 0);
-        scoresGrid.add(createHeaderLabel("Board bonuses"), col++, 0);
-        scoresGrid.add(createHeaderLabel("Cards"), col++, 0);
-        scoresGrid.add(createHeaderLabel("Total"), col, 0);
     }
 
     private void addPlayerRow(int rank, Player player) {
@@ -74,12 +67,21 @@ public class GameOverController {
     private Label createHeaderLabel(String text) {
         Label label = new Label(text);
         label.getStyleClass().add("header-label");
+        label.setMaxWidth(Double.MAX_VALUE);
         return label;
     }
 
     private Label createNormalLabel(String text) {
         Label label = new Label(text);
         label.getStyleClass().add("normal-label");
+        label.setMaxWidth(Double.MAX_VALUE);
         return label;
+    }
+
+    @FXML
+    private void onBackToMainMenu() {
+        log.info("Returning to Main Menu from Game Over screen");
+        GameSessionManager.resetForNewGame();
+        ScreenNavigator.showStartMenu();
     }
 }
