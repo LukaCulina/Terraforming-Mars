@@ -59,6 +59,8 @@ public class PlacementManager {
     }
 
     public void startFinalGreeneryPlacement(Player player, Runnable onComplete) {
+        mainController.setGameControlsEnabled(false);
+        mainController.setCancelButtonVisible(false);
         finalGreeneryCoordinator.startFinalGreeneryPlacement(player, onComplete);
     }
 
@@ -74,8 +76,10 @@ public class PlacementManager {
         this.onPlacementCompleteCallback = callback;
 
         mainController.drawBoard();
-        mainController.setGameControlsEnabled(false);
-        mainController.setCancelButtonVisible(true);
+        if (mode != PlacementMode.FINAL_GREENERY) {
+            mainController.setGameControlsEnabled(false);
+            mainController.setCancelButtonVisible(true);
+        }
     }
 
     public void executePlacement(Tile selectedTile) {
@@ -83,15 +87,7 @@ public class PlacementManager {
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
         boolean isLocalGame = ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL;
 
-        if (placementOwner == null) {
-            log.error("Placement failed: No player defined for tile placement. This should not happen.");
-            cancelPlacement();
-            return;
-        }
-
-        if (!isLocalGame && !placementOwner.getName().equals(myName)) {
-            log.error("Unauthorized placement attempt! Owner: {}, MyName: {}",
-                    placementOwner.getName(), myName);
+        if (placementOwner == null || (!isLocalGame && !placementOwner.getName().equals(myName))) {
             cancelPlacement();
             return;
         }
@@ -128,8 +124,6 @@ public class PlacementManager {
     }
 
     public void cancelPlacement() {
-        log.info("Placement canceled by user.");
-
         if (finalGreeneryCoordinator.isActive()) {
             finalGreeneryCoordinator.cancel();
         }
@@ -147,7 +141,9 @@ public class PlacementManager {
         boolean wasFinalGreenery = (placementMode == PlacementMode.FINAL_GREENERY);
 
         resetPlacementState();
-        mainController.setGameControlsEnabled(true);
+        if (!wasFinalGreenery) {
+            mainController.setGameControlsEnabled(true);
+        }
 
         mainController.drawBoard();
 
@@ -155,7 +151,6 @@ public class PlacementManager {
         NetworkBroadcaster broadcaster = config.getBroadcaster();
         if (broadcaster != null) {
             broadcaster.broadcast();
-            log.info("HOST broadcasted GameState AFTER placement");
         }
 
         if (!wasFinalGreenery) {
