@@ -5,6 +5,7 @@ import hr.terraforming.mars.terraformingmars.exception.FxmlLoadException;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -117,6 +118,8 @@ public class ScreenUtils {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(owner);
             stage.setResizable(true);
+
+            stage.setOnCloseRequest(Event::consume);
 
             Scene scene = createScene(result.root());
             stage.setScene(scene);

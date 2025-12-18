@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
+import hr.terraforming.mars.terraformingmars.coordinator.FinalGreeneryCoordinator;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
@@ -18,6 +19,7 @@ public class PlacementManager {
     private final GameBoard gameBoard;
     private final GameManager gameManager;
     private final ActionManager actionManager;
+    private final FinalGreeneryCoordinator finalGreeneryCoordinator;
 
     private PlacementMode placementMode = PlacementMode.NONE;
 
@@ -33,6 +35,7 @@ public class PlacementManager {
         this.gameManager = gameManager;
         this.gameBoard = gameBoard;
         this.actionManager = actionManager;
+        this.finalGreeneryCoordinator = new FinalGreeneryCoordinator(this);
     }
 
     public boolean isPlacementMode() {
@@ -53,6 +56,10 @@ public class PlacementManager {
 
     public void enterPlacementModeForFinalGreenery(Player player, Runnable callback) {
         enterPlacementMode(PlacementMode.FINAL_GREENERY, TileType.GREENERY, null, null, null, player, callback);
+    }
+
+    public void startFinalGreeneryPlacement(Player player, Runnable onComplete) {
+        finalGreeneryCoordinator.startFinalGreeneryPlacement(player, onComplete);
     }
 
     private void enterPlacementMode(PlacementMode mode, TileType tileType, GameMove move,
@@ -83,7 +90,7 @@ public class PlacementManager {
         }
 
         if (!isLocalGame && !placementOwner.getName().equals(myName)) {
-            log.error("🚫 Unauthorized placement attempt! Owner: {}, MyName: {}",
+            log.error("Unauthorized placement attempt! Owner: {}, MyName: {}",
                     placementOwner.getName(), myName);
             cancelPlacement();
             return;
@@ -122,6 +129,10 @@ public class PlacementManager {
 
     public void cancelPlacement() {
         log.info("Placement canceled by user.");
+
+        if (finalGreeneryCoordinator.isActive()) {
+            finalGreeneryCoordinator.cancel();
+        }
 
         if (onPlacementCompleteCallback != null) {
             Platform.runLater(onPlacementCompleteCallback);

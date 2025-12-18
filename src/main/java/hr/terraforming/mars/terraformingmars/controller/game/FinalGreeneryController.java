@@ -116,19 +116,28 @@ public class FinalGreeneryController {
     private void handleConvertGreenery() {
         if (currentPlayer == null) return;
 
-        mainController.getPlacementManager().enterPlacementModeForFinalGreenery(
+        int plants = currentPlayer.resourceProperty(ResourceType.PLANTS).get();
+        int cost = currentPlayer.getGreeneryCost();
+        int greeneryCount = plants / cost;
+
+        log.info("Player {} converting {} plants into {} greenery tiles",
+                currentPlayer.getName(), plants, greeneryCount);
+
+        closeWindow();
+
+        mainController.getPlacementManager().startFinalGreeneryPlacement(
                 currentPlayer,
                 () -> {
-                    if (this.stage != null) {
-                        this.stage.show();
-                        updateUI();
+                    log.info("All greenery tiles placed for {}", currentPlayer.getName());
+
+                    if (onComplete != null) {
+                        onComplete.run();
+                    } else {
+                        currentPlayerIndex++;
+                        Platform.runLater(this::showCurrentPlayer);
                     }
                 }
         );
-
-        if (this.stage != null) {
-            this.stage.hide();
-        }
     }
 
     @FXML
