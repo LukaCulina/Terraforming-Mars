@@ -70,7 +70,7 @@ public record GameMoveManager(ActionManager actionManager) {
 
             case PASS_TURN -> actionManager.handlePassTurn();
 
-            case RESEARCH_COMPLETE -> log.info("🔬 Processing RESEARCH_COMPLETE move");
+            case RESEARCH_COMPLETE -> log.info("Processing RESEARCH_COMPLETE move");
 
             case OPEN_CHOOSE_CARDS_MODAL -> log.info("Network {} opened choose cards modal", move.playerName());
 

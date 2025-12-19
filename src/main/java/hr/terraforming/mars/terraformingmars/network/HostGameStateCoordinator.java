@@ -30,7 +30,7 @@ public class HostGameStateCoordinator implements GameStateListener {
                 .noneMatch(p -> p.getName().startsWith("Player "));
 
         if (allJoined) {
-            log.info("HOST: All players joined, transitioning to Corporation Selection");
+            log.info("Host: All players joined, transitioning to Corporation Selection");
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
             ApplicationConfiguration.getInstance().getGameServer().distributeInitialCorporations();
         }
@@ -41,7 +41,7 @@ public class HostGameStateCoordinator implements GameStateListener {
                 .allMatch(p -> p.getCorporation() != null);
 
         if (allChosen) {
-            log.info("HOST: All players chose corporations, transitioning to Card Draft");
+            log.info("Host: All players chose corporations, transitioning to Card Draft");
             currentPhase = GameplayPhase.CARD_DRAFT;
             ApplicationConfiguration.getInstance().getGameServer().distributeInitialCards();
         }
@@ -51,7 +51,7 @@ public class HostGameStateCoordinator implements GameStateListener {
 
         Player currentPlayer = state.gameManager().getCurrentPlayerForDraft();
         if (currentPlayer == null) {
-            log.info("HOST: Draft completed, starting game");
+            log.info("Host: Draft completed, starting game");
             currentPhase = GameplayPhase.PLAYING;
             ScreenNavigator.startGameWithChosenCards(state);
         }
@@ -62,7 +62,7 @@ public class HostGameStateCoordinator implements GameStateListener {
         if (controller != null) {
             controller.updateFromNetwork(state);
         } else {
-            log.warn("HOST: Received PLAYING phase state, but controller is not set!");
+            log.warn("Host: Received PLAYING phase state, but controller is not set!");
         }
     }
 }

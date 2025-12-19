@@ -25,10 +25,10 @@ public class PlayerGameStateCoordinator implements GameStateListener {
     @Override
     public void onGameStateReceived(GameState state) {
         int callId = callCount.incrementAndGet();
-        log.info("CALL #{} from THREAD: {}", callId, Thread.currentThread().getName());
+        log.debug("CALL #{} from THREAD: {}", callId, Thread.currentThread().getName());
 
         Platform.runLater(() -> {
-            log.info("PLATFORM CALL #{} - START", callId);
+            log.debug("PLATFORM CALL #{} - START", callId);
 
             String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
@@ -38,7 +38,7 @@ public class PlayerGameStateCoordinator implements GameStateListener {
                 case CARD_DRAFT -> handleCardDraftPhase(state);
                 case PLAYING -> handlePlayingPhase(state);
             }
-            log.info("PLATFORM CALL #{} - END", callId);
+            log.debug("PLATFORM CALL #{} - END", callId);
 
         });
     }
@@ -54,7 +54,7 @@ public class PlayerGameStateCoordinator implements GameStateListener {
 
         if (allJoined) {
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
-            log.info("All of the players have joined the game");
+            log.debug("All of the players have joined the game");
 
         }
     }
@@ -65,7 +65,7 @@ public class PlayerGameStateCoordinator implements GameStateListener {
 
         if (allChosen) {
             currentPhase = GameplayPhase.CARD_DRAFT;
-            log.info("All of the players have chosen their corporation");
+            log.debug("All of the players have chosen their corporation");
         }
     }
 
@@ -74,7 +74,7 @@ public class PlayerGameStateCoordinator implements GameStateListener {
 
         if (currentPlayerForDraft == null) {
             currentPhase = GameplayPhase.PLAYING;
-            log.info("All of the players have chosen their cards");
+            log.debug("All of the players have chosen their cards");
             ScreenNavigator.startGameWithChosenCards(state);
         }
     }

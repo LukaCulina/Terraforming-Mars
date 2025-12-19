@@ -14,7 +14,7 @@ public record NetworkBroadcaster(GameManager gameManager, GameBoard gameBoard) {
             GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
             if (server != null) {
                 server.broadcastGameState(new GameState(gameManager, gameBoard));
-                log.debug("📡 Broadcast sent");
+                log.debug("Broadcast sent");
             }
         }
     }

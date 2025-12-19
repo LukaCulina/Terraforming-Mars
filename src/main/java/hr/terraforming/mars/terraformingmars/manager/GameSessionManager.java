@@ -31,7 +31,5 @@ public final class GameSessionManager {
         config.setBroadcaster(null);
         config.setPlayerType(null);
         config.setMyPlayerName(null);
-
-        log.info("resetForNewGame complete");
     }
 }

@@ -76,21 +76,21 @@ public class GameClientThread implements Runnable {
     public void sendCardChoice(List<Card> selectedCards) {
         sendMessage(
                 new CardChoiceMessage(selectedCards.stream().map(Card::getName).toList()),
-                () -> log.info("✅ Sent card choice with {} cards", selectedCards.size())
+                () -> log.debug("Sent card choice with {} cards", selectedCards.size())
         );
     }
 
     public void sendPlayerName(String playerName) {
         sendMessage(
                 new PlayerNameMessage(playerName),
-                () -> log.info("✅ Sent player name to server: {}", playerName)
+                () -> log.debug("Sent player name to server: {}", playerName)
         );
     }
 
     public void sendCorporationChoice(String corporationName) {
         sendMessage(
                 new CorporationChoiceMessage(corporationName),
-                () -> log.info("✅ Sent corporation choice to server: {}", corporationName)
+                () -> log.debug("Sent corporation choice to server: {}", corporationName)
         );
     }
 
@@ -113,13 +113,11 @@ public class GameClientThread implements Runnable {
     }
 
     public void shutdown() {
-        log.info("GameClientThread shutting down...");
+        log.info("GameClientThread shutting down");
         running = false;
 
         closeSocket();
         clearState();
-
-        log.info("GameClientThread shutdown complete");
     }
 
     private void closeSocket() {

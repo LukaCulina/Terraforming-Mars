@@ -28,7 +28,7 @@ public class PlayerBoardLoader {
             return controller;
 
         } catch (IOException e) {
-            log.error("FATAL: Could not load PlayerBoard.fxml. The application cannot start correctly.", e);
+            log.error("Could not load PlayerBoard.fxml. The application cannot start correctly.", e);
             throw new FxmlLoadException("Failed to load PlayerBoard.fxml", e);
         }
     }

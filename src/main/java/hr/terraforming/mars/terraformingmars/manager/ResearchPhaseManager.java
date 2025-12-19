@@ -36,7 +36,7 @@ public class ResearchPhaseManager {
 
     private void showScreenForNextPlayer() {
         if (researchPlayerIndex >= gameManager.getPlayers().size()) {
-            log.info("🏁 All players finished research! Calling onResearchComplete | currentPhase={}",
+            log.info("All players finished research! Calling onResearchComplete | currentPhase={}",
                     gameManager.getCurrentPhase());
             onResearchComplete.run();
             return;
@@ -69,7 +69,7 @@ public class ResearchPhaseManager {
 
     private void finishForCurrentPlayer(List<Card> boughtCards) {
         if (researchPlayerIndex >= gameManager.getPlayers().size()) {
-            log.warn("⚠️ finishForCurrentPlayer called but research already complete, ignoring");
+            log.warn("finishForCurrentPlayer called but research has already been complete!");
             return;
         }
 

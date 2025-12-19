@@ -38,7 +38,6 @@ public class PlayerMessageHandler {
     }
 
     private void handleGameState(GameState state) {
-        log.info("Received game state update");
         Platform.runLater(() -> {
             synchronized (listeners) {
                 for (GameStateListener listener : listeners) {
@@ -127,7 +126,7 @@ public class PlayerMessageHandler {
                 return;
             }
 
-            log.info("CLIENT received FinalGreeneryOffer, opening modal for {}", myName);
+            log.debug("Client received FinalGreeneryOffer, opening modal for {}", myName);
             showFinalGreeneryModal(me, gm, controller, myName);
         });
     }
@@ -147,7 +146,7 @@ public class PlayerMessageHandler {
     }
 
     private void sendFinalGreeneryCompletion(String playerName) {
-        log.info("CLIENT {} finished Final Greenery", playerName);
+        log.debug("Client {} finished Final Greenery", playerName);
         GameMove completionMove = new GameMove(
                 playerName,
                 ActionType.FINISH_FINAL_GREENERY,
@@ -155,7 +154,7 @@ public class PlayerMessageHandler {
                 java.time.LocalDateTime.now()
         );
         client.sendMove(completionMove);
-        log.info("CLIENT sent Final Greenery completion move to HOST");
+        log.debug("Client sent Final Greenery completion move to HOST");
     }
 
     private void handleGameOver(GameState lastGameState) {

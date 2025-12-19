@@ -65,19 +65,13 @@ public class PlayerBoardController {
 
         updatePlayerInfo();
 
-        PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
-
-        if (playerType == PlayerType.LOCAL) {
+        ApplicationConfiguration config = ApplicationConfiguration.getInstance();
+        if (config.getPlayerType() == PlayerType.LOCAL || player.getName().equals(config.getMyPlayerName())) {
             updateCardsDisplay();
         } else {
-            String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
-            if (player.getName().equals(myName)) {
-                updateCardsDisplay();
-            } else {
-                cardsDisplayArea.getChildren().clear();
-                showHandButton.setVisible(false);
-                showPlayedButton.setVisible(false);
-            }
+            cardsDisplayArea.getChildren().clear();
+            showHandButton.setVisible(false);
+            showPlayedButton.setVisible(false);
         }
     }
 
@@ -116,27 +110,23 @@ public class PlayerBoardController {
         if (player == null || cardsDisplayArea == null) return;
 
         cardsDisplayArea.getChildren().clear();
-
         List<Card> cardsToShow = isShowingHand ? player.getHand() : player.getPlayed();
         final String disabledClass = "card-view-disabled";
         CardViewBuilder.setupCardTilePane(cardsDisplayArea, 3, 10);
+
         cardsToShow.forEach(card -> {
             VBox cardNode = CardViewBuilder.createCardNode(card);
 
-            if (isShowingHand) {
-                boolean canPlay = player.canPlayCard(card);
+            boolean isActive = isShowingHand && player.canPlayCard(card);
 
-                if (canPlay && actionManager != null) {
-                    cardNode.setOnMouseClicked(_ -> actionManager.handlePlayCard(card));
-                    cardNode.getStyleClass().remove(disabledClass);
-                    cardNode.setDisable(false);
-                } else {
-                    cardNode.setOnMouseClicked(null);
-                    cardNode.getStyleClass().add(disabledClass);
-                    cardNode.setDisable(true);
-                }
+            if (isActive && actionManager != null) {
+                cardNode.setOnMouseClicked(_ -> actionManager.handlePlayCard(card));
+                cardNode.getStyleClass().remove(disabledClass);
+                cardNode.setDisable(false);
             } else {
                 cardNode.setOnMouseClicked(null);
+                cardNode.getStyleClass().add(disabledClass);
+                cardNode.setDisable(true);
             }
 
             cardsDisplayArea.getChildren().add(cardNode);
@@ -150,12 +140,7 @@ public class PlayerBoardController {
         final String activeClass = "card-button-active";
         showHandButton.getStyleClass().remove(activeClass);
         showPlayedButton.getStyleClass().remove(activeClass);
-
-        if (isShowingHand) {
-            showHandButton.getStyleClass().add(activeClass);
-        } else {
-            showPlayedButton.getStyleClass().add(activeClass);
-        }
+        (isShowingHand ? showHandButton : showPlayedButton).getStyleClass().add(activeClass);
     }
 
     private void updateTagsLegend() {
@@ -170,7 +155,7 @@ public class PlayerBoardController {
 
         for (var node : tagsLegendPane.getChildren()) {
             if (node instanceof HBox tagEntry) {
-                updateSingleTagEntry(tagEntry);
+                updateTagCount(tagEntry);
             }
         }
     }
@@ -193,7 +178,7 @@ public class PlayerBoardController {
         return tagEntry;
     }
 
-    private void updateSingleTagEntry(HBox tagEntry) {
+    private void updateTagCount(HBox tagEntry) {
         TagType tag = (TagType) tagEntry.getUserData();
         if (tag == null || tagEntry.getChildren().isEmpty()) return;
 
@@ -206,8 +191,6 @@ public class PlayerBoardController {
     }
 
     public void setHandInteractionEnabled(boolean isEnabled) {
-        if (handContainer != null) {
-            handContainer.setDisable(!isEnabled);
-        }
+        if (handContainer != null) handContainer.setDisable(!isEnabled);
     }
 }

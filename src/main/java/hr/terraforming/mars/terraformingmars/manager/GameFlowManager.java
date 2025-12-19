@@ -46,31 +46,13 @@ public class GameFlowManager {
 
             gm().resetDraftPhase();
 
-            var config = ApplicationConfiguration.getInstance();
-            PlayerType playerType = config.getPlayerType();
-
-            switch (playerType) {
-                case HOST, CLIENT -> {
-                    log.info("ONLINE: Starting Final Greenery phase manager.");
-                    this.finalGreeneryManager = new FinalGreeneryPhaseManager(
-                            gm(),
-                            controller.getSceneWindow(),
-                            controller,
-                            this::onFinalGreeneryComplete
-                    );
-                    finalGreeneryManager.start();
-                }
-                case LOCAL -> {
-                    log.info("LOCAL: Starting Final Greenery phase manager.");
-                    this.finalGreeneryManager = new FinalGreeneryPhaseManager(
-                            gm(),
-                            controller.getSceneWindow(),
-                            controller,
-                            this::onFinalGreeneryComplete
-                    );
-                    finalGreeneryManager.start();
-                }
-            }
+            this.finalGreeneryManager = new FinalGreeneryPhaseManager(
+                    gm(),
+                    controller.getSceneWindow(),
+                    controller,
+                    this::onFinalGreeneryComplete
+            );
+            finalGreeneryManager.start();
         }
         else {
             startNewGeneration();

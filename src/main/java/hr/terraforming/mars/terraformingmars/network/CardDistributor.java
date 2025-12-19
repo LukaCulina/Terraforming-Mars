@@ -16,7 +16,7 @@ import java.util.List;
 public record CardDistributor(GameManager gameManager, GameServerThread serverThread, ActionManager actionManager) {
 
     public void distributeInitialCorporations() {
-        log.info("HOST distributing corporations to all players...");
+        log.debug("Host distributing corporations to all players...");
         gameManager.shuffleCorporations();
 
         for (Player player : gameManager.getPlayers()) {
@@ -31,7 +31,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
     }
 
     public void distributeInitialCards() {
-        log.info("HOST distributing initial project cards...");
+        log.debug("Host distributing initial project cards...");
         gameManager.shuffleCards();
 
         for (Player player : gameManager.getPlayers()) {
@@ -46,7 +46,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
     }
 
     public void distributeResearchCards() {
-        log.info("HOST distributing Research Phase cards...");
+        log.debug("Host distributing Research Phase cards...");
         for (Player player : gameManager.getPlayers()) {
             List<Card> offer = gameManager.drawCards(4);
 
@@ -70,7 +70,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
     }
 
     private void handleHostConfirmation(Player player, List<Card> boughtCards) {
-        log.info("HOST confirming research cards. Count: {}", boughtCards.size());
+        log.debug("Host confirming research cards. Count: {}", boughtCards.size());
         int cost = boughtCards.size() * 3;
         if (player.getMC() >= cost) {
             player.spendMC(cost);
@@ -80,7 +80,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
         synchronized (gameManager) {
             boolean morePlayers = gameManager.advanceDraftPlayer();
             if (!morePlayers) {
-                log.info("HOST finished last. Triggering next phase (ACTIONS).");
+                log.info("Host finished last. Triggering next phase (ACTIONS).");
                 if (actionManager != null && actionManager.getGameFlowManager() != null) {
                     actionManager.getGameFlowManager().onResearchComplete();
                 }

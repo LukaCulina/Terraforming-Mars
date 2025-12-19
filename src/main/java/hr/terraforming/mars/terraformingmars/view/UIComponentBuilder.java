@@ -60,7 +60,7 @@ public record UIComponentBuilder(GameScreenController controller, ActionManager 
             btn.setUserData(project);
 
             Text icon = new Text(project.getIcon());
-            icon.setStyle("-fx-font-size: 20px;");
+            icon.getStyleClass().add("icon");
             btn.setGraphic(icon);
             Tooltip tooltip = new Tooltip(project.getDescription() + "\n(Price: " + project.getCost() + " MC)");
             tooltip.getStyleClass().add("tooltip");

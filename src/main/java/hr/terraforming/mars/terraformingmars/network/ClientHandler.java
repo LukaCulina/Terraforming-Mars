@@ -99,8 +99,7 @@ public class ClientHandler implements Runnable {
     }
 
     public synchronized void sendGameState(GameState state) {
-        log.debug("Sending game state to client with gameBoard = {}",
-                state.gameBoard() != null ? "NOT NULL" : "NULL");
+        log.debug("Sending GameState to {}", playerName);
 
         if (!ready) { return; }
 

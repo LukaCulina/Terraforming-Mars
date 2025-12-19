@@ -20,7 +20,6 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
 
     public String handlePlayerName(PlayerNameMessage msg) {
         String playerName = msg.playerName();
-        log.info("Associating client handler with player: {}", playerName);
 
         for (Player p : gameManager.getPlayers()) {
             if (p.getName().startsWith("Player ")) {
@@ -50,7 +49,7 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
                 .allMatch(player -> player.getCorporation() != null);
 
         if (allChosen) {
-            log.info("All of the players have chosen corporations. Distributing initial cards...");
+            log.debug("All of the players have chosen corporations. Distributing initial cards...");
         }
     }
 
@@ -100,7 +99,7 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
 
     public void handleGameMove(GameMove move) {
         if (actionManager == null) {
-            log.warn("ActionManager is null, cannot process move");
+            log.debug("ActionManager is null, cannot process move");
             return;
         }
 

@@ -624,3 +624,7 @@
 .tooltip {
     -fx-font-size: 12px;
 }
+
+.icon {
+    -fx-font-size: 20px;
+}

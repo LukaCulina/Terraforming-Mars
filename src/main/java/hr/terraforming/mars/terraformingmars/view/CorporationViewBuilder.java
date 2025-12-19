@@ -77,7 +77,7 @@ public class CorporationViewBuilder {
     private static String getResourceIcon(ResourceType type) {
         return switch (type) {
             case STEEL -> "🔩";
-            case TITANIUM -> "🛰️";
+            case TITANIUM -> "🚀";
             case PLANTS -> "🌿";
             case ENERGY -> "⚡";
             case HEAT -> "🔥";

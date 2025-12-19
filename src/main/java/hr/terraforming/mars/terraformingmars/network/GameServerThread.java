@@ -106,7 +106,7 @@ public class GameServerThread implements Runnable {
 
     public void setActionManager(ActionManager actionManager) {
         this.actionManager = actionManager;
-        log.info("ActionManager injected into GameServerThread");
+        log.debug("ActionManager injected into GameServerThread");
         for (ClientHandler client : connectedClients) {
             client.setActionManager(actionManager);
         }
@@ -130,7 +130,7 @@ public class GameServerThread implements Runnable {
     }
 
     public void broadcastToAll(Object message) {
-        log.info("Broadcasting {} to all {} clients",
+        log.debug("Broadcasting {} to all {} clients",
                 message.getClass().getSimpleName(), connectedClients.size());
         for (ClientHandler client : connectedClients) {
             client.sendObject(message);
@@ -138,7 +138,7 @@ public class GameServerThread implements Runnable {
     }
 
     public void shutdown() {
-        log.info("🛑 GameServerThread shutting down...");
+        log.info("GameServerThread shutting down");
         running = false;
 
         try {
@@ -153,8 +153,6 @@ public class GameServerThread implements Runnable {
             connectedClients.clear();
             localListeners.clear();
             cardDistributor = null;
-
-            log.info("✅ GameServerThread shutdown complete");
         } catch (IOException e) {
             log.error("Error shutting down server", e);
         }

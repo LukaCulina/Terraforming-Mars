@@ -150,6 +150,7 @@ public final class DocumentationUtils {
     private static void appendMethods(StringBuilder sb, Class<?> clazz) {
         Method[] methods = clazz.getDeclaredMethods();
         if (methods.length == 0) return;
+
         sb.append("<h3>Methods</h3>").append(UL_START);
         for (Method method : methods) {
             boolean isSyntheticOrBridge = method.isSynthetic() || method.isBridge();
