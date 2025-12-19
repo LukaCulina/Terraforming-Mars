@@ -14,8 +14,6 @@ public class ProductionService {
     }
 
     public static void executeProduction(List<Player> players) {
-        log.info("Production Phase Started");
-
         for (Player p : players) {
             int income = p.getTR() + p.productionProperty(ResourceType.MEGA_CREDITS).get();
             p.addMC(income);
@@ -33,7 +31,5 @@ public class ProductionService {
             log.debug("{}: Produced {} MC, {} resources",
                     p.getName(), income, p.getProductionMap().size());
         }
-
-        log.info("Production Finished");
     }
 }

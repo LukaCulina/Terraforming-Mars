@@ -36,7 +36,7 @@ public class ResearchPhaseManager {
 
     private void showScreenForNextPlayer() {
         if (researchPlayerIndex >= gameManager.getPlayers().size()) {
-            log.info("All players finished research! Calling onResearchComplete | currentPhase={}",
+            log.debug("All players finished research! Calling onResearchComplete | currentPhase={}",
                     gameManager.getCurrentPhase());
             onResearchComplete.run();
             return;
