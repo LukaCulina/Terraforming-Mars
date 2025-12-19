@@ -38,7 +38,7 @@ public class ChooseCorporationController {
         }
     }
 
-    private void showWaitingForPlayer(/*String playerName*/) {
+    private void showWaitingForPlayer() {
         chooseCorpLabel.setText("");
         chooseCorpLabel.getStyleClass().clear();
 

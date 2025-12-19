@@ -72,7 +72,6 @@ public class GameScreenInitializer {
         componentBuilder.createMilestoneButtons(actionPanels.milestonesBox());
         componentBuilder.createStandardProjectButtons(actionPanels.standardProjectsBox());
 
-        // Button actions
         playerControls.passTurnButton().setOnAction(_ -> actionManager.handlePassTurn());
         playerControls.convertHeatButton().setOnAction(_ -> actionManager.handleConvertHeat());
         playerControls.convertPlantsButton().setOnAction(_ -> actionManager.handleConvertPlants());
@@ -87,7 +86,6 @@ public class GameScreenInitializer {
         GridPane bottomGrid = controller.bottomGrid;
         StackPane temperaturePane = controller.temperaturePane;
 
-        // Player controls
         playerControls.passTurnButton().prefWidthProperty()
                 .bind(playerInterface.widthProperty().multiply(0.6));
 
@@ -97,13 +95,11 @@ public class GameScreenInitializer {
         playerControls.convertPlantsButton().prefWidthProperty()
                 .bind(conversionBox.widthProperty().multiply(0.7));
 
-        // Action panels
         actionPanels.standardProjectsBox().prefWidthProperty()
                 .bind(gameBoardPane.widthProperty().multiply(0.15));
         actionPanels.milestonesBox().prefWidthProperty()
                 .bind(bottomGrid.widthProperty().multiply(0.40));
 
-        // Global status
         globalStatus.oxygenProgressBar().prefWidthProperty()
                 .bind(gameBoardPane.widthProperty().multiply(0.8));
         temperaturePane.prefWidthProperty()

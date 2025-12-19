@@ -77,7 +77,7 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
                 });
                 return;
             }
-            default -> { /*Nothing is done*/ }
+            default -> { /*Nothing happens*/ }
         }
 
         if ("System".equals(move.playerName())) {
