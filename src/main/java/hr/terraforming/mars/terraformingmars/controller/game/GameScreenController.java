@@ -65,8 +65,7 @@ public class GameScreenController {
     private GameScreenCoordinator gameScreenCoordinator;
     @Setter private Player viewedPlayer = null;
     private final GameStateService gameStateService = new GameStateService();
-    @Setter
-    private ReplayManager replayManager;
+    @Setter private ReplayManager replayManager;
     @Getter private Timeline moveHistoryTimeline;
 
     @FXML
@@ -76,7 +75,6 @@ public class GameScreenController {
         this.setupCoordinator = new GameSetupCoordinator(this);
         this.gameScreenCoordinator = new GameScreenCoordinator();
         addDebugButtons();
-
     }
 
     private void addDebugButtons() {

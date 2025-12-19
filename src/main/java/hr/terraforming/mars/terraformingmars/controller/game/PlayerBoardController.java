@@ -53,7 +53,8 @@ public class PlayerBoardController {
                 playerBoard,
                 new GameScreenResizer.FontMapping(".meter-text", 0.035),
                 new GameScreenResizer.FontMapping(".resource-text", 0.03),
-                new GameScreenResizer.FontMapping(".tag-text-label", 0.025)
+                new GameScreenResizer.FontMapping(".tag-text-label", 0.025),
+                new GameScreenResizer.FontMapping(".card-buttons", 0.03)
         );
     }
 

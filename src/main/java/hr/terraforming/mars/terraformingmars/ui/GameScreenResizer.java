@@ -58,8 +58,10 @@ public class GameScreenResizer {
         double base = Math.min(pane.getWidth(), pane.getHeight());
 
         for (FontMapping mapping : mappings) {
-            double fontSize = base * mapping.scaleFactor;
-            String style = String.format("-fx-font-size: %.2fpx;", fontSize);
+            double scaledSize = base * mapping.scaleFactor;
+            double finalFontSize = Math.max(scaledSize, 10.0);
+
+            String style = String.format("-fx-font-size: %.2fpx;", finalFontSize);
 
             pane.lookupAll(mapping.styleClass).forEach(node -> {
                 if (node instanceof javafx.scene.text.Text || node instanceof Label || node instanceof Button) {

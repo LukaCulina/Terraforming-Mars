@@ -12,7 +12,7 @@
     <Label text="GAME OVER" styleClass="main-title"/>
     <Label fx:id="winnerLabel" styleClass="choose-label"/>
 
-    <GridPane fx:id="scoresGrid" hgap="40" vgap="15" alignment="CENTER" styleClass="game-over-grid">
+    <GridPane fx:id="scoresGrid" hgap="30" vgap="15" alignment="CENTER" styleClass="game-over-grid">
         <Label text="Rank" styleClass="header-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
         <Label text="Player" styleClass="header-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
         <Label text="TR" styleClass="header-label" GridPane.columnIndex="2" GridPane.rowIndex="0"/>

@@ -621,3 +621,6 @@
     -fx-font-size: 20px;
 }
 
+.tooltip {
+    -fx-font-size: 12px;
+}

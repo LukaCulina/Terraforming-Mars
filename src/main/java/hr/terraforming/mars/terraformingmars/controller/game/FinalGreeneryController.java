@@ -21,7 +21,6 @@ import java.util.List;
 public class FinalGreeneryController {
 
     @FXML private VBox finalGreenery;
-    @FXML private Label infoLabel;
     @FXML private Label playerNameLabel;
     @FXML private Label plantsLabel;
     @FXML private Label greeneryCostLabel;
@@ -45,11 +44,10 @@ public class FinalGreeneryController {
         GameScreenResizer.updateFonts(
                 finalGreenery,
                 new GameScreenResizer.FontMapping(".choose-label", 0.05),
-                new GameScreenResizer.FontMapping(".info-label", 0.025),
-                new GameScreenResizer.FontMapping(".player-name-label", 0.035),
-                new GameScreenResizer.FontMapping(".details-label", 0.025),
-                new GameScreenResizer.FontMapping(".confirm-button", 0.025),
-                new GameScreenResizer.FontMapping(".player-button", 0.025)
+                new GameScreenResizer.FontMapping(".player-name-label", 0.04),
+                new GameScreenResizer.FontMapping(".details-label", 0.035),
+                new GameScreenResizer.FontMapping(".confirm-button", 0.035),
+                new GameScreenResizer.FontMapping(".player-button", 0.035)
         );
     }
 
@@ -98,12 +96,6 @@ public class FinalGreeneryController {
 
         int plants = currentPlayer.resourceProperty(ResourceType.PLANTS).get();
         int cost = currentPlayer.getGreeneryCost();
-
-        if (players != null) {
-            infoLabel.setText("Player " + (currentPlayerIndex + 1) + "/" + players.size());
-        } else {
-            infoLabel.setText("Final Greenery Phase");
-        }
 
         playerNameLabel.setText(currentPlayer.getName());
         plantsLabel.setText("🌿 Plants: " + plants);
@@ -166,7 +158,6 @@ public class FinalGreeneryController {
     }
 
     public void replayShowFinalGreenery(String playerName, int plants, int cost) {
-        infoLabel.setText("Replay: Final Greenery Conversion");
         playerNameLabel.setText(playerName);
         plantsLabel.setText("Plants: " + plants);
         greeneryCostLabel.setText("Cost: " + cost);

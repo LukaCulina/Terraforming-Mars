@@ -8,34 +8,28 @@ import hr.terraforming.mars.terraformingmars.enums.StandardProject;
 import hr.terraforming.mars.terraformingmars.model.GameBoard;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.view.UIComponentBuilder;
 import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import hr.terraforming.mars.terraformingmars.view.component.ActionPanelComponents;
 import hr.terraforming.mars.terraformingmars.view.component.GlobalStatusComponents;
 import hr.terraforming.mars.terraformingmars.view.component.PlayerControlComponents;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.layout.*;
 import lombok.Getter;
 
 import java.util.Map;
 
 public class GameScreenManager {
 
-    @Getter
-    private final HexBoardDrawer hexBoardDrawer;
-
+    @Getter private final HexBoardDrawer hexBoardDrawer;
     private final GameScreenController controller;
-    private final ActionManager actionManager;
     private final GlobalStatusComponents globalStatus;
     private final ActionPanelComponents actionPanels;
     private final PlayerControlComponents playerControls;
 
-    public GameScreenManager(GameScreenController controller, ActionManager actionManager,
+    public GameScreenManager(GameScreenController controller,
                              HexBoardDrawer hexBoardDrawer, GlobalStatusComponents globalStatus,
                              ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
         this.controller = controller;
-        this.actionManager = actionManager;
         this.hexBoardDrawer = hexBoardDrawer;
         this.globalStatus = globalStatus;
         this.actionPanels = actionPanels;
@@ -49,31 +43,6 @@ public class GameScreenManager {
         if (hexBoardDrawer != null) {
             hexBoardDrawer.setGameBoard(board());
         }
-    }
-
-    public void initializeUIComponents(GameScreenController controller, BorderPane gameBoardPane, BorderPane playerInterface, GridPane bottomGrid, StackPane temperaturePane) {
-        UIComponentBuilder componentBuilder = new UIComponentBuilder(controller, actionManager, gm());
-        componentBuilder.createPlayerButtons(playerControls.playerListBar());
-        componentBuilder.createMilestoneButtons(actionPanels.milestonesBox());
-        componentBuilder.createStandardProjectButtons(actionPanels.standardProjectsBox());
-
-        playerControls.passTurnButton().setOnAction(_ -> actionManager.handlePassTurn());
-        playerControls.convertHeatButton().setOnAction(_ -> actionManager.handleConvertHeat());
-        playerControls.convertPlantsButton().setOnAction(_ -> actionManager.handleConvertPlants());
-
-        playerControls.passTurnButton().prefWidthProperty().bind(playerInterface.widthProperty().multiply(0.6));
-
-        VBox conversionBox = (VBox) playerControls.convertHeatButton().getParent();
-        playerControls.convertHeatButton().prefWidthProperty().bind(conversionBox.widthProperty().multiply(0.7));
-        playerControls.convertPlantsButton().prefWidthProperty().bind(conversionBox.widthProperty().multiply(0.7));
-
-        actionPanels.standardProjectsBox().prefWidthProperty().bind(gameBoardPane.widthProperty().multiply(0.15));
-        globalStatus.oxygenProgressBar().prefWidthProperty().bind(gameBoardPane.widthProperty().multiply(0.8));
-        temperaturePane.prefWidthProperty().bind(gameBoardPane.widthProperty().multiply(0.15));
-        globalStatus.temperatureProgressBar().prefWidthProperty().bind(gameBoardPane.widthProperty().multiply(0.6));
-        globalStatus.oceansLabel().prefWidthProperty().bind(bottomGrid.widthProperty().multiply(0.15));
-        globalStatus.oceansLabel().prefHeightProperty().bind(globalStatus.oceansLabel().prefWidthProperty());
-        actionPanels.milestonesBox().prefWidthProperty().bind(bottomGrid.widthProperty().multiply(0.40));
     }
 
     public void updateGeneralUI(Player viewedPlayer, boolean isPlacing, boolean isMyTurn) {

@@ -40,9 +40,9 @@ public record UIComponentBuilder(GameScreenController controller, ActionManager 
             btn.setOnAction(_ -> actionManager.handleClaimMilestone(milestone));
 
             Tooltip tooltip = new Tooltip(milestone.getDescription() + "\n(Price: 8 MC)");
-            tooltip.setStyle("-fx-font-size: 14px;");
-
+            tooltip.getStyleClass().add("tooltip");
             btn.setTooltip(tooltip);
+
             milestonesBox.getChildren().add(btn);
         }
     }
@@ -63,7 +63,7 @@ public record UIComponentBuilder(GameScreenController controller, ActionManager 
             icon.setStyle("-fx-font-size: 20px;");
             btn.setGraphic(icon);
             Tooltip tooltip = new Tooltip(project.getDescription() + "\n(Price: " + project.getCost() + " MC)");
-            tooltip.setStyle("-fx-font-size: 14px;");
+            tooltip.getStyleClass().add("tooltip");
             btn.setTooltip(tooltip);
 
             btn.setOnAction(e -> actionManager.handleStandardProject((StandardProject) ((Button) e.getSource()).getUserData()));

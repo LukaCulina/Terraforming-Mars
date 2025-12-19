@@ -20,6 +20,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 
+<?import javafx.scene.control.Tooltip?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hr.terraforming.mars.terraformingmars.controller.game.GameScreenController">
     <MenuBar>
@@ -58,8 +59,20 @@
 
                     <VBox alignment="TOP_CENTER" spacing="5" GridPane.columnIndex="0">
                         <Label styleClass="project-milestone" text="Conversion" />
-                        <Button fx:id="convertHeatButton" styleClass="convert-button" text="Convert 8 Heat to Raise Temp" />
-                        <Button fx:id="convertPlantsButton" styleClass="convert-button" text="Convert 8 Plants to Greenery" />
+                        <Button fx:id="convertHeatButton" styleClass="convert-button" text="Convert Heat">
+                            <tooltip>
+                                <Tooltip text="Convert 8 Heat to raise temperature"
+                                         showDelay="300ms"
+                                         styleClass="tooltip"/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="convertPlantsButton" styleClass="convert-button" text="Convert Plants">
+                            <tooltip>
+                                <Tooltip text="Convert 8 Plants to place a Greenery tile"
+                                         showDelay="300ms"
+                                         styleClass="tooltip"/>
+                            </tooltip>
+                        </Button>
                     </VBox>
 
                     <VBox alignment="CENTER" spacing="5" GridPane.columnIndex="1">
