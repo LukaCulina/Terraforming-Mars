@@ -17,8 +17,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.format.DateTimeFormatter;
-
 @Slf4j
 public class GameScreenController {
 
@@ -208,13 +206,12 @@ public class GameScreenController {
 
     public void updateLastMoveLabel(GameMove lastGameMove) {
         if (lastGameMove != null) {
-            StringBuilder sb = new StringBuilder("Last Move: ");
-            sb.append(lastGameMove.playerName()).append(" - ");
-            sb.append(lastGameMove.actionType()).append(" (").append(lastGameMove.details()).append(")");
+            StringBuilder sb = new StringBuilder();
+            sb.append(lastGameMove.playerName()).append(" ");
+            sb.append(lastGameMove.details());
             if (lastGameMove.row() != null) {
                 sb.append(" at (").append(lastGameMove.row()).append(", ").append(lastGameMove.col()).append(")");
             }
-            sb.append(" at ").append(lastGameMove.timestamp().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
             lastMoveLabel.setText(sb.toString());
         } else {
             lastMoveLabel.setText("No moves recorded yet.");

@@ -39,7 +39,7 @@ public record NetworkCoordinator(GameScreenController controller) {
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
             if (client != null) {
                 client.sendMove(move);
-                log.debug("CLIENT sent move: {}", move.actionType());
+                log.debug("CLIENT sent move: {}", move.details());
             }
         }
     }

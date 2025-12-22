@@ -94,7 +94,7 @@ public class ActionManager {
 
             int count = soldCards.size();
             String patent = (count == 1) ? "patent" : "patents";
-            String details = "Sold: " + count + " " + patent + " for " + count + " MC";
+            String details = "sold: " + count + " " + patent + " for " + count + " MC";
 
             GameMove showModal = new GameMove(
                     gm().getCurrentPlayer().getName(),

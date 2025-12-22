@@ -113,7 +113,7 @@ public class PlacementManager {
         GameMove placeTileMove = new GameMove(
                 owner.getName(),
                 ActionType.PLACE_TILE,
-                "Placed " + tileTypeToPlace.name(),
+                "placed " + tileTypeToPlace.name(),
                 tile.getRow(),
                 tile.getCol(),
                 tileTypeToPlace,
