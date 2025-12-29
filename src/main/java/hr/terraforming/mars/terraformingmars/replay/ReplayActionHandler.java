@@ -10,9 +10,7 @@ import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
-import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -28,24 +26,23 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
         switch (move.actionType()) {
             case OPEN_CHOOSE_CARDS_MODAL -> {
                 Platform.runLater(() -> {
-                    List<String> names = Arrays.asList(move.details().split(","));
+                    List<String> cardNames = Arrays.asList(move.details().split(", "));
+
                     ScreenUtils.showAsModal(
                             controller.getSceneWindow(),
                             "ChooseCards.fxml",
                             "Research (Replay)",
                             0.7, 0.8,
-                            (ChooseCardsController c) -> c.replayShowChosenCards(names)
+                            (ChooseCardsController c) -> c.replayShowChosenCards(cardNames)
                     );
                 });
                 return;
             }
             case OPEN_SELL_PATENTS_MODAL -> {
                 Platform.runLater(() -> {
-                    List<String> soldCardNames = Arrays.asList(move.details().split(","));
+                    List<String> soldCardNames = Arrays.asList(move.details().split(", "));
 
-                    Player playerForReplay = gameManager.getPlayers().stream()
-                            .filter(p -> p.getName().equals(move.playerName()))
-                            .findFirst().orElse(null);
+                    Player playerForReplay = gameManager.getPlayerByName(move.playerName());
 
                     if (playerForReplay != null) {
                         List<Card> handBeforeSale = new ArrayList<>(playerForReplay.getHand());
@@ -99,9 +96,7 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
     }
 
     private void handlePlayerMove(GameMove move, GameManager gameManager) {
-        Player player = gameManager.getPlayers().stream()
-                .filter(p -> p.getName().equals(move.playerName()))
-                .findFirst().orElse(null);
+        Player player = gameManager.getPlayerByName(move.playerName());
 
         if (player == null) {
             log.error("Replay Error: Player {} not found.", move.playerName());
@@ -153,7 +148,7 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
 
     private void processClaimMilestone(GameMove move, Player player) {
         try {
-            Milestone milestone = Milestone.valueOf(move.details().toUpperCase());
+            Milestone milestone = Milestone.valueOf(move.details());
             player.spendMC(8);
             controller.getGameBoard().claimMilestone(milestone, player);
         } catch (IllegalArgumentException e) {
@@ -177,19 +172,11 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
 
     private void processSellPatents(GameMove move, Player player) {
         try {
-            String numberStr = move.details().replaceAll("\\D", "");
-            player.addMC(Integer.parseInt(numberStr));
+            String[] soldCardNames = move.details().split(", ");
+            player.addMC(soldCardNames.length);
         } catch (NumberFormatException _) {
             log.warn("Could not parse number of sold patents from details: {}", move.details());
         }
-    }
-
-    public void showNoMovesToReplayAlert() {
-        new Alert(Alert.AlertType.INFORMATION, "No game moves found to replay.").show();
-    }
-
-    public void showGameOverScreen(List<Player> rankedPlayers) {
-        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
     }
 
     public void clearLastMoveLabel() {

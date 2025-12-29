@@ -156,4 +156,22 @@ public class ScreenNavigator {
                 "Game Over - Final Score",
                  (GameOverController c) -> c.setFinalScores(rankedPlayers));
     }
+
+    public static void showGameScreen(GameScreenController controller) {
+        if (controller == null || controller.getGameBoardPane() == null) {
+            log.error("Cannot show GameScreen - controller or scene is null!");
+            return;
+        }
+
+        Scene gameScene = controller.getGameBoardPane().getScene();
+
+        if (gameScene == null) {
+            log.error("Cannot show GameScreen - scene is null!");
+            return;
+        }
+
+        mainStage.setScene(gameScene);
+        mainStage.setTitle("Terraforming Mars - Replay");
+        log.info("GameScreen displayed for replay");
+    }
 }

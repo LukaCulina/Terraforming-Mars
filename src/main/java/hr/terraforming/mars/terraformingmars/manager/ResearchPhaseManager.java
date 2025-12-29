@@ -76,11 +76,18 @@ public class ResearchPhaseManager {
         Player currentPlayer = gameManager.getPlayers().get(researchPlayerIndex);
 
         if (!boughtCards.isEmpty()) {
-            String details = boughtCards.stream().map(Card::getName).reduce((a,b) -> a + ", " + b).orElse("");
+            String cardNames = boughtCards.stream().map(Card::getName).reduce((a,b) -> a + ", " + b).orElse("");
+
+            int count = boughtCards.size();
+            String card = (count == 1) ? "card" : "cards";
+
+            String message = "bought " + count + " " + card;
+
             GameMove modalMove = new GameMove(
                     currentPlayer.getName(),
                     ActionType.OPEN_CHOOSE_CARDS_MODAL,
-                    "bought cards: " + details,
+                    cardNames,
+                    message,
                     java.time.LocalDateTime.now()
             );
             controller.getActionManager().recordAndSaveMove(modalMove);

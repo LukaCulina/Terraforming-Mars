@@ -110,6 +110,7 @@ public class PlayerBoardController {
         if (player == null || cardsDisplayArea == null) return;
 
         cardsDisplayArea.getChildren().clear();
+
         List<Card> cardsToShow = isShowingHand ? player.getHand() : player.getPlayed();
         final String disabledClass = "card-view-disabled";
         CardViewBuilder.setupCardTilePane(cardsDisplayArea, 3, 10);

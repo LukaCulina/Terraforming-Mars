@@ -23,8 +23,8 @@ public class GetLastGameMoveThread extends GameMoveThread implements Runnable {
                 GameMove move = lastGameMove.get();
                 StringBuilder sb = new StringBuilder();
                 sb.append(move.playerName()).append(" ");
-                if (move.details() != null && !move.details().isEmpty()) {
-                    sb.append(move.details());
+                if (move.message() != null && !move.message().isEmpty()) {
+                    sb.append(move.message());
                 }
                 if (move.row() != null) {
                     sb.append(" at [").append(move.row()).append(", ").append(move.col()).append("]");

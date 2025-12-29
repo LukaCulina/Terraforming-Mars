@@ -27,7 +27,16 @@
 
     <Button
             text="Back to Main Menu"
-            onAction="#onBackToMainMenu"
+            onAction="#backToMainMenu"
+            styleClass="confirm-button">
+        <VBox.margin>
+            <Insets top="40"/>
+        </VBox.margin>
+    </Button>
+
+    <Button
+            text="Show replay"
+            onAction="#showReplay"
             styleClass="confirm-button">
         <VBox.margin>
             <Insets top="40"/>

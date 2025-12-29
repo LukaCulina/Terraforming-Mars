@@ -9,6 +9,7 @@ import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -38,10 +39,10 @@ public class StartMenuController {
             ScreenNavigator.getMainStage().setTitle("Terraforming Mars - Loaded Game");
 
             Platform.runLater(() ->
-                    DialogUtils.showDialog("Game loaded successfully!")
+                    DialogUtils.showDialog(Alert.AlertType.INFORMATION, "Load Game Successful!", "The game has been successfully loaded!")
             );
         } else {
-            DialogUtils.showDialog("Failed to load game. No saved game found.");
+            DialogUtils.showDialog(Alert.AlertType.ERROR, "Load Game Failed!", "Failed to load game. No saved game found.");
         }
     }
 }

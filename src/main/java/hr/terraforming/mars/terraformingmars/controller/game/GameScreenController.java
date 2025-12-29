@@ -63,7 +63,7 @@ public class GameScreenController {
     private GameScreenCoordinator gameScreenCoordinator;
     @Setter private Player viewedPlayer = null;
     private final GameStateService gameStateService = new GameStateService();
-    @Setter private ReplayManager replayManager;
+    @Setter @Getter private ReplayManager replayManager;
     @Getter private Timeline moveHistoryTimeline;
 
     @FXML
@@ -84,7 +84,7 @@ public class GameScreenController {
 
         debugBox.getChildren().add(triggerFinalBtn);
 
-        // Dodaj u bottomGrid ili playerInterface
+
         if (bottomGrid != null) {
             bottomGrid.add(debugBox, 0, bottomGrid.getRowCount());
         }
@@ -196,7 +196,7 @@ public class GameScreenController {
             setupCoordinator.setupLoadedGame(loadedState);
             this.viewedPlayer = this.gameManager.getCurrentPlayer();
             updateAllUI();
-            DialogUtils.showDialog("The game has been successfully loaded!");
+            DialogUtils.showDialog(Alert.AlertType.INFORMATION, "Load Game Successful!", "The game has been successfully loaded!");
         }
     }
 
@@ -208,7 +208,7 @@ public class GameScreenController {
         if (lastGameMove != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(lastGameMove.playerName()).append(" ");
-            sb.append(lastGameMove.details());
+            sb.append(lastGameMove.message());
             if (lastGameMove.row() != null) {
                 sb.append(" at (").append(lastGameMove.row()).append(", ").append(lastGameMove.col()).append(")");
             }

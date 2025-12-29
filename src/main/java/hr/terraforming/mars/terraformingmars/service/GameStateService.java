@@ -6,6 +6,7 @@ import hr.terraforming.mars.terraformingmars.model.GameState;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;
 import hr.terraforming.mars.terraformingmars.util.GameMoveUtils;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
+import javafx.scene.control.Alert;
 import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 
@@ -35,7 +36,7 @@ public class GameStateService {
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(gameState);
-            DialogUtils.showDialog("The game has been successfully saved!");
+            DialogUtils.showDialog(Alert.AlertType.INFORMATION, "Save Game Successful!", "The game has been successfully saved!");
             log.info("Game state saved to {}", file.getAbsolutePath());
         } catch (IOException e) {
             log.error("Failed to save game state to {}", file.getAbsolutePath(), e);

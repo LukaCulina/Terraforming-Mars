@@ -113,6 +113,7 @@ public class XmlUtils {
                     String playerName = element.getElementsByTagName("PlayerName").item(0).getTextContent();
                     ActionType actionType = ActionType.valueOf(element.getElementsByTagName("ActionType").item(0).getTextContent());
                     String details = element.getElementsByTagName("Details").item(0).getTextContent();
+                    String message = element.getElementsByTagName("Message").item(0).getTextContent();
                     LocalDateTime timestamp = LocalDateTime.parse(
                             element.getElementsByTagName("Timestamp").item(0).getTextContent(),
                             FORMATTER
@@ -133,7 +134,7 @@ public class XmlUtils {
                         tileType = TileType.valueOf(element.getElementsByTagName(TILE_TYPE).item(0).getTextContent());
                     }
 
-                    GameMove move = new GameMove(playerName, actionType, details, row, col, tileType, timestamp);
+                    GameMove move = new GameMove(playerName, actionType, details, message, row, col, tileType, timestamp);
                     moves.add(move);
                 }
             }
@@ -173,6 +174,7 @@ public class XmlUtils {
         gameMoveElement.appendChild(createElement(doc, "PlayerName", move.playerName()));
         gameMoveElement.appendChild(createElement(doc, "ActionType", move.actionType().name()));
         gameMoveElement.appendChild(createElement(doc, "Details", move.details()));
+        gameMoveElement.appendChild(createElement(doc, "Message", move.message()));
         gameMoveElement.appendChild(createElement(doc, "Timestamp", move.timestamp().format(FORMATTER)));
 
         if (move.row() != null) {

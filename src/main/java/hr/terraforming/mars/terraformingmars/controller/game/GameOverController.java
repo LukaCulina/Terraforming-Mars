@@ -1,10 +1,13 @@
 package hr.terraforming.mars.terraformingmars.controller.game;
 
 import hr.terraforming.mars.terraformingmars.manager.GameSessionManager;
+import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
+import hr.terraforming.mars.terraformingmars.util.DialogUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
@@ -79,8 +82,23 @@ public class GameOverController {
     }
 
     @FXML
-    private void onBackToMainMenu() {
+    private void showReplay() {
+        log.info("Starting replay from Game Over screen");
+
+        GameScreenController controller = ApplicationConfiguration.getInstance().getActiveGameController();
+
+        if (controller != null && controller.getReplayManager() != null) {
+            ScreenNavigator.showGameScreen(controller);
+            controller.getReplayManager().startReplay();
+        } else {
+            DialogUtils.showDialog(Alert.AlertType.ERROR, "Replay Error", "Game controller or replay manager is not available.");
+        }
+    }
+
+    @FXML
+    private void backToMainMenu() {
         log.info("Returning to Main Menu from Game Over screen");
+
         GameSessionManager.resetForNewGame();
         ScreenNavigator.showStartMenu();
     }

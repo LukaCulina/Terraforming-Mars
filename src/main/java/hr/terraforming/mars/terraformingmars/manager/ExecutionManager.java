@@ -40,7 +40,11 @@ public class ExecutionManager {
     public void handlePassTurn() {
         if (gm().getCurrentPhase() != GamePhase.ACTIONS) return;
 
+        String currentTurnName = gm().getCurrentPlayer().getName();
+        GameMove move = new GameMove(currentTurnName, ActionType.PASS_TURN, "","passed their turn", LocalDateTime.now());
+
         boolean allPlayersPassed = gm().passTurn();
+        actionManager.recordAndSaveMove(move);
 
         if (allPlayersPassed) {
             PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
@@ -64,8 +68,8 @@ public class ExecutionManager {
             return;
         }
 
-        GameMove move = new GameMove(currentPlayer.getName(), ActionType.PLAY_CARD,
-                "played card: " + card.getName(), LocalDateTime.now());
+        GameMove move = new GameMove(currentPlayer.getName(), ActionType.PLAY_CARD, card.getName()
+                , "played card: " + card.getName(), LocalDateTime.now());
 
         if (card.getTileToPlace() != null) {
             if (isLocalPlayerMove(currentPlayer)) {
@@ -87,7 +91,7 @@ public class ExecutionManager {
         if (board().claimMilestone(milestone, currentPlayer)) {
             currentPlayer.spendMC(MILESTONE_COST);
             actionManager.performAction();
-            GameMove move = new GameMove(currentPlayer.getName(), ActionType.CLAIM_MILESTONE,
+            GameMove move = new GameMove(currentPlayer.getName(), ActionType.CLAIM_MILESTONE, milestone.name(),
                     "claimed milestone: " + milestone.name(), LocalDateTime.now());
             actionManager.recordAndSaveMove(move);
         } else {
@@ -107,7 +111,7 @@ public class ExecutionManager {
         }
 
         GameMove move = new GameMove(gm().getCurrentPlayer().getName(),
-                ActionType.USE_STANDARD_PROJECT, "used standard project: " + project.name(), LocalDateTime.now());
+                ActionType.USE_STANDARD_PROJECT, project.name(), "used standard project: " + project.name(), LocalDateTime.now());
 
         if (project.requiresTilePlacement()) {
             if (isLocalPlayerMove(currentPlayer)) {
@@ -148,8 +152,13 @@ public class ExecutionManager {
         currentPlayer.increaseTR(1);
         actionManager.performAction();
 
-        GameMove move = new GameMove(currentPlayer.getName(), ActionType.CONVERT_HEAT,
-                "raised the temperature", LocalDateTime.now());
+        GameMove move = new GameMove(
+                currentPlayer.getName(),
+                ActionType.CONVERT_HEAT,
+                "",
+                "raised the temperature",
+                LocalDateTime.now());
+
         actionManager.recordAndSaveMove(move);
     }
 
@@ -165,6 +174,7 @@ public class ExecutionManager {
         GameMove convertPlantsMove = new GameMove(
                 currentPlayer.getName(),
                 ActionType.CONVERT_PLANTS,
+                "",
                 "converted " + requiredPlants + " plants to greenery",
                 LocalDateTime.now()
         );

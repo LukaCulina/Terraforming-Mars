@@ -1933,9 +1933,7 @@
       { "type": "increaseProduction", "resource": "HEAT", "amount": 3 },
       { "type": "increaseProduction", "resource": "STEEL", "amount": -1 }
     ],
-    "requirements": [
-      { "type": "minProduction", "resource": "STEEL", "amount": 1 }
-    ]
+    "requirements": []
   },
   {
     "name": "Nanotech Lab",
@@ -1976,7 +1974,7 @@
     "name": "Oceanic Terraformers",
     "cost": 19,
     "tags": ["PLANT", "BUILDING"],
-    "description": "Requirement: At least 1 ocean. Effect: Increase your plant production by 2.",
+    "description": "Requirement: At least 1 ocean placed. Effect: Increase your plant production by 2.",
     "victoryPoints": 2,
     "effects": [
       { "type": "increaseProduction", "resource": "PLANTS", "amount": 2 }

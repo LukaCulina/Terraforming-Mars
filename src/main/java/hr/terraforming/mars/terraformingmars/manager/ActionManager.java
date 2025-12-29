@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class ActionManager {
@@ -94,20 +95,26 @@ public class ActionManager {
 
             int count = soldCards.size();
             String patent = (count == 1) ? "patent" : "patents";
-            String details = "sold: " + count + " " + patent + " for " + count + " MC";
+            String message = "sold " + count + " " + patent + " for " + count + " MC";
+
+            String cardNames = soldCards.stream()
+                    .map(Card::getName)
+                    .collect(Collectors.joining(", "));
 
             GameMove showModal = new GameMove(
                     gm().getCurrentPlayer().getName(),
                     ActionType.OPEN_SELL_PATENTS_MODAL,
-                    details,
+                    cardNames,
                     java.time.LocalDateTime.now()
             );
+
             recordAndSaveMove(showModal);
 
             GameMove move = new GameMove(
                     gm().getCurrentPlayer().getName(),
                     ActionType.SELL_PATENTS,
-                    details,
+                    cardNames,
+                    message,
                     java.time.LocalDateTime.now()
             );
 

@@ -70,11 +70,11 @@ public record GameMoveManager(ActionManager actionManager) {
 
             case PASS_TURN -> actionManager.handlePassTurn();
 
-            case RESEARCH_COMPLETE -> log.info("Processing RESEARCH_COMPLETE move");
+            case RESEARCH_COMPLETE -> log.debug("Processing RESEARCH_COMPLETE move");
 
-            case OPEN_CHOOSE_CARDS_MODAL -> log.info("Network {} opened choose cards modal", move.playerName());
+            case OPEN_CHOOSE_CARDS_MODAL -> log.debug("Network {} opened choose cards modal", move.playerName());
 
-            case OPEN_SELL_PATENTS_MODAL -> log.info("Network: {} opened sell patents modal", move.playerName());
+            case OPEN_SELL_PATENTS_MODAL -> log.debug("Network: {} opened sell patents modal", move.playerName());
 
             case FINISH_FINAL_GREENERY -> handleFinishFinalGreenery(move);
 
@@ -110,7 +110,6 @@ public record GameMoveManager(ActionManager actionManager) {
             player.spendMC(-soldCardNames.size());
 
             actionManager.performAction();
-            log.info("{} sold: {}", player.getName(), move.details());
         }
     }
 
