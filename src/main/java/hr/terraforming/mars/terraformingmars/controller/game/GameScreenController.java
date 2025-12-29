@@ -163,8 +163,12 @@ public class GameScreenController {
     }
 
     public void setCancelButtonVisible(boolean visible) {
-        if (cancelPlacementButton != null) {
+        if (cancelPlacementButton != null && passTurnButton != null) {
             cancelPlacementButton.setVisible(visible);
+            cancelPlacementButton.setManaged(visible);
+
+            passTurnButton.setVisible(!visible);
+            passTurnButton.setManaged(!visible);
         }
     }
 
