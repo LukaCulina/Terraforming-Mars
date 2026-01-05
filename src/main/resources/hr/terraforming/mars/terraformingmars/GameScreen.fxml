@@ -49,9 +49,9 @@
             <bottom>
                 <GridPane fx:id="bottomGrid" styleClass="borderpane-vertical" BorderPane.alignment="CENTER">
                     <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="33.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="33.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="33.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="40.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
@@ -80,8 +80,7 @@
                         <Label fx:id="oceansLabel" styleClass="ocean-counter-label" text="0 / 9" />
                     </VBox>
 
-                    <VBox fx:id="milestonesBox" alignment="TOP_CENTER" spacing="5" GridPane.columnIndex="2">
-                    </VBox>
+                    <VBox fx:id="milestonesBox" alignment="TOP_CENTER" spacing="5" GridPane.columnIndex="2"/>
                 </GridPane>
             </bottom>
             <top>

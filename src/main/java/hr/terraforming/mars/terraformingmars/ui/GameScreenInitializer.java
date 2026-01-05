@@ -88,14 +88,14 @@ public class GameScreenInitializer {
 
         VBox conversionBox = (VBox) playerControls.convertHeatButton().getParent();
         playerControls.convertHeatButton().prefWidthProperty()
-                .bind(conversionBox.widthProperty().multiply(0.7));
+                .bind(conversionBox.widthProperty().multiply(0.8));
         playerControls.convertPlantsButton().prefWidthProperty()
-                .bind(conversionBox.widthProperty().multiply(0.7));
+                .bind(conversionBox.widthProperty().multiply(0.8));
 
         actionPanels.standardProjectsBox().prefWidthProperty()
                 .bind(gameBoardPane.widthProperty().multiply(0.15));
         actionPanels.milestonesBox().prefWidthProperty()
-                .bind(bottomGrid.widthProperty().multiply(0.40));
+                .bind(bottomGrid.widthProperty().multiply(0.4));
 
         globalStatus.oxygenProgressBar().prefWidthProperty()
                 .bind(gameBoardPane.widthProperty().multiply(0.8));

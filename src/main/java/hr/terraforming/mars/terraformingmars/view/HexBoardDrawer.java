@@ -6,13 +6,15 @@ import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.model.Tile;
 import hr.terraforming.mars.terraformingmars.enums.TileType;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,18 +81,20 @@ public class HexBoardDrawer {
         if (tile.getOwner() != null) {
             Player owner = tile.getOwner();
 
-            Circle markerBackground = new Circle(hexRadius * 0.35);
+            Circle markerBackground = new Circle(hexRadius * 0.4);
             markerBackground.setFill(owner.getPlayerColor());
             markerBackground.setStroke(Color.WHITE);
             markerBackground.setStrokeWidth(1.5);
             markerBackground.setMouseTransparent(true);
 
-            Label playerNumberLabel = new Label(String.valueOf(owner.getPlayerNumber()));
-            playerNumberLabel.getStyleClass().add("player-number-label");
-            playerNumberLabel.setTextFill(owner.getPlayerColor().getBrightness() < 0.5 ? Color.WHITE : Color.BLACK);
-            playerNumberLabel.setMouseTransparent(true);
+            Text playerNumberText = new Text(String.valueOf(owner.getPlayerNumber()));
+            playerNumberText.setFill(owner.getPlayerColor().getBrightness() < 0.5 ? Color.WHITE : Color.BLACK);
+            playerNumberText.setMouseTransparent(true);
 
-            stackPane.getChildren().addAll(markerBackground, playerNumberLabel);
+            double fontSize = hexRadius * 0.5;
+            playerNumberText.setFont(Font.font("System", FontWeight.BOLD, fontSize));
+
+            stackPane.getChildren().addAll(markerBackground, playerNumberText);
         }
 
         stackPane.setOnMouseClicked(this::handleHexClick);

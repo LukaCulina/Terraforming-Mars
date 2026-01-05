@@ -35,7 +35,7 @@ public record UIComponentBuilder(GameScreenController controller, ActionManager 
 
         for (Milestone milestone : Milestone.values()) {
             Button milestoneButton = new Button(milestone.getName());
-            milestoneButton.prefWidthProperty().bind(milestoneBox.widthProperty().multiply(0.5));
+            milestoneButton.prefWidthProperty().bind(milestoneBox.widthProperty().multiply(0.8));
             milestoneButton.getStyleClass().add("milestone-button");
             milestoneButton.setUserData(milestone);
             milestoneButton.setOnAction(_ -> actionManager.handleClaimMilestone(milestone));

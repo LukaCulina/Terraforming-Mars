@@ -45,9 +45,10 @@ public class FinalGreeneryController {
                 finalGreeneryScreen,
                 new GameScreenResizer.FontMapping(".choose-label", 0.05),
                 new GameScreenResizer.FontMapping(".player-name-label", 0.04),
+                new GameScreenResizer.FontMapping(".info-label", 0.04),
                 new GameScreenResizer.FontMapping(".details-label", 0.035),
-                new GameScreenResizer.FontMapping(".confirm-button", 0.035),
-                new GameScreenResizer.FontMapping(".player-button", 0.035)
+                new GameScreenResizer.FontMapping(".confirm-button", 0.03),
+                new GameScreenResizer.FontMapping(".player-button", 0.03)
         );
     }
 

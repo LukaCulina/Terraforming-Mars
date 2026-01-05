@@ -34,6 +34,7 @@ public class ScreenUtils {
 
     private static final int LOADING_PANE_SIZE = 100;
     private static final int TRANSITION_DURATION = 200;
+    private static final double INITIAL_DELAY_SECONDS = 0.5;
 
     public static void setConfig(ResourceConfig resourceConfig) {
         if (config != null) {
@@ -93,57 +94,64 @@ public class ScreenUtils {
             double heightPercentage,
             Consumer<T> controllerAction) {
 
-        Stage loadingStage = createLoadingStage(owner);
-        PauseTransition delay = new PauseTransition(Duration.millis(TRANSITION_DURATION));
-        delay.setOnFinished(_ -> loadingStage.show());
+        Runnable showModalTask = () -> {
 
-        Task<FxmlResult<T>> loadTask = new Task<>() {
-            @Override
-            protected FxmlResult<T> call() {
-                return loadFxml(fxmlFile);
-            }
+            Stage loadingStage = createLoadingStage(owner);
+            PauseTransition delay = new PauseTransition(Duration.millis(TRANSITION_DURATION));
+            delay.setOnFinished(_ -> loadingStage.show());
+
+            Task<FxmlResult<T>> loadTask = new Task<>() {
+                @Override
+                protected FxmlResult<T> call() {
+                    return loadFxml(fxmlFile);
+                }
+            };
+
+            loadTask.setOnSucceeded(_ -> {
+                delay.stop();
+                loadingStage.close();
+
+                FxmlResult<T> result = loadTask.getValue();
+                if (controllerAction != null) {
+                    controllerAction.accept(result.controller());
+                }
+
+                Stage stage = new Stage();
+                stage.setTitle(title);
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initOwner(owner);
+                stage.setResizable(true);
+
+                stage.setOnCloseRequest(Event::consume);
+
+                Scene scene = createScene(result.root());
+                stage.setScene(scene);
+                stage.setWidth(owner.getWidth() * widthPercentage);
+                stage.setHeight(owner.getHeight() * heightPercentage);
+
+                double centerX = owner.getX() + (owner.getWidth() - stage.getWidth()) / 2;
+                double centerY = owner.getY() + (owner.getHeight() - stage.getHeight()) / 2;
+
+                stage.setX(centerX);
+                stage.setY(centerY);
+
+                stage.showAndWait();
+            });
+
+            loadTask.setOnFailed(_ -> {
+                delay.stop();
+                loadingStage.close();
+                log.error("Failed to load FXML file asynchronously: {}", fxmlFile, loadTask.getException());
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Could not load screen: " + fxmlFile).showAndWait());
+            });
+
+            delay.play();
+            new Thread(loadTask).start();
         };
 
-        loadTask.setOnSucceeded(_ -> {
-            delay.stop();
-            loadingStage.close();
-
-            FxmlResult<T> result = loadTask.getValue();
-            if (controllerAction != null) {
-                controllerAction.accept(result.controller());
-            }
-
-            Stage stage = new Stage();
-            stage.setTitle(title);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(owner);
-            stage.setResizable(true);
-
-            stage.setOnCloseRequest(Event::consume);
-
-            Scene scene = createScene(result.root());
-            stage.setScene(scene);
-            stage.setWidth(owner.getWidth() * widthPercentage);
-            stage.setHeight(owner.getHeight() * heightPercentage);
-
-            double centerX = owner.getX() + (owner.getWidth() - stage.getWidth()) / 2;
-            double centerY = owner.getY() + (owner.getHeight() - stage.getHeight()) / 2;
-
-            stage.setX(centerX);
-            stage.setY(centerY);
-
-            stage.showAndWait();
-        });
-
-        loadTask.setOnFailed(_ -> {
-            delay.stop();
-            loadingStage.close();
-            log.error("Failed to load FXML file asynchronously: {}", fxmlFile, loadTask.getException());
-            Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Could not load screen: " + fxmlFile).showAndWait());
-        });
-
-        delay.play();
-        new Thread(loadTask).start();
+        PauseTransition initialDelay = new PauseTransition(Duration.seconds(INITIAL_DELAY_SECONDS));
+        initialDelay.setOnFinished(_ -> showModalTask.run());
+        initialDelay.play();
     }
 
     private static Stage createLoadingStage(Window owner) {
