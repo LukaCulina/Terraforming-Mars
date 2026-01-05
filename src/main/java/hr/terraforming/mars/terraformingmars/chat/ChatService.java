@@ -11,4 +11,6 @@ public interface ChatService extends Remote {
     void sendChatMessage(String chatMessage) throws RemoteException;
 
     List<String> returnChatHistory() throws RemoteException;
+
+    void clearChatHistory() throws RemoteException;  // ← DODAJ
 }

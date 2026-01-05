@@ -11,7 +11,7 @@ public final class GameSessionManager {
     }
 
     public static void resetForNewGame() {
-        log.info("Resetting application state for new game...");
+        log.info("Resetting application state for new game");
 
         ApplicationConfiguration config = ApplicationConfiguration.getInstance();
 

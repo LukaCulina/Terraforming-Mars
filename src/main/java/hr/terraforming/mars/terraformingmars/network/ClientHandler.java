@@ -19,8 +19,8 @@ public class ClientHandler implements Runnable {
     private final Socket socket;
     private final GameManager gameManager;
 
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    private ObjectOutputStream clientOutput;
+    private ObjectInputStream clientInput;
     private volatile boolean ready = false;
     private final CompletableFuture<Void> readyFuture = new CompletableFuture<>();
     private volatile boolean running = true;
@@ -30,15 +30,11 @@ public class ClientHandler implements Runnable {
     public ClientHandler(Socket socket, GameManager gameManager, ActionManager actionManager) {
         this.socket = socket;
         this.gameManager = gameManager;
-        this.messageHandler = new ClientMessageHandler(
-                gameManager,
-                actionManager,
-                this::broadcastIfAvailable
-        );
+        setActionManager(actionManager);
     }
 
     public void setActionManager(ActionManager actionManager) {
-        this.messageHandler = new ClientMessageHandler(
+       messageHandler = new ClientMessageHandler(
                 gameManager,
                 actionManager,
                 this::broadcastIfAvailable
@@ -50,8 +46,8 @@ public class ClientHandler implements Runnable {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 
-            this.out = outputStream;
-            this.in = inputStream;
+            clientOutput = outputStream;
+            clientInput = inputStream;
             ready = true;
             readyFuture.complete(null);
 
@@ -73,7 +69,7 @@ public class ClientHandler implements Runnable {
 
     private void handleMessage(Object obj) {
         switch (obj) {
-            case PlayerNameMessage msg -> this.playerName = messageHandler.handlePlayerName(msg);
+            case PlayerNameMessage msg -> playerName = messageHandler.handlePlayerName(msg);
             case CorporationChoiceMessage msg -> messageHandler.handleCorporationChoice(playerName, msg);
             case CardChoiceMessage msg -> messageHandler.handleCardChoice(playerName, msg);
             case GameMove move -> messageHandler.handleGameMove(move);
@@ -104,9 +100,9 @@ public class ClientHandler implements Runnable {
         if (!ready) { return; }
 
         try {
-            out.writeObject(state);
-            out.reset();
-            out.flush();
+            clientOutput.writeObject(state);
+            clientOutput.reset();
+            clientOutput.flush();
         } catch (IOException e) {
             log.error("Failed to send game state", e);
             cleanup();
@@ -116,9 +112,9 @@ public class ClientHandler implements Runnable {
     public synchronized void sendObject(Object message) {
         if (!ready) return;
         try {
-            out.writeObject(message);
-            out.reset();
-            out.flush();
+            clientOutput.writeObject(message);
+            clientOutput.reset();
+            clientOutput.flush();
             log.debug("Sent object of type {} to {}", message.getClass().getSimpleName(), playerName);
         } catch (IOException e) {
             log.error("Failed to send object to {}", playerName, e);
@@ -134,8 +130,8 @@ public class ClientHandler implements Runnable {
         running = false;
         ready = false;
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
+            if (clientInput != null) clientInput.close();
+            if (clientOutput != null) clientOutput.close();
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException e) {
             log.error("Error closing client resources", e);

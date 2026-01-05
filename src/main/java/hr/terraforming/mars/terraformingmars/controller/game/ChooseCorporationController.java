@@ -49,7 +49,7 @@ public class ChooseCorporationController {
         confirmButton.setVisible(false);
         confirmButton.setManaged(false);
 
-        log.info("Transitioned to waiting screen.");
+        log.debug("Transitioned to waiting screen.");
     }
 
     private void showCorporationSelection(Player player, List<Corporation> offer) {
@@ -66,7 +66,7 @@ public class ChooseCorporationController {
         confirmButton.setVisible(true);
         confirmButton.setManaged(true);
 
-        log.info("{} is choosing corporation", player.getName());
+        log.info("{} is choosing a corporation", player.getName());
     }
 
     private void populateCorporationBoxes() {

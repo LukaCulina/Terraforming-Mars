@@ -60,11 +60,9 @@ public class FinalGreeneryPhaseManager {
 
             var server = ApplicationConfiguration.getInstance().getGameServer();
             if (server != null) {
-                log.info("HOST broadcasting final GameState");
                 GameBoard gameBoard = gameManager.getGameBoard();
                 server.broadcastGameState(new GameState(gameManager, gameBoard));
 
-                log.info("HOST sending GameOverMessage to all clients");
                 server.broadcastToAll(new GameOverMessage());
             }
 
@@ -81,6 +79,16 @@ public class FinalGreeneryPhaseManager {
 
         log.info("Final Greenery turn for: {}", currentPlayer.getName());
 
+        int plants = currentPlayer.resourceProperty(ResourceType.PLANTS).get();
+        int cost = currentPlayer.getGreeneryCost();
+
+        if (plants < cost) {
+            log.info("Player {} has insufficient plants ({} < {}) - auto-skipping Final Greenery",
+                    currentPlayer.getName(), plants, cost);
+            finishForCurrentPlayer();
+            return;
+        }
+
         if (playerType == PlayerType.LOCAL) {
             showModalForPlayer(currentPlayer);
             return;
@@ -91,12 +99,11 @@ public class FinalGreeneryPhaseManager {
         }
 
         if (currentPlayer.getName().equals(myPlayerName)) {
-            log.info("HOST opening modal for himself");
             showModalForPlayer(currentPlayer);
         } else {
             var server = ApplicationConfiguration.getInstance().getGameServer();
             if (server != null) {
-                log.info("HOST sending FinalGreeneryOffer to {}", currentPlayer.getName());
+                log.debug("Host sending FinalGreeneryOffer to {}", currentPlayer.getName());
                 server.sendToPlayer(
                         currentPlayer.getName(),
                         new FinalGreeneryOfferMessage(currentPlayer.getName())
@@ -106,16 +113,6 @@ public class FinalGreeneryPhaseManager {
     }
 
     private void showModalForPlayer(Player player) {
-        int plants = player.resourceProperty(ResourceType.PLANTS).get();
-        int cost = player.getGreeneryCost();
-
-        if (plants < cost) {
-            log.info("Player {} has insufficient plants ({} < {}) - auto-skipping Final Greenery",
-                    player.getName(), plants, cost);
-            finishForCurrentPlayer();
-            return;
-        }
-
         ScreenUtils.showAsModal(
                 ownerWindow,
                 "FinalGreeneryScreen.fxml",
@@ -134,7 +131,6 @@ public class FinalGreeneryPhaseManager {
         }
 
         Player currentPlayer = gameManager.getPlayers().get(currentPlayerIndex);
-        log.info("{} finished Final Greenery placement", currentPlayer.getName());
 
         gameManager.advanceDraftPlayer();
 
@@ -142,7 +138,7 @@ public class FinalGreeneryPhaseManager {
         if (config.getPlayerType() == PlayerType.HOST) {
             var broadcaster = config.getBroadcaster();
             if (broadcaster != null) {
-                log.info("HOST broadcasting after {} finished", currentPlayer.getName());
+                log.debug("Host broadcasting after {} finished", currentPlayer.getName());
                 broadcaster.broadcast();
             }
         }

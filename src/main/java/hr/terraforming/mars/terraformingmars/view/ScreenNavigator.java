@@ -26,7 +26,7 @@ public class ScreenNavigator {
     private static final int CARD_COST = 3;
 
     public static void showStartMenu() {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "StartMenu.fxml",
                 "Terraforming Mars - Main Menu",
@@ -37,7 +37,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseModeScreen() {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "ChooseMode.fxml",
                 "Choose Mode",
@@ -46,7 +46,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseOnlineModeScreen() {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "ChooseOnlineMode.fxml",
                 "Choose Online Mode",
@@ -55,7 +55,7 @@ public class ScreenNavigator {
     }
 
     public static void showJoinGameScreen() {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "JoinGame.fxml",
                 "Join Game",
@@ -64,7 +64,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseNameScreen(GameManager gameManager, GameBoard gameBoard) {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "ChooseName.fxml",
                 "Choose a name",
@@ -73,7 +73,7 @@ public class ScreenNavigator {
     }
 
     public static void showWaitingForPlayersScreen(GameManager gameManager, int expectedPlayerCount) {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "WaitingScreen.fxml",
                 "Waiting for Players",
@@ -82,7 +82,7 @@ public class ScreenNavigator {
     }
 
     public static void showChoosePlayersScreen() {
-        ScreenUtils.showAsMainScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
+        ScreenUtils.showAsScreen(mainStage, "ChoosePlayers.fxml", "Choose the number of players", (ChoosePlayersController _) -> {});
     }
 
     public static void showChooseCorporationScreen(GameManager gameManager) {
@@ -92,7 +92,7 @@ public class ScreenNavigator {
     }
 
     public static void showChooseCorporationScreen(Player player, List<Corporation> offer, GameManager gameManager) {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "ChooseCorporation.fxml",
                 "Choose for " + player.getName(),
@@ -110,7 +110,7 @@ public class ScreenNavigator {
         Consumer<List<Card>> onConfirmAction =
                 chosenCards -> handleCardDraftConfirmation(chosenCards, player, gameManager);
 
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "ChooseCards.fxml",
                 "Choose Initial Cards - " + player.getName(),
@@ -149,7 +149,7 @@ public class ScreenNavigator {
     }
 
     public static void showGameOverScreen(List<Player> rankedPlayers) {
-        ScreenUtils.showAsMainScreen(
+        ScreenUtils.showAsScreen(
                 mainStage,
                 "GameOver.fxml",
                 "Game Over - Final Score",

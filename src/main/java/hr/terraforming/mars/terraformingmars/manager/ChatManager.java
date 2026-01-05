@@ -9,6 +9,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -32,6 +33,19 @@ public class ChatManager {
         this.chatListView = chatListView;
         this.chatInput = chatInput;
         this.chatBoxContainer = chatBoxContainer;
+
+        setupAutoScroll();
+    }
+
+    private void setupAutoScroll() {
+        if (chatListView != null) {
+            chatListView.getItems().addListener((ListChangeListener<String>) _ -> Platform.runLater(() -> {
+                int size = chatListView.getItems().size();
+                if (size > 0) {
+                    chatListView.scrollTo(size - 1);
+                }
+            }));
+        }
     }
 
     public void setupChatSystem(PlayerType playerType) {
@@ -101,6 +115,21 @@ public class ChatManager {
             }
         } catch (RemoteException e) {
             log.error("Failed to send chat message", e);
+        }
+    }
+
+    public void clearHistory() {
+        if (chatService != null) {
+            try {
+                chatService.clearChatHistory();
+                Platform.runLater(() -> {
+                    if (chatListView != null) {
+                        chatListView.getItems().clear();
+                    }
+                });
+            } catch (RemoteException e) {
+                log.error("Failed to clear chat history", e);
+            }
         }
     }
 }

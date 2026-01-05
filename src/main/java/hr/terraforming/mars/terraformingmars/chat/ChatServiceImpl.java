@@ -6,15 +6,20 @@ import java.util.List;
 
 public class ChatServiceImpl implements ChatService{
 
-    private final List<String> chatMessageHistory = new ArrayList<>();
+    private final List<String> chatHistory = new ArrayList<>();
 
     @Override
     public void sendChatMessage(String chatMessage) throws RemoteException {
-        chatMessageHistory.add(chatMessage);
+        chatHistory.add(chatMessage);
     }
 
     @Override
     public List<String> returnChatHistory() throws RemoteException {
-    return chatMessageHistory;
+    return chatHistory;
+    }
+
+    @Override
+    public synchronized void clearChatHistory() throws RemoteException {
+        chatHistory.clear();
     }
 }

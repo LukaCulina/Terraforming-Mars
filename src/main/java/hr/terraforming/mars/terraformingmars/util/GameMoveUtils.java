@@ -115,7 +115,7 @@ public class GameMoveUtils {
             );
 
             XmlUtils.appendGameMove(initialMove);
-            log.debug("INITIAL_SETUP move successfully saved to XML!");
+            log.debug("Initial setup move successfully saved to XML!");
 
         } catch (Exception e) {
             log.error("Fatal error occurred during initial state saving.");

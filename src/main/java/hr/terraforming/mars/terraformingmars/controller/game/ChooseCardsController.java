@@ -141,7 +141,7 @@ public class ChooseCardsController {
 
             NetworkBroadcaster broadcaster = config.getBroadcaster();
             if (broadcaster != null) {
-                log.info("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
+                log.debug("Broadcasting game state with gameBoard = {}", gameManager.getGameBoard() != null ? "NOT NULL" : "NULL");
                 broadcaster.broadcast();
             }
         }

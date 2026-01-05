@@ -16,8 +16,8 @@ import java.util.List;
 public class GameClientThread implements Runnable {
     private final String hostname;
     private final int port;
-    private Socket socket;
-    private ObjectOutputStream out;
+    private Socket clientSocket;
+    private ObjectOutputStream serverOutput;
     private final List<GameStateListener> listeners = new ArrayList<>();
     private volatile boolean running = true;
     private GameState lastGameState;
@@ -31,12 +31,12 @@ public class GameClientThread implements Runnable {
 
     @Override
     public void run() {
-        try (Socket clientSocket = new Socket(hostname, port);
-             ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-             ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream())) {
+        try (Socket socket = new Socket(hostname, port);
+             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 
-            this.socket = clientSocket;
-            this.out = outputStream;
+            this.clientSocket = socket;
+            this.serverOutput = outputStream;
 
             log.info("Connected to server at {}:{}", hostname, port);
 
@@ -54,7 +54,7 @@ public class GameClientThread implements Runnable {
 
     private void processMessage(Object message) {
         if (message instanceof GameState state) {
-            this.lastGameState = state;
+            lastGameState = state;
         }
         messageDispatcher.dispatch(message, lastGameState);
     }
@@ -98,11 +98,11 @@ public class GameClientThread implements Runnable {
         sendMessage(move, null);
     }
 
-    private void sendMessage(Object message, Runnable onSuccess) {
+    private synchronized void sendMessage(Object message, Runnable onSuccess) {
         try {
-            if (out != null) {
-                out.writeObject(message);
-                out.flush();
+            if (serverOutput != null) {
+                serverOutput.writeObject(message);
+                serverOutput.flush();
                 if (onSuccess != null) {
                     onSuccess.run();
                 }
@@ -122,11 +122,11 @@ public class GameClientThread implements Runnable {
 
     private void closeSocket() {
         try {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
+            if (clientSocket != null && !clientSocket.isClosed()) {
+                clientSocket.close();
             }
         } catch (IOException e) {
-            log.error("Error closing client socket", e);
+            log.error("Error closing client clientSocket", e);
         }
     }
 
@@ -135,6 +135,6 @@ public class GameClientThread implements Runnable {
             listeners.clear();
         }
         lastGameState = null;
-        out = null;
+        serverOutput = null;
     }
 }

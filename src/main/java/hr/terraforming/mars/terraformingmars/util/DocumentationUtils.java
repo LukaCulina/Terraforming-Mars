@@ -1,6 +1,5 @@
 package hr.terraforming.mars.terraformingmars.util;
 
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedWriter;
@@ -75,9 +74,9 @@ public final class DocumentationUtils {
             }
             docBuilder.append(HTML_END);
             writeHtmlFile(docBuilder.toString());
-            showAlertDialog(AlertType.INFORMATION, "Success", "Documentation generated successfully!");
+            DialogUtils.showDialog(AlertType.INFORMATION, "Success", "Documentation generated successfully!");
         } catch (IOException e) {
-            showAlertDialog(AlertType.ERROR, "Error", "Failed to generate documentation: " + e.getMessage());
+            DialogUtils.showDialog(AlertType.ERROR, "Error", "Failed to generate documentation: " + e.getMessage());
             log.error("Failed to generate documentation.", e);
         }
     }
@@ -185,13 +184,5 @@ public final class DocumentationUtils {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DOC_FILE))) {
             writer.write(htmlContent);
         }
-    }
-
-    private static void showAlertDialog(AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

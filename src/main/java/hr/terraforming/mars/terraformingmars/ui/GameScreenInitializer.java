@@ -16,8 +16,8 @@ public class GameScreenInitializer {
         throw new IllegalStateException("Utility class");
     }
 
-    public static GameScreenManager initUI(GameScreenController controller,
-                                           ActionManager actionManager) {
+    public static GameScreenManager initializeUI(GameScreenController controller,
+                                                 ActionManager actionManager) {
 
         HexBoardDrawer hexBoardDrawer = new HexBoardDrawer(
                 controller.getHexBoardPane(),

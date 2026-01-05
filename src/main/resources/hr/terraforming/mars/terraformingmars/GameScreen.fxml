@@ -164,7 +164,7 @@
                         <ListView fx:id="chatListView" VBox.vgrow="ALWAYS" />
                         <HBox spacing="5.0" alignment="CENTER">
                             <TextField fx:id="chatInput" promptText="Type message..." HBox.hgrow="ALWAYS" />
-                            <Button mnemonicParsing="false" onAction="#sendChatMessage" text="Send" />
+                            <Button mnemonicParsing="false" onAction="#sendChatMessage" text="Send" styleClass="send-chat"/>
                         </HBox>
                     </VBox>
                 </VBox>

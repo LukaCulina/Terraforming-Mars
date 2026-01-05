@@ -75,7 +75,7 @@ public class ScreenUtils {
         return scene;
     }
 
-    public static <T> void showAsMainScreen(Stage stage, String fxmlFile, String title, Consumer<T> controllerAction) {
+    public static <T> void showAsScreen(Stage stage, String fxmlFile, String title, Consumer<T> controllerAction) {
         FxmlResult<T> result = loadFxml(fxmlFile);
         if (controllerAction != null) {
             controllerAction.accept(result.controller());

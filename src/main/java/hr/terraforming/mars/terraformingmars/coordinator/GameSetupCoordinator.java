@@ -82,7 +82,7 @@ public record GameSetupCoordinator(GameScreenController controller) {
                 _ -> placementManager.cancelPlacement()
         );
 
-        GameScreenManager gameScreenManager = GameScreenInitializer.initUI(
+        GameScreenManager gameScreenManager = GameScreenInitializer.initializeUI(
                 controller,
                 actionManager
         );
@@ -119,6 +119,11 @@ public record GameSetupCoordinator(GameScreenController controller) {
         if (chatManager != null) {
             try {
                 chatManager.setupChatSystem(playerType);
+
+                if (playerType == PlayerType.HOST) {
+                    chatManager.clearHistory();
+                    log.info("Chat history cleared for new game");
+                }
             } catch (Exception e) {
                 log.warn("Chat unavailable, continuing without chat", e);
             }

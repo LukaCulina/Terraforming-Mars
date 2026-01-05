@@ -15,13 +15,18 @@ import java.util.List;
 @Slf4j
 public record CardDistributor(GameManager gameManager, GameServerThread serverThread, ActionManager actionManager) {
 
+    private static final int INITIAL_CORPORATION_COUNT = 2;
+    private static final int INITIAL_CARD_COUNT = 6;
+    private static final int RESEARCH_CARD_COUNT = 4;
+    private static final int CARD_COST = 3;
+
     public void distributeInitialCorporations() {
         log.debug("Host distributing corporations to all players...");
         gameManager.shuffleCorporations();
 
         for (Player player : gameManager.getPlayers()) {
-            List<Corporation> offer = gameManager.drawCorporations(2);
-            if (isLocalHost(player)) {
+            List<Corporation> offer = gameManager.drawCorporations(INITIAL_CORPORATION_COUNT);
+            if (isCurrentPlayer(player)) {
                 Platform.runLater(() -> ScreenNavigator.showChooseCorporationScreen(player, offer, gameManager));
             } else {
                 List<String> names = offer.stream().map(Corporation::name).toList();
@@ -35,8 +40,8 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
         gameManager.shuffleCards();
 
         for (Player player : gameManager.getPlayers()) {
-            List<Card> offer = gameManager.drawCards(6);
-            if (isLocalHost(player)) {
+            List<Card> offer = gameManager.drawCards(INITIAL_CARD_COUNT);
+            if (isCurrentPlayer(player)) {
                 Platform.runLater(() -> ScreenNavigator.showInitialCardDraftScreen(player, offer, gameManager));
             } else {
                 List<String> names = offer.stream().map(Card::getName).toList();
@@ -48,7 +53,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
     public void distributeResearchCards() {
         log.debug("Host distributing Research Phase cards...");
         for (Player player : gameManager.getPlayers()) {
-            List<Card> offer = gameManager.drawCards(4);
+            List<Card> offer = gameManager.drawCards(RESEARCH_CARD_COUNT);
 
             if (offer.isEmpty()) {
                 if (actionManager != null && actionManager.getGameFlowManager() != null) {
@@ -57,7 +62,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
                 continue;
             }
 
-            if (isLocalHost(player)) {
+            if (isCurrentPlayer(player)) {
                 Platform.runLater(() -> ScreenUtils.showAsModal(
                         ScreenNavigator.getMainStage(), "ChooseCards.fxml", "Research Phase", 0.7, 0.8,
                         (ChooseCardsController c) -> c.setup(player, offer, cards -> handleHostConfirmation(player, cards), gameManager, true)
@@ -71,7 +76,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
     private void handleHostConfirmation(Player player, List<Card> boughtCards) {
         log.debug("Host confirming research cards. Count: {}", boughtCards.size());
-        int cost = boughtCards.size() * 3;
+        int cost = boughtCards.size() * CARD_COST;
         if (player.getMC() >= cost) {
             player.spendMC(cost);
             player.getHand().addAll(boughtCards);
@@ -88,7 +93,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
         }
     }
 
-    private boolean isLocalHost(Player player) {
+    private boolean isCurrentPlayer(Player player) {
         return player.getName().equals(ApplicationConfiguration.getInstance().getMyPlayerName());
     }
 }

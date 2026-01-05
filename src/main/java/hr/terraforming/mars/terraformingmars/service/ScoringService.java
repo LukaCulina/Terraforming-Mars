@@ -17,7 +17,6 @@ public class ScoringService {
     public static List<Player> calculateFinalScores(List<Player> players) {
         for (Player p : players) {
             p.calculateTilePoints();
-            log.info("{} - Final Score: {}", p.getName(), p.getFinalScore());
         }
 
         List<Player> rankedPlayers = new ArrayList<>(players);
