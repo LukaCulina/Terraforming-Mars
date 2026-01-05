@@ -52,7 +52,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
             if (offer.isEmpty()) {
                 if (actionManager != null && actionManager.getGameFlowManager() != null) {
-                    Platform.runLater(() -> actionManager.getGameFlowManager().onResearchComplete());
+                    Platform.runLater(() -> actionManager.getGameFlowManager().finishResearchPhase());
                 }
                 continue;
             }
@@ -82,7 +82,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
             if (!morePlayers) {
                 log.info("Host finished last. Triggering next phase (ACTIONS).");
                 if (actionManager != null && actionManager.getGameFlowManager() != null) {
-                    actionManager.getGameFlowManager().onResearchComplete();
+                    actionManager.getGameFlowManager().finishResearchPhase();
                 }
             }
         }

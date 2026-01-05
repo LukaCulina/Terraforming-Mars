@@ -92,7 +92,7 @@ public record PlacementService(GameBoard gameBoard) {
         log.info("City placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
     }
 
-    public void executeComplexPlacement(PlacementContext context) {
+    public void placeByMode(PlacementContext context) {
         switch (context.mode()) {
             case FINAL_GREENERY -> placeFinalGreenery(context.tile(), context.owner());
             case PLANT_CONVERSION -> placePlantConversion(context.tile(), context.owner());

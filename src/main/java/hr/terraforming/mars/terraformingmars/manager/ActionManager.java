@@ -31,7 +31,7 @@ public class ActionManager {
         this.executionManager = new ExecutionManager(controller, this, gameFlowManager);
     }
 
-    private GameManager gm() {
+    private GameManager getGameManager() {
         return controller.getGameManager();
     }
 
@@ -39,7 +39,7 @@ public class ActionManager {
         gameMoveManager.processMove(move);
     }
 
-    public void recordAndSaveMove(GameMove move) {
+    public void saveMove(GameMove move) {
         XmlUtils.appendGameMove(move);
 
         new Thread(new SaveNewGameMoveThread(move)).start();
@@ -49,19 +49,20 @@ public class ActionManager {
     }
 
     public void performAction() {
-        gm().incrementActionsTaken();
+        getGameManager().incrementActionsTaken();
 
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
         if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
             controller.updateAllUI();
         }
 
-        if (gm().getActionsTakenThisTurn() >= 2) {
+        if (getGameManager().getActionsTakenThisTurn() >= 2) {
             log.info("Player has taken 2 actions. Automatically passing turn.");
-            if (gm().getCurrentPhase() == GamePhase.ACTIONS) {
+            if (getGameManager().getCurrentPhase() == GamePhase.ACTIONS) {
                 handlePassTurn();
             } else {
-                log.info("Skipping auto-pass - phase: {}", gm().getCurrentPhase());
+                log.info("Skipping auto-pass - phase: {}", getGameManager().getCurrentPhase());
             }
         }
     }
@@ -90,7 +91,7 @@ public class ActionManager {
         executionManager.handleConvertPlants();
     }
 
-    public void openSellPatentsWindow() {
+    public void handleSellPatents() {
         Consumer<List<Card>> onSaleCompleteAction = soldCards -> {
 
             int count = soldCards.size();
@@ -102,25 +103,24 @@ public class ActionManager {
                     .collect(Collectors.joining(", "));
 
             GameMove showModal = new GameMove(
-                    gm().getCurrentPlayer().getName(),
+                    getGameManager().getCurrentPlayer().getName(),
                     ActionType.OPEN_SELL_PATENTS_MODAL,
                     cardNames,
                     java.time.LocalDateTime.now()
             );
 
-            recordAndSaveMove(showModal);
+            saveMove(showModal);
 
             GameMove move = new GameMove(
-                    gm().getCurrentPlayer().getName(),
+                    getGameManager().getCurrentPlayer().getName(),
                     ActionType.SELL_PATENTS,
                     cardNames,
                     message,
                     java.time.LocalDateTime.now()
             );
 
-            recordAndSaveMove(move);
-
             performAction();
+            saveMove(move);
         };
 
         Window owner = controller.getHexBoardPane().getScene().getWindow();
@@ -130,7 +130,7 @@ public class ActionManager {
                 "SellPatents.fxml",
                 "Sell Patents",
                 0.5, 0.7,
-                (SellPatentsController c) -> c.initData(gm().getCurrentPlayer(), onSaleCompleteAction)
+                (SellPatentsController c) -> c.initData(getGameManager().getCurrentPlayer(), onSaleCompleteAction)
         );
     }
 }

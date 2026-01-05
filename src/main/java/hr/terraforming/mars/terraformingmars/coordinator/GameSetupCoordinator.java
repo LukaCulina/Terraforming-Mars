@@ -16,14 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 public record GameSetupCoordinator(GameScreenController controller) {
 
     public void setupNewGame(GameState gameState) {
-        setupGameInternal(gameState, true);
+        setupGame(gameState, true);
     }
 
     public void setupLoadedGame(GameState gameState) {
-        setupGameInternal(gameState, false);
+        setupGame(gameState, false);
     }
 
-    private void setupGameInternal(GameState gameState, boolean shouldStartGame) {
+    private void setupGame(GameState gameState, boolean shouldStartGame) {
         controller.setGameManager(gameState.gameManager());
         controller.setGameBoard(gameState.gameBoard());
 
@@ -38,15 +38,15 @@ public record GameSetupCoordinator(GameScreenController controller) {
 
         initializeComponents();
 
-        setupChatIfAvailable();
+        setupChat();
 
         controller.getNetworkCoordinator().setupClientListeners();
 
-        setupInitialPlayerView();
-
         if (shouldStartGame) {
-            startGameIfLocalOrHost();
+            startGame();
         }
+
+        setupInitialPlayer();
 
         finalizeUISetup();
     }
@@ -62,7 +62,7 @@ public record GameSetupCoordinator(GameScreenController controller) {
         );
         controller.setActionManager(actionManager);
 
-        injectActionManagerToServer(actionManager);
+        setupActionManager(actionManager);
 
         PlacementManager placementManager = new PlacementManager(
                 controller,
@@ -98,10 +98,12 @@ public record GameSetupCoordinator(GameScreenController controller) {
         controller.setReplayManager(new ReplayManager(controller));
     }
 
-    private void injectActionManagerToServer(ActionManager actionManager) {
+    private void setupActionManager(ActionManager actionManager) {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
         if (playerType == PlayerType.HOST) {
             GameServerThread server = ApplicationConfiguration.getInstance().getGameServer();
+
             if (server != null) {
                 server.setActionManager(actionManager);
             } else {
@@ -110,7 +112,7 @@ public record GameSetupCoordinator(GameScreenController controller) {
         }
     }
 
-    private void setupChatIfAvailable() {
+    private void setupChat() {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
         ChatManager chatManager = controller.getChatManager();
 
@@ -123,12 +125,13 @@ public record GameSetupCoordinator(GameScreenController controller) {
         }
     }
 
-    private void setupInitialPlayerView() {
+    private void setupInitialPlayer() {
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
         Player playerToShow = controller.getGameManager().getCurrentPlayer();
 
         if (myPlayerName != null) {
             Player myPlayer = controller.getGameManager().getPlayerByName(myPlayerName);
+
             if (myPlayer != null) {
                 playerToShow = myPlayer;
             }
@@ -136,8 +139,9 @@ public record GameSetupCoordinator(GameScreenController controller) {
         controller.showPlayerBoard(playerToShow);
     }
 
-    private void startGameIfLocalOrHost() {
+    private void startGame() {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+
         if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
             controller.getGameManager().startGame();
         }

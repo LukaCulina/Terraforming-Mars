@@ -31,12 +31,14 @@ public record NetworkCoordinator(GameScreenController controller) {
 
         if (playerType == PlayerType.HOST) {
             NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
+
             if (broadcaster != null) {
                 broadcaster.broadcast();
                 log.debug("HOST broadcasted game state");
             }
         } else if (playerType == PlayerType.CLIENT) {
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
+
             if (client != null) {
                 client.sendMove(move);
                 log.debug("CLIENT sent move: {}", move.details());
@@ -51,6 +53,7 @@ public record NetworkCoordinator(GameScreenController controller) {
             controller.setGameControlsEnabled(false);
 
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
+
             if (client != null) {
                 client.addGameStateListener(controller::updateFromNetwork);
             }
@@ -58,10 +61,12 @@ public record NetworkCoordinator(GameScreenController controller) {
     }
 
     private boolean validateGameState(GameState state) {
+
         if (state == null) {
             log.error("Received null GameState!");
             return false;
         }
+
         if (state.gameManager() == null || state.gameBoard() == null) {
             log.error("Incomplete GameState! Manager={}, Board={}",
                     state.gameManager(), state.gameBoard());
@@ -86,6 +91,7 @@ public record NetworkCoordinator(GameScreenController controller) {
 
         if (myPlayerName != null) {
             Player myPlayer = controller.getGameManager().getPlayerByName(myPlayerName);
+
             if (myPlayer != null) {
                 controller.setViewedPlayer(myPlayer);
                 return;

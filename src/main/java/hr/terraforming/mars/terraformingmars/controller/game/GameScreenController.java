@@ -69,9 +69,9 @@ public class GameScreenController {
     @FXML
     private void initialize() {
         currentPlayerBoardController = PlayerBoardLoader.load(currentPlayerBoardContainer);
-        this.networkCoordinator = new NetworkCoordinator(this);
-        this.setupCoordinator = new GameSetupCoordinator(this);
-        this.gameScreenCoordinator = new GameScreenCoordinator();
+        networkCoordinator = new NetworkCoordinator(this);
+        setupCoordinator = new GameSetupCoordinator(this);
+        gameScreenCoordinator = new GameScreenCoordinator();
         addDebugButtons();
     }
 
@@ -150,7 +150,7 @@ public class GameScreenController {
     }
 
     public void showPlayerBoard(Player player) {
-        this.viewedPlayer = player;
+        viewedPlayer = player;
         updateAllUI();
     }
 
@@ -198,7 +198,7 @@ public class GameScreenController {
         GameState loadedState = gameStateService.loadGame();
         if (loadedState != null) {
             setupCoordinator.setupLoadedGame(loadedState);
-            this.viewedPlayer = this.gameManager.getCurrentPlayer();
+            viewedPlayer = gameManager.getCurrentPlayer();
             updateAllUI();
             DialogUtils.showDialog(Alert.AlertType.INFORMATION, "Load Game Successful!", "The game has been successfully loaded!");
         }

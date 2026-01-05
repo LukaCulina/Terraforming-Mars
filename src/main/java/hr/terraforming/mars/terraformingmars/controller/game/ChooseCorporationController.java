@@ -22,7 +22,7 @@ public class ChooseCorporationController {
     @FXML private Button confirmButton;
 
     private GameManager gameManager;
-    private List<Corporation> options;
+    private List<Corporation> availableCorporations;
     private Corporation selectedCorporation;
     private VBox selectedCard;
 
@@ -56,9 +56,9 @@ public class ChooseCorporationController {
         chooseCorpLabel.setText(player.getName() + ", choose your corporation:");
         chooseCorpLabel.setStyle("");
 
-        this.options = offer;
-        this.selectedCorporation = null;
-        this.selectedCard = null;
+        availableCorporations = offer;
+        selectedCorporation = null;
+        selectedCard = null;
 
         populateCorporationBoxes();
         updateConfirmButton();
@@ -71,7 +71,7 @@ public class ChooseCorporationController {
 
     private void populateCorporationBoxes() {
         corporationButtonsContainer.getChildren().clear();
-        for (Corporation corp : options) {
+        for (Corporation corp : availableCorporations) {
             VBox corpCard = CorporationViewBuilder.createCorporationNode(corp);
 
             corpCard.setOnMouseClicked(_ -> selectCorporationCard(corp, corpCard));

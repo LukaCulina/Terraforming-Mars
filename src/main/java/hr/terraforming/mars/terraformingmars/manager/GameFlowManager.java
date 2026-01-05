@@ -26,31 +26,31 @@ public class GameFlowManager {
         this.controller = controller;
     }
 
-    private GameManager gm() {
+    private GameManager getGameManager() {
         return controller.getGameManager();
     }
 
-    private GameBoard board() {
+    private GameBoard getGameBoard() {
         return controller.getGameBoard();
     }
 
-    public void handleEndOfActionPhase() {
+    public void startProductionPhase() {
         log.info("All players have passed. Starting Production Phase.");
 
-        gm().doProduction();
+        getGameManager().doProduction();
 
         controller.updateAllUI();
 
-        if (board().isFinalGeneration()) {
+        if (getGameBoard().isFinalGeneration()) {
             log.info("This was the last generation. Starting final greenery conversion phase.");
 
-            gm().resetDraftPhase();
+            getGameManager().resetDraftPhase();
 
-            this.finalGreeneryManager = new FinalGreeneryPhaseManager(
-                    gm(),
+            finalGreeneryManager = new FinalGreeneryPhaseManager(
+                    getGameManager(),
                     controller.getSceneWindow(),
                     controller,
-                    this::onFinalGreeneryComplete
+                    this::finishGame
             );
             finalGreeneryManager.start();
         }
@@ -59,16 +59,17 @@ public class GameFlowManager {
         }
     }
 
-    private void onFinalGreeneryComplete() {
+    private void finishGame() {
         log.info("Final Greenery phase complete. Calculating final scores.");
 
-        List<Player> rankedPlayers = gm().calculateFinalScores();
+        List<Player> rankedPlayers = getGameManager().calculateFinalScores();
 
         Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
 
-        var cfg = ApplicationConfiguration.getInstance();
-        if (cfg.getPlayerType() == PlayerType.HOST && cfg.getBroadcaster() != null) {
-            cfg.getBroadcaster().broadcast();
+        var config = ApplicationConfiguration.getInstance();
+
+        if (config.getPlayerType() == PlayerType.HOST && config.getBroadcaster() != null) {
+            config.getBroadcaster().broadcast();
             log.info("HOST broadcasted final GameState after scoring");
         }
     }
@@ -76,10 +77,10 @@ public class GameFlowManager {
     private void startNewGeneration() {
         log.info("Production phase is over. Starting a new generation.");
 
-        gm().startNewGeneration();
-        gm().resetDraftPhase();
+        getGameManager().startNewGeneration();
+        getGameManager().resetDraftPhase();
 
-        controller.setViewedPlayer(gm().getCurrentPlayer());
+        controller.setViewedPlayer(getGameManager().getCurrentPlayer());
         controller.updateAllUI();
 
         var config = ApplicationConfiguration.getInstance();
@@ -94,33 +95,35 @@ public class GameFlowManager {
             case LOCAL -> {
                 log.info("LOCAL: Starting local research phase manager.");
                 new ResearchPhaseManager(
-                        gm(),
+                        getGameManager(),
                         controller.getSceneWindow(),
                         controller,
-                        this::onResearchComplete
+                        this::finishResearchPhase
                 ).start();
             }
             default -> log.warn("Unknown or null PlayerType in startNewGeneration(): {}", playerType);
         }
     }
 
-    public void onResearchComplete() {
-        if (gm().getCurrentPhase() == GamePhase.ACTIONS) {
+    public void finishResearchPhase() {
+        if (getGameManager().getCurrentPhase() == GamePhase.ACTIONS) {
             log.warn("Already in ACTIONS phase, skipping duplicate beginActionPhase()");
             return;
         }
 
-        createAndSaveResearchPhaseSnapshot(gm());
+        saveResearchPhaseSnapshot(getGameManager());
 
         log.info("Research phase complete. Starting Action Phase.");
 
-        gm().beginActionPhase();
+        getGameManager().beginActionPhase();
 
         controller.updateAllUI();
 
         var config = ApplicationConfiguration.getInstance();
+
         if (config.getPlayerType() == hr.terraforming.mars.terraformingmars.enums.PlayerType.HOST) {
             NetworkBroadcaster broadcaster = config.getBroadcaster();
+
             if (broadcaster != null) {
                 log.info("Broadcasting game state after research complete");
                 broadcaster.broadcast();
@@ -128,8 +131,9 @@ public class GameFlowManager {
         }
     }
 
-    private void createAndSaveResearchPhaseSnapshot(GameManager gameManager) {
+    private void saveResearchPhaseSnapshot(GameManager gameManager) {
         Map<String, Object> researchData = new HashMap<>();
+
         for (Player player : gameManager.getPlayers()) {
             Map<String, Object> playerData = new HashMap<>();
             playerData.put("hand", player.getHand().stream().map(Card::getName).toList());

@@ -100,14 +100,14 @@ public class Card implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
 
-        Card originalCard = CardFactory.getCardByName(this.name);
+        Card originalCard = CardFactory.getCardByName(name);
 
         if (originalCard != null) {
-            this.effects = originalCard.getEffects();
-            this.requirement = originalCard.getRequirement();
+            effects = originalCard.getEffects();
+            requirement = originalCard.getRequirement();
         } else {
-            this.effects = Collections.emptyList();
-            this.requirement = (_, _) -> true;
+            effects = Collections.emptyList();
+            requirement = (_, _) -> true;
         }
     }
 }

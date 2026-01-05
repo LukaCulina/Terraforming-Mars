@@ -176,7 +176,7 @@ public class GameManager implements Serializable {
                 return;
             }
         }
-        log.warn("🎭 setCurrentPlayerByName() | Player '{}' not found", playerName);
+        log.warn("Player '{}' not found", playerName);
     }
 
     public Player getPlayerByName(String playerName) {

@@ -38,7 +38,9 @@ public class Player implements Serializable {
         this.state = new PlayerState();
     }
 
-    public Color getPlayerColor() { return PLAYER_COLORS.get((playerNumber - 1) % PLAYER_COLORS.size()); }
+    public Color getPlayerColor() {
+        return PLAYER_COLORS.get((playerNumber - 1) % PLAYER_COLORS.size());
+    }
 
     public void setCorporation(Corporation corporation) {
         this.corporation = corporation;
@@ -62,6 +64,7 @@ public class Player implements Serializable {
     public void addCardsToHand(List<Card> cardsToAdd) { getHand().addAll(cardsToAdd); }
 
     public void addMC(int amount) { mcProperty().set(getMC() + amount); }
+
     public boolean spendMC(int amount) {
         if (getMC() >= amount) {
             mcProperty().set(getMC() - amount);
@@ -76,6 +79,7 @@ public class Player implements Serializable {
 
     public void increaseProduction(ResourceType type, int amount) {
         state.productionProperty(type).set(state.productionProperty(type).get() + amount);
+
         if (corporation != null && corporation.name().equals("Helion") && type == ResourceType.ENERGY && amount > 0) {
             addMC(2);
         }
@@ -90,22 +94,18 @@ public class Player implements Serializable {
     }
 
     public boolean canPlayCard(Card card) {
-        if (card == null || !getHand().contains(card)) {
-            return false;
-        }
+        if (card == null || !getHand().contains(card)) return false;
 
-        int finalCost = state.getCardCost(card, this.corporation);
+        int finalCost = state.getCardCost(card, corporation);
 
-        if (getMC() < finalCost) {
-            return false;
-        }
-        return card.getRequirement().test(this, this.board);
+        if (getMC() < finalCost) return false;
+
+        return card.getRequirement().test(this, board);
     }
 
     public void playCard(Card card, GameManager gameManager) {
         if (canPlayCard(card)) {
-            int finalCost = state.getCardCost(card, this.corporation);
-
+            int finalCost = state.getCardCost(card, corporation);
             spendMC(finalCost);
             getHand().remove(card);
             getPlayed().add(card);
@@ -113,14 +113,13 @@ public class Player implements Serializable {
 
             if (corporation != null) {
                 String corpName = corporation.name();
+
                 if (corpName.equals("Interplanetary Cinematics") && card.getTags().contains(TagType.SPACE)) {
                     addMC(2);
                 } else if (corpName.equals("Saturn Systems") && card.getTags().contains(TagType.JOVIAN)) {
                     increaseProduction(ResourceType.MEGA_CREDITS, 1);
                 }
             }
-
-            log.info("{} played the card: {}", this.name, card.getName());
         }
     }
 
@@ -130,11 +129,12 @@ public class Player implements Serializable {
 
     public void spendPlantsForGreenery() {
         int cost = getGreeneryCost();
+
         if (resourceProperty(ResourceType.PLANTS).get() >= cost) {
             resourceProperty(ResourceType.PLANTS).set(resourceProperty(ResourceType.PLANTS).get() - cost);
         } else {
             log.warn("{} failed to place greenery: insufficient plants (has {}, needs {}).",
-                    this.name, resourceProperty(ResourceType.PLANTS).get(), cost);
+                    name, resourceProperty(ResourceType.PLANTS).get(), cost);
         }
     }
 
@@ -146,6 +146,7 @@ public class Player implements Serializable {
     }
 
     public void addClaimedMilestone(Milestone milestone) { state.getClaimedMilestones().add(milestone); }
+
     public int getMilestonePoints() { return state.getClaimedMilestones().size() * 5; }
 
     public long getOwnedCityCount() {
@@ -170,10 +171,12 @@ public class Player implements Serializable {
         int totalTilePoints = (int) (greeneryPoints + cityPoints);
         state.tilePointsProperty().set(totalTilePoints);
 
-        log.info("{} scored {} points from tiles.", this.name, totalTilePoints);
+        log.info("{} scored {} points from tiles.", name, totalTilePoints);
     }
 
-    public int getTilePoints() { return state.tilePointsProperty().get(); }
+    public int getTilePoints() {
+        return state.tilePointsProperty().get();
+    }
 
     public int getFinalScore() {
         int cardPoints = getPlayed().stream().mapToInt(Card::getVictoryPoints).sum();
@@ -181,10 +184,10 @@ public class Player implements Serializable {
     }
 
     public void resetForNewGame() {
-        if (this.corporation != null) {
-            this.state.reset(this.corporation);
+        if (corporation != null) {
+            state.reset(corporation);
         } else {
-            log.error("Cannot reset player state, corporation is null for player {}.", this.name);
+            log.error("Cannot reset player state, corporation is null for player {}.", name);
         }
     }
 }

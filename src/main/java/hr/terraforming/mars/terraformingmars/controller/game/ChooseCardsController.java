@@ -74,7 +74,7 @@ public class ChooseCardsController {
         chooseCardsLabel.setText(player.getName() + ", choose your cards:");
         chooseCardsLabel.setStyle("");
 
-        this.selectedCards.clear();
+        selectedCards.clear();
 
         remainingMCLabel.textProperty().bind(remainingMC.asString("Remaining MC: %d"));
         remainingMC.set(player.getMC());

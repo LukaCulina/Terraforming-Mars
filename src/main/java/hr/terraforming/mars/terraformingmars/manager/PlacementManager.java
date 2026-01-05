@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class PlacementManager {
     private GameMove moveInProgress;
 
-    private final GameScreenController mainController;
+    private final GameScreenController gameScreenController;
     private final GameBoard gameBoard;
     private final GameManager gameManager;
     private final ActionManager actionManager;
@@ -30,8 +30,8 @@ public class PlacementManager {
     private Player finalGreeneryPlayer = null;
     private Runnable onPlacementCompleteCallback = null;
 
-    public PlacementManager(GameScreenController mainController, GameManager gameManager, GameBoard gameBoard, ActionManager actionManager) {
-        this.mainController = mainController;
+    public PlacementManager(GameScreenController gameScreenController, GameManager gameManager, GameBoard gameBoard, ActionManager actionManager) {
+        this.gameScreenController = gameScreenController;
         this.gameManager = gameManager;
         this.gameBoard = gameBoard;
         this.actionManager = actionManager;
@@ -59,26 +59,26 @@ public class PlacementManager {
     }
 
     public void startFinalGreeneryPlacement(Player player, Runnable onComplete) {
-        mainController.setGameControlsEnabled(false);
-        mainController.setCancelButtonVisible(false);
+        gameScreenController.setGameControlsEnabled(false);
+        gameScreenController.setCancelButtonVisible(false);
         finalGreeneryCoordinator.startFinalGreeneryPlacement(player, onComplete);
     }
 
-    private void enterPlacementMode(PlacementMode mode, TileType tileType, GameMove move,
-                                    Card card, StandardProject project, Player player, Runnable callback) {
+    private void enterPlacementMode(PlacementMode placementMode, TileType tileTypeToPlace, GameMove moveInProgress,
+                                    Card cardToPlace, StandardProject projectToPlace, Player finalGreeneryPlayer, Runnable onPlacementCompleteCallback) {
 
-        this.placementMode = mode;
-        this.tileTypeToPlace = tileType;
-        this.moveInProgress = move;
-        this.cardToPlace = card;
-        this.projectToPlace = project;
-        this.finalGreeneryPlayer = player;
-        this.onPlacementCompleteCallback = callback;
+        this.placementMode = placementMode;
+        this.tileTypeToPlace = tileTypeToPlace;
+        this.moveInProgress = moveInProgress;
+        this.cardToPlace = cardToPlace;
+        this.projectToPlace = projectToPlace;
+        this.finalGreeneryPlayer = finalGreeneryPlayer;
+        this.onPlacementCompleteCallback = onPlacementCompleteCallback;
 
-        mainController.drawBoard();
-        if (mode != PlacementMode.FINAL_GREENERY) {
-            mainController.setGameControlsEnabled(false);
-            mainController.setCancelButtonVisible(true);
+        gameScreenController.drawBoard();
+        if (placementMode != PlacementMode.FINAL_GREENERY) {
+            gameScreenController.setGameControlsEnabled(false);
+            gameScreenController.setCancelButtonVisible(true);
         }
     }
 
@@ -92,7 +92,7 @@ public class PlacementManager {
             return;
         }
 
-        recordMoves(selectedTile, placementOwner);
+        boolean wasFinalGreenery = (placementMode == PlacementMode.FINAL_GREENERY);
 
         PlacementService placementService = new PlacementService(gameBoard);
         PlacementService.PlacementContext context = new PlacementService.PlacementContext(
@@ -100,14 +100,20 @@ public class PlacementManager {
                 tileTypeToPlace, cardToPlace, projectToPlace
         );
 
-        placementService.executeComplexPlacement(context);
+        placementService.placeByMode(context);
 
-        finishPlacement();
+        if (!wasFinalGreenery) {
+            actionManager.performAction();
+        }
+
+        recordMoves(selectedTile, placementOwner);
+
+        finishPlacement(wasFinalGreenery);
     }
 
     private void recordMoves(Tile tile, Player owner) {
         if (moveInProgress != null) {
-            actionManager.recordAndSaveMove(moveInProgress);
+            actionManager.saveMove(moveInProgress);
         }
 
         GameMove placeTileMove = new GameMove(
@@ -121,7 +127,7 @@ public class PlacementManager {
                 LocalDateTime.now()
         );
 
-        actionManager.recordAndSaveMove(placeTileMove);
+        actionManager.saveMove(placeTileMove);
     }
 
     public void cancelPlacement() {
@@ -134,28 +140,22 @@ public class PlacementManager {
         }
 
         resetAllState();
-        mainController.setGameControlsEnabled(true);
-        mainController.drawBoard();
+        gameScreenController.setGameControlsEnabled(true);
+        gameScreenController.drawBoard();
     }
 
-    private void finishPlacement() {
-        boolean wasFinalGreenery = (placementMode == PlacementMode.FINAL_GREENERY);
-
+    private void finishPlacement(boolean wasFinalGreenery) {
         resetPlacementState();
         if (!wasFinalGreenery) {
-            mainController.setGameControlsEnabled(true);
+            gameScreenController.setGameControlsEnabled(true);
         }
 
-        mainController.drawBoard();
+        gameScreenController.drawBoard();
 
         var config = ApplicationConfiguration.getInstance();
         NetworkBroadcaster broadcaster = config.getBroadcaster();
         if (broadcaster != null) {
             broadcaster.broadcast();
-        }
-
-        if (!wasFinalGreenery) {
-            actionManager.performAction();
         }
 
         if (wasFinalGreenery && onPlacementCompleteCallback != null) {
@@ -164,18 +164,18 @@ public class PlacementManager {
     }
 
     private void resetPlacementState() {
-        this.placementMode = PlacementMode.NONE;
-        this.projectToPlace = null;
-        this.cardToPlace = null;
-        this.tileTypeToPlace = null;
-        this.moveInProgress = null;
-        mainController.setCancelButtonVisible(false);
+        placementMode = PlacementMode.NONE;
+        projectToPlace = null;
+        cardToPlace = null;
+        tileTypeToPlace = null;
+        moveInProgress = null;
+        gameScreenController.setCancelButtonVisible(false);
     }
 
     private void resetAllState() {
         resetPlacementState();
-        this.finalGreeneryPlayer = null;
-        this.onPlacementCompleteCallback = null;
+        finalGreeneryPlayer = null;
+        onPlacementCompleteCallback = null;
     }
 
     public Player getPlacementOwner() {

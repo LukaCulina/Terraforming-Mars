@@ -31,7 +31,7 @@ public class FinalGreeneryController {
     private List<Player> players;
     private int currentPlayerIndex = 0;
     private Player currentPlayer;
-    private GameScreenController mainController;
+    private GameScreenController gameScreenController;
     private Runnable onComplete;
     private Stage stage;
 
@@ -51,25 +51,25 @@ public class FinalGreeneryController {
         );
     }
 
-    public void setup(GameManager gameManager, GameScreenController mainController) {
+    public void setup(GameManager gameManager, GameScreenController gameScreenController) {
         this.players = gameManager.getPlayers();
-        this.mainController = mainController;
+        this.gameScreenController = gameScreenController;
         this.gameManager = gameManager;
-        this.currentPlayerIndex = 0;
+        currentPlayerIndex = 0;
         Platform.runLater(() -> this.stage = (Stage) convertButton.getScene().getWindow());
         showCurrentPlayer();
     }
 
     public void setupSinglePlayer(Player player, GameManager gameManager,
-                                  GameScreenController mainController,
+                                  GameScreenController gameScreenController,
                                   Runnable onComplete) {
         this.currentPlayer = player;
         this.gameManager = gameManager;
-        this.mainController = mainController;
+        this.gameScreenController = gameScreenController;
         this.onComplete = onComplete;
 
         Platform.runLater(() -> {
-            this.stage = (Stage) convertButton.getScene().getWindow();
+            stage = (Stage) convertButton.getScene().getWindow();
             updateUI();
         });
     }
@@ -81,7 +81,7 @@ public class FinalGreeneryController {
             return;
         }
 
-        this.currentPlayer = players.get(currentPlayerIndex);
+        currentPlayer = players.get(currentPlayerIndex);
         updateUI();
     }
 
@@ -117,7 +117,7 @@ public class FinalGreeneryController {
 
         closeWindow();
 
-        mainController.getPlacementManager().startFinalGreeneryPlacement(
+        gameScreenController.getPlacementManager().startFinalGreeneryPlacement(
                 currentPlayer,
                 () -> {
                     log.info("All greenery tiles placed for {}", currentPlayer.getName());

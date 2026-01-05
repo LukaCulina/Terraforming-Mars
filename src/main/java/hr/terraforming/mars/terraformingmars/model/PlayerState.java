@@ -35,17 +35,17 @@ public class PlayerState implements Serializable {
     private final List<Card> played = new ArrayList<>();
 
     public PlayerState() {
-        this.trValue = 20;
+        trValue = 20;
         initializeTransientProperties();
     }
 
     private void initializeTransientProperties() {
-        this.resources = new EnumMap<>(ResourceType.class);
-        this.production = new EnumMap<>(ResourceType.class);
+        resources = new EnumMap<>(ResourceType.class);
+        production = new EnumMap<>(ResourceType.class);
 
-        this.tr = new SimpleIntegerProperty(this.trValue);
-        this.mc = new SimpleIntegerProperty(this.mcValue);
-        this.tilePoints = new SimpleIntegerProperty(this.tilePointsValue);
+        tr = new SimpleIntegerProperty(trValue);
+        mc = new SimpleIntegerProperty(mcValue);
+        tilePoints = new SimpleIntegerProperty(tilePointsValue);
 
         for (ResourceType type : ResourceType.values()) {
             resources.put(type, new SimpleIntegerProperty(resourceValues.getOrDefault(type, 0)));
@@ -61,9 +61,9 @@ public class PlayerState implements Serializable {
 
     @Serial
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        this.trValue = this.tr.get();
-        this.mcValue = this.mc.get();
-        this.tilePointsValue = this.tilePoints.get();
+        trValue = tr.get();
+        mcValue = mc.get();
+        tilePointsValue = tilePoints.get();
 
         resources.forEach((key, value) -> resourceValues.put(key, value.get()));
         production.forEach((key, value) -> productionValues.put(key, value.get()));
@@ -82,39 +82,33 @@ public class PlayerState implements Serializable {
     }
 
     public int getCardCost(Card card, Corporation corporation) {
-        int currentCost = card.getCost();
         if (corporation == null) {
-            return currentCost;
+            return card.getCost();
         }
 
+        int discount = calculateCorporationDiscount(corporation, card);
+        return Math.max(0, card.getCost() - discount);
+    }
+
+    private int calculateCorporationDiscount(Corporation corporation, Card card) {
         String corpName = corporation.name();
+        List<TagType> tags = card.getTags();
 
-        if (corpName.equals("Credicor")) {
-            currentCost -= 1;
-        }
-        else if (corpName.equals("Mining Guild") && card.getTags().contains(TagType.BUILDING)) {
-            currentCost -= 2;
-        }
-        else if (corpName.equals("Phobolog") && card.getTags().contains(TagType.SPACE)) {
-            currentCost -= 4;
-        }
-        else if (corpName.equals("Teractor") && card.getTags().contains(TagType.EARTH)) {
-            currentCost -= 3;
-        }
-        else if (corpName.equals("Inventrix") && card.getTags().contains(TagType.SCIENCE)) {
-            currentCost -= 2;
-        }
-        else if (corpName.equals("Thorgate") && card.getTags().contains(TagType.ENERGY)) {
-            currentCost -= 3;
-        }
-
-        return Math.max(0, currentCost);
+        return switch (corpName) {
+            case "Credicor" -> 1;
+            case "Mining Guild" -> tags.contains(TagType.BUILDING) ? 2 : 0;
+            case "Phobolog" -> tags.contains(TagType.SPACE) ? 4 : 0;
+            case "Teractor" -> tags.contains(TagType.EARTH) ? 3 : 0;
+            case "Inventrix" -> tags.contains(TagType.SCIENCE) ? 2 : 0;
+            case "Thorgate" -> tags.contains(TagType.ENERGY) ? 3 : 0;
+            default -> 0;
+        };
     }
 
     public void reset(Corporation corporation) {
-        this.tr.set(20);
-        this.mc.set(corporation.startingMC());
-        this.tilePoints.set(0);
+        tr.set(20);
+        mc.set(corporation.startingMC());
+        tilePoints.set(0);
 
         for (IntegerProperty resourceProp : resources.values()) {
             resourceProp.set(0);
@@ -130,8 +124,8 @@ public class PlayerState implements Serializable {
             );
         }
 
-        this.hand.clear();
-        this.played.clear();
-        this.claimedMilestones.clear();
+        hand.clear();
+        played.clear();
+        claimedMilestones.clear();
     }
 }

@@ -20,8 +20,8 @@ public class HexGridUtils {
         int r = centerTile.getRow();
         int c = centerTile.getCol();
 
-        getTileAt(r, c - 1, allTiles).ifPresent(adjacent::add);
-        getTileAt(r, c + 1, allTiles).ifPresent(adjacent::add);
+        getTile(r, c - 1, allTiles).ifPresent(adjacent::add);
+        getTile(r, c + 1, allTiles).ifPresent(adjacent::add);
 
         int[] rowsToCheck = {r - 1, r + 1};
         for (int nextR : rowsToCheck) {
@@ -33,16 +33,16 @@ public class HexGridUtils {
                 int c1 = (int) Math.floor(correspondingCol);
                 int c2 = (int) Math.ceil(correspondingCol);
 
-                getTileAt(nextR, c1, allTiles).ifPresent(adjacent::add);
+                getTile(nextR, c1, allTiles).ifPresent(adjacent::add);
                 if (c1 != c2) {
-                    getTileAt(nextR, c2, allTiles).ifPresent(adjacent::add);
+                    getTile(nextR, c2, allTiles).ifPresent(adjacent::add);
                 }
             }
         }
         return new ArrayList<>(adjacent);
     }
 
-    public static Optional<Tile> getTileAt(int row, int col, List<Tile> allTiles) {
+    public static Optional<Tile> getTile(int row, int col, List<Tile> allTiles) {
         if (row < 0 || row >= HEXES_IN_ROW.length || col < 0 || col >= HEXES_IN_ROW[row]) {
             return Optional.empty();
         }

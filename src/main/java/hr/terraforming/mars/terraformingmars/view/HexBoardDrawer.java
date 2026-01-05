@@ -104,7 +104,7 @@ public class HexBoardDrawer {
 
         double radiusByWidth = (paneWidth / (maxHexesInRow * 1.5 + 0.5)) / (2 * HEX_SPACING);
         double radiusByHeight = (paneHeight / numRows) / (2 * HEX_SPACING);
-        this.hexRadius = Math.min(radiusByWidth, radiusByHeight) * 1.3;
+        hexRadius = Math.min(radiusByWidth, radiusByHeight) * 1.3;
     }
 
     private double[] calculateHexPosition(Tile tile, double hexWidth, double hexHeight, double paneWidth, double startY) {

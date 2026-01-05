@@ -18,14 +18,14 @@ public class StartMenuController {
 
     @FXML
     private void startNewGame() {
-        log.info("Starting new game...");
+        log.info("Starting new game");
         gameStateService.clearGameData();
         ScreenNavigator.showChooseModeScreen();
     }
 
     @FXML
     private void loadSavedGame() {
-        log.info("Loading saved game...");
+        log.info("Loading saved game");
         GameState loadedState = gameStateService.loadGame();
 
         if (loadedState != null) {

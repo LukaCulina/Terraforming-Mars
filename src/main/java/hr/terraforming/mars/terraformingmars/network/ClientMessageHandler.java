@@ -87,7 +87,7 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
                     Platform.runLater(() -> {
                         var flowManager = actionManager.getGameFlowManager();
                         if (flowManager != null) {
-                            flowManager.onResearchComplete();
+                            flowManager.finishResearchPhase();
                         }
                     });
                 }

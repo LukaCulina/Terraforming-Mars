@@ -21,11 +21,11 @@ public class ExecutionManager {
         this.gameFlowManager = gameFlowManager;
     }
 
-    private GameManager gm() {
+    private GameManager getGameManager() {
         return controller.getGameManager();
     }
 
-    private GameBoard board() {
+    private GameBoard getGameBoard() {
         return controller.getGameBoard();
     }
 
@@ -38,29 +38,29 @@ public class ExecutionManager {
     }
 
     public void handlePassTurn() {
-        if (gm().getCurrentPhase() != GamePhase.ACTIONS) return;
+        if (getGameManager().getCurrentPhase() != GamePhase.ACTIONS) return;
 
-        String currentTurnName = gm().getCurrentPlayer().getName();
+        String currentTurnName = getGameManager().getCurrentPlayer().getName();
         GameMove move = new GameMove(currentTurnName, ActionType.PASS_TURN, "","passed their turn", LocalDateTime.now());
 
-        boolean allPlayersPassed = gm().passTurn();
-        actionManager.recordAndSaveMove(move);
+        boolean allPlayersPassed = getGameManager().passTurn();
+        actionManager.saveMove(move);
 
         if (allPlayersPassed) {
             PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
             if (playerType == PlayerType.HOST || playerType == PlayerType.LOCAL) {
-                gameFlowManager.handleEndOfActionPhase();
+                gameFlowManager.startProductionPhase();
             } else {
                 log.info("CLIENT: All players passed, waiting for server to change phase.");
             }
         } else {
-            controller.setViewedPlayer(gm().getCurrentPlayer());
+            controller.setViewedPlayer(getGameManager().getCurrentPlayer());
             controller.updateAllUI();
         }
     }
 
     public void handlePlayCard(Card card) {
-        Player currentPlayer = gm().getCurrentPlayer();
+        Player currentPlayer = getGameManager().getCurrentPlayer();
 
         if (!currentPlayer.canPlayCard(card)) {
             log.warn("Player {} cannot play card '{}'. Requirements not met or insufficient funds.",
@@ -75,25 +75,25 @@ public class ExecutionManager {
             if (isLocalPlayerMove(currentPlayer)) {
                 controller.getPlacementManager().enterPlacementModeForCard(card, move);
             } else {
-                currentPlayer.playCard(card, gm());
+                currentPlayer.playCard(card, getGameManager());
             }
         } else {
-            currentPlayer.playCard(card, gm());
+            currentPlayer.playCard(card, getGameManager());
             actionManager.performAction();
-            actionManager.recordAndSaveMove(move);
+            actionManager.saveMove(move);
         }
     }
 
     public void handleClaimMilestone(Milestone milestone) {
-        Player currentPlayer = gm().getCurrentPlayer();
+        Player currentPlayer = getGameManager().getCurrentPlayer();
         final int MILESTONE_COST = 8;
 
-        if (board().claimMilestone(milestone, currentPlayer)) {
+        if (getGameBoard().claimMilestone(milestone, currentPlayer)) {
             currentPlayer.spendMC(MILESTONE_COST);
             actionManager.performAction();
             GameMove move = new GameMove(currentPlayer.getName(), ActionType.CLAIM_MILESTONE, milestone.name(),
                     "claimed milestone: " + milestone.name(), LocalDateTime.now());
-            actionManager.recordAndSaveMove(move);
+            actionManager.saveMove(move);
         } else {
             log.warn("Failed attempt by {} to claim milestone '{}'.",
                     currentPlayer.getName(), milestone.getName());
@@ -101,7 +101,7 @@ public class ExecutionManager {
     }
 
     public void handleStandardProject(StandardProject project) {
-        Player currentPlayer = gm().getCurrentPlayer();
+        Player currentPlayer = getGameManager().getCurrentPlayer();
         int finalCost = CostService.getFinalProjectCost(project, currentPlayer);
 
         if (currentPlayer.getMC() < finalCost) {
@@ -110,7 +110,7 @@ public class ExecutionManager {
             return;
         }
 
-        GameMove move = new GameMove(gm().getCurrentPlayer().getName(),
+        GameMove move = new GameMove(getGameManager().getCurrentPlayer().getName(),
                 ActionType.USE_STANDARD_PROJECT, project.name(), "used standard project: " + project.name(), LocalDateTime.now());
 
         if (project.requiresTilePlacement()) {
@@ -126,19 +126,19 @@ public class ExecutionManager {
                     return;
                 }
                 if (isLocalPlayerMove(currentPlayer)) {
-                    actionManager.openSellPatentsWindow();
+                    actionManager.handleSellPatents();
                 }
             } else {
                 currentPlayer.spendMC(finalCost);
-                project.execute(currentPlayer, board());
+                project.execute(currentPlayer, getGameBoard());
                 actionManager.performAction();
-                actionManager.recordAndSaveMove(move);
+                actionManager.saveMove(move);
             }
         }
     }
 
     public void handleConvertHeat() {
-        Player currentPlayer = gm().getCurrentPlayer();
+        Player currentPlayer = getGameManager().getCurrentPlayer();
 
         if (currentPlayer.resourceProperty(ResourceType.HEAT).get() < 8) {
             log.warn("{} failed to convert heat: insufficient resources.", currentPlayer.getName());
@@ -148,7 +148,7 @@ public class ExecutionManager {
         currentPlayer.resourceProperty(ResourceType.HEAT).set(
                 currentPlayer.resourceProperty(ResourceType.HEAT).get() - 8
         );
-        board().increaseTemperature();
+        getGameBoard().increaseTemperature();
         currentPlayer.increaseTR(1);
         actionManager.performAction();
 
@@ -159,11 +159,11 @@ public class ExecutionManager {
                 "raised the temperature",
                 LocalDateTime.now());
 
-        actionManager.recordAndSaveMove(move);
+        actionManager.saveMove(move);
     }
 
     public void handleConvertPlants() {
-        Player currentPlayer = gm().getCurrentPlayer();
+        Player currentPlayer = getGameManager().getCurrentPlayer();
         int requiredPlants = currentPlayer.getGreeneryCost();
 
         if (currentPlayer.resourceProperty(ResourceType.PLANTS).get() < requiredPlants) {

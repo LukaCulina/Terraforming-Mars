@@ -30,7 +30,7 @@ public class ResearchPhaseManager {
     }
 
     public void start() {
-        this.researchPlayerIndex = 0;
+        researchPlayerIndex = 0;
         Platform.runLater(this::showScreenForNextPlayer);
     }
 
@@ -90,7 +90,7 @@ public class ResearchPhaseManager {
                     message,
                     java.time.LocalDateTime.now()
             );
-            controller.getActionManager().recordAndSaveMove(modalMove);
+            controller.getActionManager().saveMove(modalMove);
         }
 
         int cost = boughtCards.size() * 3;

@@ -27,8 +27,8 @@ public class FinalGreeneryCoordinator {
         log.info("Starting Final Greenery placement for {}: {} plants → {} greenery",
                 player.getName(), plants, greeneryCount);
 
-        this.currentPlayer = player;
-        this.remainingGreenery = greeneryCount;
+        currentPlayer = player;
+        remainingGreenery = greeneryCount;
         this.onComplete = onComplete;
 
         if (greeneryCount == 0) {
@@ -60,11 +60,11 @@ public class FinalGreeneryCoordinator {
         log.info("Final Greenery placement completed for {}",
                 currentPlayer != null ? currentPlayer.getName() : "unknown");
 
-        Runnable callback = this.onComplete;
+        Runnable callback = onComplete;
 
-        this.currentPlayer = null;
-        this.remainingGreenery = 0;
-        this.onComplete = null;
+        currentPlayer = null;
+        remainingGreenery = 0;
+        onComplete = null;
 
         if (callback != null) {
             Platform.runLater(callback);

@@ -14,11 +14,11 @@ import java.util.List;
 @Slf4j
 public record GameMoveManager(ActionManager actionManager) {
 
-    private GameManager gm() {
+    private GameManager getGameManager() {
         return actionManager.getController().getGameManager();
     }
 
-    private GameBoard board() {
+    private GameBoard getGameBoard() {
         return actionManager.getController().getGameBoard();
     }
 
@@ -29,7 +29,7 @@ public record GameMoveManager(ActionManager actionManager) {
     public void processMove(GameMove move) {
 
         if (move.actionType() != ActionType.OPEN_CHOOSE_CARDS_MODAL) {
-            gm().setCurrentPlayerByName(move.playerName());
+            getGameManager().setCurrentPlayerByName(move.playerName());
         }
 
         switch (move.actionType()) {
@@ -87,14 +87,14 @@ public record GameMoveManager(ActionManager actionManager) {
             return;
         }
 
-        Player player = gm().getPlayerByName(move.playerName());
-        Tile tile = board().getTileAt(move.row(), move.col());
+        Player player = getGameManager().getPlayerByName(move.playerName());
+        Tile tile = getGameBoard().getTileAt(move.row(), move.col());
 
         if (tile != null && player != null) {
             switch (move.tileType()) {
-                case OCEAN -> board().placeOcean(tile, player);
-                case GREENERY -> board().placeGreenery(tile, player);
-                case CITY -> board().placeCity(tile, player);
+                case OCEAN -> getGameBoard().placeOcean(tile, player);
+                case GREENERY -> getGameBoard().placeGreenery(tile, player);
+                case CITY -> getGameBoard().placeCity(tile, player);
                 default -> log.warn("Received PLACE_TILE with unhandled type: {}", move.tileType());
             }
             actionManager.performAction();
@@ -102,7 +102,7 @@ public record GameMoveManager(ActionManager actionManager) {
     }
 
     private void handleSellPatents(GameMove move) {
-        Player player = gm().getPlayerByName(move.playerName());
+        Player player = getGameManager().getPlayerByName(move.playerName());
         if (player != null && !player.getHand().isEmpty()) {
             List<String> soldCardNames = Arrays.asList(move.details().split(","));
 

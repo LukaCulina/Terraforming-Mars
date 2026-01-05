@@ -6,8 +6,8 @@ public class SaveNewGameMoveThread extends GameMoveThread implements Runnable {
 
     private final GameMove gameMove;
 
-    public SaveNewGameMoveThread(GameMove newGameMove) {
-        this.gameMove = newGameMove;
+    public SaveNewGameMoveThread(GameMove gameMove) {
+        this.gameMove = gameMove;
     }
 
     @Override

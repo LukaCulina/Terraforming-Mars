@@ -131,7 +131,6 @@ public class ScreenNavigator {
             showInitialCardDraftScreen(gameManager);
         } else {
             GameMoveUtils.saveInitialSetupMove(gameManager);
-            gameManager.startGame();
             GameState gameState = new GameState(gameManager, gameManager.getGameBoard());
             startGameWithChosenCards(gameState);
         }
@@ -139,11 +138,11 @@ public class ScreenNavigator {
 
     public static void startGameWithChosenCards(GameState gameState) {
         var result = ScreenUtils.loadFxml("GameScreen.fxml");
-        GameScreenController mainController = (GameScreenController) result.controller();
+        GameScreenController gameScreenController = (GameScreenController) result.controller();
         Scene mainGameScene = ScreenUtils.createScene(result.root());
-        ApplicationConfiguration.getInstance().setActiveGameController(mainController);
+        ApplicationConfiguration.getInstance().setActiveGameController(gameScreenController);
 
-        mainController.setupGame(gameState);
+        gameScreenController.setupGame(gameState);
 
         mainStage.setScene(mainGameScene);
         mainStage.setTitle("Terraforming Mars");

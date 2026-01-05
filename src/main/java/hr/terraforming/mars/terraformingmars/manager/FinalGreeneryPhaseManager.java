@@ -35,20 +35,20 @@ public class FinalGreeneryPhaseManager {
 
     public void start() {
         gameManager.setCurrentPhase(GamePhase.FINAL_GREENERY);
-        this.currentPlayerIndex = 0;
-        Platform.runLater(this::showScreenForNextPlayer);
+        currentPlayerIndex = 0;
+        Platform.runLater(this::processNextPlayer);
     }
 
-    public void showScreenForNextPlayer() {
+    public void processNextPlayer() {
         if (currentPlayerIndex >= gameManager.getPlayers().size()) {
-            handleAllPlayersFinished();
+            finishPhase();
             return;
         }
 
         handleCurrentPlayerTurn();
     }
 
-    private void handleAllPlayersFinished() {
+    private void finishPhase() {
         log.info("All players have finished Final Greenery!");
 
         gameManager.setCurrentPhase(GamePhase.GAME_OVER);
@@ -82,7 +82,7 @@ public class FinalGreeneryPhaseManager {
         log.info("Final Greenery turn for: {}", currentPlayer.getName());
 
         if (playerType == PlayerType.LOCAL) {
-            openModalForPlayer(currentPlayer);
+            showModalForPlayer(currentPlayer);
             return;
         }
 
@@ -92,7 +92,7 @@ public class FinalGreeneryPhaseManager {
 
         if (currentPlayer.getName().equals(myPlayerName)) {
             log.info("HOST opening modal for himself");
-            openModalForPlayer(currentPlayer);
+            showModalForPlayer(currentPlayer);
         } else {
             var server = ApplicationConfiguration.getInstance().getGameServer();
             if (server != null) {
@@ -105,7 +105,7 @@ public class FinalGreeneryPhaseManager {
         }
     }
 
-    private void openModalForPlayer(Player player) {
+    private void showModalForPlayer(Player player) {
         int plants = player.resourceProperty(ResourceType.PLANTS).get();
         int cost = player.getGreeneryCost();
 
@@ -148,6 +148,6 @@ public class FinalGreeneryPhaseManager {
         }
 
         currentPlayerIndex++;
-        Platform.runLater(this::showScreenForNextPlayer);
+        Platform.runLater(this::processNextPlayer);
     }
 }

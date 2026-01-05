@@ -66,12 +66,17 @@ public class PlayerBoardController {
         updatePlayerInfo();
 
         ApplicationConfiguration config = ApplicationConfiguration.getInstance();
-        if (config.getPlayerType() == PlayerType.LOCAL || player.getName().equals(config.getMyPlayerName())) {
+        boolean isMyPlayer = config.getPlayerType() == PlayerType.LOCAL
+                || player.getName().equals(config.getMyPlayerName());
+
+        // ✅ UVIJEK postavi visibility - ne ovisi o if/else granama
+        showHandButton.setVisible(isMyPlayer);
+        showPlayedButton.setVisible(isMyPlayer);
+
+        if (isMyPlayer) {
             updateCardsDisplay();
         } else {
             cardsDisplayArea.getChildren().clear();
-            showHandButton.setVisible(false);
-            showPlayedButton.setVisible(false);
         }
     }
 

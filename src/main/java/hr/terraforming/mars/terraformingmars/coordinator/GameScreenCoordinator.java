@@ -20,15 +20,18 @@ public class GameScreenCoordinator {
     public void updateAllUI(Player viewedPlayer, GameManager gameManager, PlacementManager placementManager,
                             PlayerBoardController playerBoardController, ActionManager actionManager,
                             GameScreenManager gameScreenManager) {
+
         if (gameManager == null || viewedPlayer == null || gameScreenManager == null) return;
 
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
         boolean isMyTurn = gameManager.getCurrentPlayer().getName().equals(myName);
+
         if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {
             isMyTurn = true;
         }
 
         boolean isPlacing = (placementManager != null && placementManager.isPlacementMode());
+
         gameScreenManager.updateGeneralUI(viewedPlayer, isPlacing, isMyTurn);
 
         if (playerBoardController != null) {
@@ -44,6 +47,7 @@ public class GameScreenCoordinator {
             node.getStyleClass().remove("current-player-highlight");
 
             Object userData = node.getUserData();
+
             if (userData != null && userData.equals(currentPlayer.getName())) {
                 node.getStyleClass().add("current-player-highlight");
             }

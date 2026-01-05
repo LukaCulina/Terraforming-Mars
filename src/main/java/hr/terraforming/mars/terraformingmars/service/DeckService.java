@@ -23,12 +23,12 @@ public class DeckService implements Serializable {
     }
 
     public void shuffleCorporations() {
-        Collections.shuffle(this.remainingCorporations);
+        Collections.shuffle(remainingCorporations);
         log.info("Corporations shuffled. Remaining: {}", remainingCorporations.size());
     }
 
     public void shuffleCards() {
-        Collections.shuffle(this.remainingCards);
+        Collections.shuffle(remainingCards);
         log.info("Project cards shuffled. Remaining: {}", remainingCards.size());
     }
 
@@ -58,15 +58,15 @@ public class DeckService implements Serializable {
 
         int cardsToTake = Math.min(count, remainingCards.size());
         List<Card> drawnCards = new ArrayList<>(remainingCards.subList(0, cardsToTake));
-        this.remainingCards.removeAll(drawnCards);
+        remainingCards.removeAll(drawnCards);
 
         return drawnCards;
     }
 
     public void reset() {
-        this.remainingCorporations.clear();
-        this.remainingCorporations.addAll(CorporationFactory.getAllCorporations());
-        this.remainingCards.clear();
-        this.remainingCards.addAll(CardFactory.getAllCards());
+        remainingCorporations.clear();
+        remainingCorporations.addAll(CorporationFactory.getAllCorporations());
+        remainingCards.clear();
+        remainingCards.addAll(CardFactory.getAllCards());
     }
 }

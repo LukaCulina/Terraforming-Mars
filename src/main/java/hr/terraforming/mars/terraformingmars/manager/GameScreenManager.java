@@ -36,12 +36,12 @@ public class GameScreenManager {
         this.playerControls = playerControls;
     }
 
-    private GameManager gm() { return controller.getGameManager(); }
-    private GameBoard board() { return controller.getGameBoard(); }
+    private GameManager getGameManager() { return controller.getGameManager(); }
+    private GameBoard getGameBoard() { return controller.getGameBoard(); }
 
     public void updateHexBoardDrawer() {
         if (hexBoardDrawer != null) {
-            hexBoardDrawer.setGameBoard(board());
+            hexBoardDrawer.setGameBoard(getGameBoard());
         }
     }
 
@@ -61,28 +61,28 @@ public class GameScreenManager {
     }
 
     private void updateGlobalParameters() {
-        globalStatus.generationLabel().setText("Generation: " + gm().getGeneration());
-        globalStatus.phaseLabel().setText("Phase: " + gm().getCurrentPhase().toString());
+        globalStatus.generationLabel().setText("Generation: " + getGameManager().getGeneration());
+        globalStatus.phaseLabel().setText("Phase: " + getGameManager().getCurrentPhase().toString());
 
-        double oxygenProgress = (double) board().getOxygenLevel() / GameBoard.MAX_OXYGEN;
+        double oxygenProgress = (double) getGameBoard().getOxygenLevel() / GameBoard.MAX_OXYGEN;
         globalStatus.oxygenProgressBar().setProgress(oxygenProgress);
-        globalStatus.oxygenLabel().setText(String.format("%d%%", board().getOxygenLevel()));
+        globalStatus.oxygenLabel().setText(String.format("%d%%", getGameBoard().getOxygenLevel()));
 
-        double tempProgress = (double) (board().getTemperature() - GameBoard.MIN_TEMPERATURE) / (GameBoard.MAX_TEMPERATURE - GameBoard.MIN_TEMPERATURE);
+        double tempProgress = (double) (getGameBoard().getTemperature() - GameBoard.MIN_TEMPERATURE) / (GameBoard.MAX_TEMPERATURE - GameBoard.MIN_TEMPERATURE);
         globalStatus.temperatureProgressBar().setProgress(tempProgress);
-        globalStatus.temperatureLabel().setText(String.format("%d°C", board().getTemperature()));
+        globalStatus.temperatureLabel().setText(String.format("%d°C", getGameBoard().getTemperature()));
 
         if (globalStatus.oceansLabel() != null) {
-            int oceans = board().getOceansPlaced();
+            int oceans = getGameBoard().getOceansPlaced();
             int maxOceans = GameBoard.MAX_OCEANS;
             globalStatus.oceansLabel().setText(String.format("%d / %d", oceans, maxOceans));
         }
     }
 
     private void updateStandardProjectButtonsState(boolean isPlacing) {
-        Player currentPlayer = gm().getCurrentPlayer();
-        boolean isActionPhase = gm().getCurrentPhase() == GamePhase.ACTIONS;
-        boolean canPerformAction = gm().getActionsTakenThisTurn() < 2;
+        Player currentPlayer = getGameManager().getCurrentPlayer();
+        boolean isActionPhase = getGameManager().getCurrentPhase() == GamePhase.ACTIONS;
+        boolean canPerformAction = getGameManager().getActionsTakenThisTurn() < 2;
 
         actionPanels.standardProjectsBox().getChildren().forEach(node -> {
             if (node instanceof Button btn) {
@@ -91,7 +91,7 @@ public class GameScreenManager {
                     boolean canAfford = currentPlayer.getMC() >= project.getCost();
                     boolean disable = isPlacing || !canAfford || !isActionPhase || !canPerformAction;
                     if (project == StandardProject.AQUIFER) {
-                        disable = disable || !board().canPlaceOcean();
+                        disable = disable || !getGameBoard().canPlaceOcean();
                     } else if (project == StandardProject.SELL_PATENTS) {
                         boolean hasCardsInHand = !currentPlayer.getHand().isEmpty();
                         disable = disable || !hasCardsInHand;
@@ -103,9 +103,9 @@ public class GameScreenManager {
     }
 
     private void updateMilestoneButtonsState(boolean isPlacing) {
-        Player currentPlayer = gm().getCurrentPlayer();
-        boolean isActionPhase = gm().getCurrentPhase() == GamePhase.ACTIONS;
-        Map<Milestone, Player> claimed = board().getClaimedMilestones();
+        Player currentPlayer = getGameManager().getCurrentPlayer();
+        boolean isActionPhase = getGameManager().getCurrentPhase() == GamePhase.ACTIONS;
+        Map<Milestone, Player> claimed = getGameBoard().getClaimedMilestones();
 
         actionPanels.milestonesBox().getChildren().forEach(node -> {
             if (node instanceof Button btn) {
@@ -129,7 +129,7 @@ public class GameScreenManager {
     }
 
     private void updatePlayerButtonsHighlight(Player viewedPlayer) {
-        Player currentPlayer = gm().getCurrentPlayer();
+        Player currentPlayer = getGameManager().getCurrentPlayer();
         for (Node node : playerControls.playerListBar().getChildren()) {
             if (node instanceof Button btn) {
                 String buttonPlayerName = btn.getText();
@@ -146,9 +146,9 @@ public class GameScreenManager {
     }
 
     private void updateConvertButtonsState(boolean isPlacing, boolean isMyTurn) {
-        Player currentPlayer = gm().getCurrentPlayer();
-        boolean isActionPhase = gm().getCurrentPhase() == GamePhase.ACTIONS;
-        boolean canPerformAction = gm().getActionsTakenThisTurn() < 2;
+        Player currentPlayer = getGameManager().getCurrentPlayer();
+        boolean isActionPhase = getGameManager().getCurrentPhase() == GamePhase.ACTIONS;
+        boolean canPerformAction = getGameManager().getActionsTakenThisTurn() < 2;
         boolean controlsActive = isMyTurn && isActionPhase && canPerformAction && !isPlacing;
 
         Button convertHeatBtn = playerControls.convertHeatButton();
@@ -156,7 +156,7 @@ public class GameScreenManager {
 
         if (convertHeatBtn != null) {
             boolean canAffordHeat = currentPlayer.resourceProperty(ResourceType.HEAT).get() >= 8;
-            boolean isTemperatureMaxed = board().getTemperature() >= GameBoard.MAX_TEMPERATURE;
+            boolean isTemperatureMaxed = getGameBoard().getTemperature() >= GameBoard.MAX_TEMPERATURE;
             convertHeatBtn.setDisable(!controlsActive || !canAffordHeat || isTemperatureMaxed);
         }
 
