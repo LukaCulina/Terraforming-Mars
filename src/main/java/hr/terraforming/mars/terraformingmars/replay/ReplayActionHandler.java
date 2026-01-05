@@ -149,8 +149,8 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
     private void processClaimMilestone(GameMove move, Player player) {
         try {
             Milestone milestone = Milestone.valueOf(move.details());
-            player.spendMC(8);
-            controller.getGameBoard().claimMilestone(milestone, player);
+            player.canSpendMC(8);
+            controller.getGameBoard().canClaimMilestone(milestone, player);
         } catch (IllegalArgumentException e) {
             log.error("Replay Error: Invalid Milestone name '{}' in game move.", move.details(), e);
         }
@@ -159,13 +159,13 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
     private void processUseStandardProject(GameMove move, Player player) {
         StandardProject project = StandardProject.valueOf(move.details());
         int finalCost = CostService.getFinalProjectCost(project, player);
-        player.spendMC(finalCost);
+        player.canSpendMC(finalCost);
         project.execute(player, controller.getGameBoard());
     }
 
     private void processConvertHeat(Player player) {
         player.addResource(ResourceType.HEAT, -8);
-        if (controller.getGameBoard().increaseTemperature()) {
+        if (controller.getGameBoard().canIncreaseTemperature()) {
             player.increaseTR(1);
         }
     }

@@ -21,11 +21,11 @@ public class ClientHandler implements Runnable {
 
     private ObjectOutputStream clientOutput;
     private ObjectInputStream clientInput;
-    private volatile boolean ready = false;
-    private final CompletableFuture<Void> readyFuture = new CompletableFuture<>();
-    private volatile boolean running = true;
+    private volatile boolean isClientReady = false;
+    private volatile boolean isServerRunning = true;
     @Getter private String playerName;
     private ClientMessageHandler messageHandler;
+    private final CompletableFuture<Void> readyFuture = new CompletableFuture<>();
 
     public ClientHandler(Socket socket, GameManager gameManager, ActionManager actionManager) {
         this.socket = socket;
@@ -48,16 +48,16 @@ public class ClientHandler implements Runnable {
 
             clientOutput = outputStream;
             clientInput = inputStream;
-            ready = true;
+            isClientReady = true;
             readyFuture.complete(null);
 
-            while (running && !socket.isClosed()) {
+            while (isServerRunning && !socket.isClosed()) {
                 Object obj = inputStream.readObject();
                 handleMessage(obj);
             }
 
         } catch (IOException | ClassNotFoundException e) {
-            if (running) {
+            if (isServerRunning) {
                 log.error("Client handler error", e);
             } else {
                 log.info("Client disconnected gracefully");
@@ -97,7 +97,7 @@ public class ClientHandler implements Runnable {
     public synchronized void sendGameState(GameState state) {
         log.debug("Sending GameState to {}", playerName);
 
-        if (!ready) { return; }
+        if (!isClientReady) { return; }
 
         try {
             clientOutput.writeObject(state);
@@ -110,7 +110,7 @@ public class ClientHandler implements Runnable {
     }
 
     public synchronized void sendObject(Object message) {
-        if (!ready) return;
+        if (!isClientReady) return;
         try {
             clientOutput.writeObject(message);
             clientOutput.reset();
@@ -127,8 +127,8 @@ public class ClientHandler implements Runnable {
     }
 
     private void cleanup() {
-        running = false;
-        ready = false;
+        isServerRunning = false;
+        isClientReady = false;
         try {
             if (clientInput != null) clientInput.close();
             if (clientOutput != null) clientOutput.close();

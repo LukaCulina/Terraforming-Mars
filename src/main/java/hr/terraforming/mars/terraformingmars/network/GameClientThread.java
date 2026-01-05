@@ -41,8 +41,8 @@ public class GameClientThread implements Runnable {
             log.info("Connected to server at {}:{}", hostname, port);
 
             while (running) {
-                Object receivedObject = inputStream.readObject();
-                processMessage(receivedObject);
+                Object receivedMessage = inputStream.readObject();
+                processMessage(receivedMessage);
             }
 
         } catch (EOFException _) {

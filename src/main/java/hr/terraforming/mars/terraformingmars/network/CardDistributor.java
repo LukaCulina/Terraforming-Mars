@@ -78,13 +78,13 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
         log.debug("Host confirming research cards. Count: {}", boughtCards.size());
         int cost = boughtCards.size() * CARD_COST;
         if (player.getMC() >= cost) {
-            player.spendMC(cost);
+            player.canSpendMC(cost);
             player.getHand().addAll(boughtCards);
         }
 
         synchronized (gameManager) {
-            boolean morePlayers = gameManager.advanceDraftPlayer();
-            if (!morePlayers) {
+            boolean morePlayersToChoose = gameManager.hasMoreDraftPlayers();
+            if (!morePlayersToChoose) {
                 log.info("Host finished last. Triggering next phase (ACTIONS).");
                 if (actionManager != null && actionManager.getGameFlowManager() != null) {
                     actionManager.getGameFlowManager().finishResearchPhase();

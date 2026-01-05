@@ -82,14 +82,14 @@ public class GameMoveUtils {
     }
 
     public static Timeline createLastMoveTimeline(Label lastMoveLabel) {
-        Timeline theLastMoveTimeline = new Timeline(new KeyFrame(Duration.seconds(2), _ -> {
+        Timeline lastMoveTimeline = new Timeline(new KeyFrame(Duration.seconds(2), _ -> {
             GetLastGameMoveThread thread = new GetLastGameMoveThread(lastMoveLabel);
             Thread t = new Thread(thread);
             t.setDaemon(true);
             t.start();
         }));
-        theLastMoveTimeline.setCycleCount(Animation.INDEFINITE);
-        return theLastMoveTimeline;
+        lastMoveTimeline.setCycleCount(Animation.INDEFINITE);
+        return lastMoveTimeline;
     }
 
     public static void saveInitialSetupMove(GameManager gameManager) {

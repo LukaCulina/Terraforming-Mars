@@ -30,7 +30,8 @@ public class ChooseCardsController {
     @FXML private Label chooseCardsLabel;
     @FXML private Button confirmButton;
 
-    private static final String SELECTED_CARD_STYLE = "card-view-selected";
+    private static final int CARD_PURCHASE_COST = 3;
+    private static final String SELECTED_CARD_CLASS = "card-view-selected";
 
     private Player player;
     private GameManager gameManager;
@@ -98,25 +99,22 @@ public class ChooseCardsController {
 
 
     private void toggleSelection(Card card, VBox cardNode) {
-
-        final int costPerCard = 3;
-
-        if (cardNode.getStyleClass().contains(SELECTED_CARD_STYLE)) {
+        if (cardNode.getStyleClass().contains(SELECTED_CARD_CLASS)) {
             selectedCards.remove(card);
-            cardNode.getStyleClass().remove(SELECTED_CARD_STYLE);
+            cardNode.getStyleClass().remove(SELECTED_CARD_CLASS);
         } else {
-            int potentialCost = (selectedCards.size() + 1) * costPerCard;
+            int potentialCost = (selectedCards.size() + 1) * CARD_PURCHASE_COST;
 
             if (player.getMC() >= potentialCost) {
                 selectedCards.add(card);
-                cardNode.getStyleClass().add(SELECTED_CARD_STYLE);
+                cardNode.getStyleClass().add(SELECTED_CARD_CLASS);
             } else {
                 log.warn("Player {} failed to select card '{}': not enough MC (has {}, needs {}).",
                         player.getName(), card.getName(), player.getMC(), potentialCost);
             }
         }
 
-        int totalCost = selectedCards.size() * costPerCard;
+        int totalCost = selectedCards.size() * CARD_PURCHASE_COST;
         remainingMC.set(player.getMC() - totalCost);
     }
 
@@ -178,7 +176,7 @@ public class ChooseCardsController {
             if (card != null) {
                 VBox cardNode = CardViewBuilder.createCardNode(card);
                 cardNode.setMouseTransparent(true);
-                cardNode.getStyleClass().add(SELECTED_CARD_STYLE);
+                cardNode.getStyleClass().add(SELECTED_CARD_CLASS);
                 cardsTile.getChildren().add(cardNode);
             }
         }

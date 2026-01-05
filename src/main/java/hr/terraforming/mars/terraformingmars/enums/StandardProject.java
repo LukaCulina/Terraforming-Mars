@@ -16,7 +16,7 @@ public enum StandardProject {
     ),
 
     ASTEROID("Asteroid", "☄","Increase temperature by 1 step (2°C).", 14, null, (player, board) -> {
-        if (board.increaseTemperature()) {
+        if (board.canIncreaseTemperature()) {
             player.increaseTR(1);
         }
     }),

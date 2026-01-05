@@ -59,10 +59,10 @@ public record PlacementService(GameBoard gameBoard) {
         }
     }
 
-    public void placeOcean(Tile onTile, Player forPlayer) {
+    public void placeOceanTile(Tile onTile, Player forPlayer) {
         if (gameBoard.getOceansPlaced() < GameBoard.MAX_OCEANS && gameBoard.isOceanCoordinate(onTile.getRow(), onTile.getCol())) {
             onTile.setType(TileType.OCEAN);
-            gameBoard.incrementOceansPlaced();
+            gameBoard.incrementOceanCount();
             forPlayer.increaseTR(1);
             gameBoard.notifyUI();
 
@@ -70,11 +70,11 @@ public record PlacementService(GameBoard gameBoard) {
         }
     }
 
-    public void placeGreenery(Tile onTile, Player forPlayer) {
+    public void placeGreeneryTile(Tile onTile, Player forPlayer) {
         onTile.setType(TileType.GREENERY);
         onTile.setOwner(forPlayer);
 
-        if(gameBoard.increaseOxygen()) {
+        if (gameBoard.canIncreaseOxygen()) {
             forPlayer.increaseTR(1);
         }
 
@@ -83,7 +83,7 @@ public record PlacementService(GameBoard gameBoard) {
         log.info("Greenery placed by {} on tile ({}, {}).", forPlayer.getName(), onTile.getRow(), onTile.getCol());
     }
 
-    public void placeCity(Tile onTile, Player forPlayer) {
+    public void placeCityTile(Tile onTile, Player forPlayer) {
         onTile.setType(TileType.CITY);
         onTile.setOwner(forPlayer);
         forPlayer.increaseProduction(ResourceType.MEGA_CREDITS, 1);
@@ -94,34 +94,35 @@ public record PlacementService(GameBoard gameBoard) {
 
     public void placeByMode(PlacementContext context) {
         switch (context.mode()) {
-            case FINAL_GREENERY -> placeFinalGreenery(context.tile(), context.owner());
-            case PLANT_CONVERSION -> placePlantConversion(context.tile(), context.owner());
+            case FINAL_GREENERY -> placeFinalGreeneryTile(context.tile(), context.owner());
+            case PLANT_CONVERSION -> placeGreeneryFromPlants(context.tile(), context.owner());
             case STANDARD_PROJECT, CARD -> placeWithPayment(context);
             default -> log.error("Unknown placement mode: {}", context.mode());
         }
     }
 
-    private void placeFinalGreenery(Tile tile, Player owner) {
+    private void placeFinalGreeneryTile(Tile tile, Player owner) {
         int cost = owner.getGreeneryCost();
+
         if (owner.resourceProperty(ResourceType.PLANTS).get() >= cost) {
             owner.spendPlantsForGreenery();
-            placeGreenery(tile, owner);
+            placeGreeneryTile(tile, owner);
         } else {
             log.warn("{} does not have enough plants (has {}, needs {}).",
                     owner.getName(), owner.resourceProperty(ResourceType.PLANTS).get(), cost);
         }
     }
 
-    private void placePlantConversion(Tile tile, Player owner) {
-        placeGreenery(tile, owner);
+    private void placeGreeneryFromPlants(Tile tile, Player owner) {
+        placeGreeneryTile(tile, owner);
         owner.spendPlantsForGreenery();
     }
 
     private void placeWithPayment(PlacementContext context) {
         switch (context.tileType()) {
-            case OCEAN -> placeOcean(context.tile(), context.owner());
-            case GREENERY -> placeGreenery(context.tile(), context.owner());
-            case CITY -> placeCity(context.tile(), context.owner());
+            case OCEAN -> placeOceanTile(context.tile(), context.owner());
+            case GREENERY -> placeGreeneryTile(context.tile(), context.owner());
+            case CITY -> placeCityTile(context.tile(), context.owner());
             default -> {
                 log.error("Unexpected tile type: {}", context.tileType());
                 return;
@@ -129,18 +130,10 @@ public record PlacementService(GameBoard gameBoard) {
         }
 
         if (context.card() != null) {
-            log.info("🃏 BEFORE playCard: {} hand size = {}, hand = {}",
-                    context.owner().getName(),
-                    context.owner().getHand().size(),
-                    context.owner().getHand().stream().map(Card::getName).toList());
             context.owner().playCard(context.card(), context.gameManager());
-            log.info("🃏 AFTER playCard: {} hand size = {}, hand = {}",
-                    context.owner().getName(),
-                    context.owner().getHand().size(),
-                    context.owner().getHand().stream().map(Card::getName).toList());
         } else if (context.project() != null) {
             int finalCost = CostService.getFinalProjectCost(context.project(), context.owner());
-            context.owner().spendMC(finalCost);
+            context.owner().canSpendMC(finalCost);
         }
     }
 

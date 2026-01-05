@@ -57,8 +57,9 @@ public class ReplayManager {
             replayTimeline.stop();
         }
 
-        List<GameMove> movesToReplay = loader.loadMoves();
-        if (movesToReplay.isEmpty()) {
+        List<GameMove> replayMoves = loader.loadMoves();
+
+        if (replayMoves.isEmpty()) {
             log.warn("No game moves to replay");
             Platform.runLater(() ->
                     DialogUtils.showDialog(Alert.AlertType.WARNING, "Replay", "No game moves found to replay.")
@@ -67,20 +68,20 @@ public class ReplayManager {
         }
 
         prepareForReplay();
-        loader.setupInitialState(movesToReplay, controller.getGameManager());
+        loader.setupInitialState(replayMoves, controller.getGameManager());
         controller.updateAllUI();
 
         AtomicInteger moveIndex = new AtomicInteger(0);
 
         replayTimeline = new Timeline(new KeyFrame(Duration.seconds(1), _ -> {
-            if (moveIndex.get() < movesToReplay.size()) {
-                GameMove move = movesToReplay.get(moveIndex.getAndIncrement());
+            if (moveIndex.get() < replayMoves.size()) {
+                GameMove move = replayMoves.get(moveIndex.getAndIncrement());
                 actionHandler.executeReplayMove(move);
                 controller.updateAllUI();
             }
         }));
 
-        replayTimeline.setCycleCount(movesToReplay.size());
+        replayTimeline.setCycleCount(replayMoves.size());
         replayTimeline.setOnFinished(_ -> onReplayFinished());
         replayTimeline.play();
     }

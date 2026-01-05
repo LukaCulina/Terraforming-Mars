@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class FinalGreeneryController {
 
-    @FXML private VBox finalGreenery;
+    @FXML private VBox finalGreeneryScreen;
     @FXML private Label playerNameLabel;
     @FXML private Label plantsLabel;
     @FXML private Label greeneryCostLabel;
@@ -37,12 +37,12 @@ public class FinalGreeneryController {
 
     @FXML
     public void initialize() {
-        GameScreenResizer.attachFontResizeListeners(finalGreenery, this::updateFontSizes);
+        GameScreenResizer.attachFontResizeListeners(finalGreeneryScreen, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
         GameScreenResizer.updateFonts(
-                finalGreenery,
+                finalGreeneryScreen,
                 new GameScreenResizer.FontMapping(".choose-label", 0.05),
                 new GameScreenResizer.FontMapping(".player-name-label", 0.04),
                 new GameScreenResizer.FontMapping(".details-label", 0.035),

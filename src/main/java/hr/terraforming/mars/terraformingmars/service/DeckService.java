@@ -46,7 +46,7 @@ public class DeckService implements Serializable {
         return drawn;
     }
 
-    public List<Corporation> getCorporationOffer() {
+    public List<Corporation> getInitialCorporations() {
         return drawCorporations(2);
     }
 

@@ -12,7 +12,7 @@ public class FinalGreeneryCoordinator {
     private final PlacementManager placementManager;
 
     private Player currentPlayer;
-    private int remainingGreenery = 0;
+    private int remainingGreeneryCount = 0;
     private Runnable onComplete;
 
     public FinalGreeneryCoordinator(PlacementManager placementManager) {
@@ -28,7 +28,7 @@ public class FinalGreeneryCoordinator {
                 player.getName(), plants, greeneryCount);
 
         currentPlayer = player;
-        remainingGreenery = greeneryCount;
+        remainingGreeneryCount = greeneryCount;
         this.onComplete = onComplete;
 
         if (greeneryCount == 0) {
@@ -42,7 +42,7 @@ public class FinalGreeneryCoordinator {
 
 
     private void placeNextGreenery() {
-        if (remainingGreenery <= 0) {
+        if (remainingGreeneryCount <= 0) {
             finish();
             return;
         }
@@ -50,7 +50,7 @@ public class FinalGreeneryCoordinator {
         placementManager.enterPlacementModeForFinalGreenery(
                 currentPlayer,
                 () -> {
-                    remainingGreenery--;
+                    remainingGreeneryCount--;
                     Platform.runLater(this::placeNextGreenery);
                 }
         );
@@ -63,7 +63,7 @@ public class FinalGreeneryCoordinator {
         Runnable callback = onComplete;
 
         currentPlayer = null;
-        remainingGreenery = 0;
+        remainingGreeneryCount = 0;
         onComplete = null;
 
         if (callback != null) {
@@ -75,12 +75,12 @@ public class FinalGreeneryCoordinator {
     public void cancel() {
         if (isActive()) {
             log.info("Final Greenery placement cancelled for {} ({} remaining)",
-                    currentPlayer.getName(), remainingGreenery);
+                    currentPlayer.getName(), remainingGreeneryCount);
             finish();
         }
     }
 
     public boolean isActive() {
-        return remainingGreenery > 0 && currentPlayer != null;
+        return remainingGreeneryCount > 0 && currentPlayer != null;
     }
 }

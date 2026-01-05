@@ -101,7 +101,7 @@ public class ScreenNavigator {
     }
 
     public static void showInitialCardDraftScreen(GameManager gameManager) {
-        Player currentPlayer = gameManager.getCurrentPlayerForDraft();
+        Player currentPlayer = gameManager.getCurrentDraftPlayer();
         List<Card> offer = gameManager.drawCards(STARTING_CARDS);
         showInitialCardDraftScreen(currentPlayer, offer, gameManager);
     }
@@ -124,10 +124,10 @@ public class ScreenNavigator {
             GameManager gameManager) {
 
         int cost = chosenCards.size() * CARD_COST;
-        currentPlayer.spendMC(cost);
+        currentPlayer.canSpendMC(cost);
         currentPlayer.getHand().addAll(chosenCards);
 
-        if (gameManager.advanceDraftPlayer()) {
+        if (gameManager.hasMoreDraftPlayers()) {
             showInitialCardDraftScreen(gameManager);
         } else {
             GameMoveUtils.saveInitialSetupMove(gameManager);

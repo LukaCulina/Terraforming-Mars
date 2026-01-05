@@ -89,14 +89,14 @@ public class GameScreenManager {
                 StandardProject project = (StandardProject) btn.getUserData();
                 if (project != null) {
                     boolean canAfford = currentPlayer.getMC() >= project.getCost();
-                    boolean disable = isPlacing || !canAfford || !isActionPhase || !canPerformAction;
+                    boolean shouldDisable = isPlacing || !canAfford || !isActionPhase || !canPerformAction;
                     if (project == StandardProject.AQUIFER) {
-                        disable = disable || !getGameBoard().canPlaceOcean();
+                        shouldDisable = shouldDisable || !getGameBoard().canPlaceOcean();
                     } else if (project == StandardProject.SELL_PATENTS) {
                         boolean hasCardsInHand = !currentPlayer.getHand().isEmpty();
-                        disable = disable || !hasCardsInHand;
+                        shouldDisable = shouldDisable || !hasCardsInHand;
                     }
-                    btn.setDisable(disable);
+                    btn.setDisable(shouldDisable);
                 }
             }
         });
@@ -149,20 +149,20 @@ public class GameScreenManager {
         Player currentPlayer = getGameManager().getCurrentPlayer();
         boolean isActionPhase = getGameManager().getCurrentPhase() == GamePhase.ACTIONS;
         boolean canPerformAction = getGameManager().getActionsTakenThisTurn() < 2;
-        boolean controlsActive = isMyTurn && isActionPhase && canPerformAction && !isPlacing;
+        boolean areControlsEnabled = isMyTurn && isActionPhase && canPerformAction && !isPlacing;
 
         Button convertHeatBtn = playerControls.convertHeatButton();
         Button convertPlantsBtn = playerControls.convertPlantsButton();
 
         if (convertHeatBtn != null) {
-            boolean canAffordHeat = currentPlayer.resourceProperty(ResourceType.HEAT).get() >= 8;
+            boolean hasEnoughHeat = currentPlayer.resourceProperty(ResourceType.HEAT).get() >= 8;
             boolean isTemperatureMaxed = getGameBoard().getTemperature() >= GameBoard.MAX_TEMPERATURE;
-            convertHeatBtn.setDisable(!controlsActive || !canAffordHeat || isTemperatureMaxed);
+            convertHeatBtn.setDisable(!areControlsEnabled || !hasEnoughHeat || isTemperatureMaxed);
         }
 
         if (convertPlantsBtn != null) {
-            boolean canAffordPlants = currentPlayer.resourceProperty(ResourceType.PLANTS).get() >= currentPlayer.getGreeneryCost();
-            convertPlantsBtn.setDisable(!controlsActive || !canAffordPlants);
+            boolean hasEnoughPlants = currentPlayer.resourceProperty(ResourceType.PLANTS).get() >= currentPlayer.getGreeneryCost();
+            convertPlantsBtn.setDisable(!areControlsEnabled || !hasEnoughPlants);
         }
     }
 }

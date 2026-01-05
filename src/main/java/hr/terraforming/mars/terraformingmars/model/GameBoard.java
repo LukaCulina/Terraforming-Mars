@@ -74,22 +74,24 @@ public class GameBoard implements Serializable {
     }
 
     public void placeOcean(Tile onTile, Player forPlayer) {
-        placementService.placeOcean(onTile, forPlayer);
+        placementService.placeOceanTile(onTile, forPlayer);
     }
 
     public void placeGreenery(Tile onTile, Player forPlayer) {
-        placementService.placeGreenery(onTile, forPlayer);
+        placementService.placeGreeneryTile(onTile, forPlayer);
     }
 
     public void placeCity(Tile onTile, Player forPlayer) {
-        placementService.placeCity(onTile, forPlayer);
+        placementService.placeCityTile(onTile, forPlayer);
     }
 
-    public void incrementOceansPlaced() {
+    public void incrementOceanCount() {
         this.oceansPlaced++;
+        notifyUI();
+        checkIfGameShouldEnd();
     }
 
-    private void checkEndGameTrigger() {
+    private void checkIfGameShouldEnd() {
         if (isFinalGeneration) return;
 
         if (getOxygenLevel() >= MAX_OXYGEN &&
@@ -97,7 +99,7 @@ public class GameBoard implements Serializable {
                 getOceansPlaced() >= MAX_OCEANS) {
 
             this.isFinalGeneration = true;
-            log.info("GAME END TRIGGERED!: All global parameters are at maximum. The game will end after this generation.");
+            log.info("All global parameters are at maximum. The game will end after this generation.");
         }
     }
 
@@ -111,24 +113,24 @@ public class GameBoard implements Serializable {
 
     public int[] getHexesInRow() { return HexGridUtils.getHexesInRow(); }
 
-    public boolean increaseOxygen() {
+    public boolean canIncreaseOxygen() {
         if (getOxygenLevel() < MAX_OXYGEN) {
             oxygenLevel++;
             notifyUI();
-            checkEndGameTrigger();
+            checkIfGameShouldEnd();
             return true;
         }
         return false;
     }
 
-    public boolean increaseTemperature() {
+    public boolean canIncreaseTemperature() {
         if (temperature >= MAX_TEMPERATURE) {
             return false;
         }
 
         temperature = Math.min(temperature + 2, MAX_TEMPERATURE);
         notifyUI();
-        checkEndGameTrigger();
+        checkIfGameShouldEnd();
         return true;
     }
 
@@ -138,7 +140,7 @@ public class GameBoard implements Serializable {
         }
     }
 
-    public boolean claimMilestone(Milestone milestone, Player player) {
+    public boolean canClaimMilestone(Milestone milestone, Player player) {
         if (claimedMilestones.size() >= MAX_MILESTONES) {
             log.warn("Cannot claim milestone: maximum number of milestones ({}) has been reached.", MAX_MILESTONES);
             return false;
@@ -179,19 +181,19 @@ public class GameBoard implements Serializable {
 
     public void setTemperature(int temp) {
         this.temperature = temp;
-        checkEndGameTrigger();
+        checkIfGameShouldEnd();
         notifyUI();
     }
 
     public void setOxygenLevel(int oxygen) {
         this.oxygenLevel = oxygen;
-        checkEndGameTrigger();
+        checkIfGameShouldEnd();
         notifyUI();
     }
 
     public void setOceansPlaced(int oceans) {
         this.oceansPlaced = oceans;
-        checkEndGameTrigger();
+        checkIfGameShouldEnd();
         notifyUI();
     }
 }

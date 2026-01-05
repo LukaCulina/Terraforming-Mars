@@ -52,9 +52,10 @@ public final class CardViewBuilder {
 
         HBox tagBox = new HBox(5);
         tagBox.setAlignment(Pos.CENTER);
+
         for (TagType tag : card.getTags()) {
-            Region tagNode = createTagNode(tag);
-            tagBox.getChildren().add(tagNode);
+            Region tagIcon = createTagIcon(tag);
+            tagBox.getChildren().add(tagIcon);
         }
 
         Label descLabel = new Label(card.getDescription());
@@ -82,10 +83,10 @@ public final class CardViewBuilder {
         return cardBox;
     }
 
-    public static Region createTagNode(TagType tag) {
-        Region tagNode = new Region();
-        tagNode.getStyleClass().add("tag-icon");
-        tagNode.getStyleClass().add("tag-" + tag.name().toLowerCase());
-        return tagNode;
+    public static Region createTagIcon(TagType tag) {
+        Region tagIcon = new Region();
+        tagIcon.getStyleClass().add("tag-icon");
+        tagIcon.getStyleClass().add("tag-" + tag.name().toLowerCase());
+        return tagIcon;
     }
 }

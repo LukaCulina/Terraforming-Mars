@@ -76,7 +76,7 @@ public class EffectInterpreter {
                     int amount = ((Double) data.getOrDefault(AMOUNT, 1.0)).intValue();
                     yield (_, gm) -> {
                         for (int i = 0; i < amount; i++) {
-                            gm.getGameBoard().increaseTemperature();
+                            gm.getGameBoard().canIncreaseTemperature();
                         }
                     };
                 }
@@ -84,7 +84,7 @@ public class EffectInterpreter {
                     int amount = ((Double) data.getOrDefault(AMOUNT, 1.0)).intValue();
                     yield (_, gm) -> {
                         for (int i = 0; i < amount; i++) {
-                            gm.getGameBoard().increaseOxygen();
+                            gm.getGameBoard().canIncreaseOxygen();
                         }
                     };
                 }

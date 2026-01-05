@@ -163,15 +163,15 @@ public class HexBoardDrawer {
     }
 
     private void handleHexClick(MouseEvent event) {
-        StackPane pane = (StackPane) event.getSource();
-        Tile clickedTile = (Tile) pane.getUserData();
+        StackPane clickedPane = (StackPane) event.getSource();
+        Tile clickedTile = (Tile) clickedPane.getUserData();
         if (clickedTile == null) {
             log.warn("Hex click detected on a node with no Tile data.");
             return;
         }
 
         if (placementManager.isPlacementMode()) {
-            if (!pane.getChildren().isEmpty() && pane.getChildren().getFirst() instanceof Polygon hex && hex.getStyleClass().contains("valid-placement-hex")) {
+            if (!clickedPane.getChildren().isEmpty() && clickedPane.getChildren().getFirst() instanceof Polygon hex && hex.getStyleClass().contains("valid-placement-hex")) {
                     placementManager.executePlacement(clickedTile);
                 }
 

@@ -49,7 +49,7 @@ public class HostGameStateCoordinator implements GameStateListener {
 
     private void handleCardDraft(GameState state) {
 
-        Player currentPlayer = state.gameManager().getCurrentPlayerForDraft();
+        Player currentPlayer = state.gameManager().getCurrentDraftPlayer();
         if (currentPlayer == null) {
             log.info("Card Draft completed, starting game");
             currentPhase = GameplayPhase.PLAYING;

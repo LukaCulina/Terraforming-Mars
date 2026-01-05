@@ -25,7 +25,7 @@ public class GameScreenInitializer {
                 controller.getPlacementManager()
         );
 
-        GlobalStatusComponents statusComp = new GlobalStatusComponents(
+        GlobalStatusComponents statusComponents = new GlobalStatusComponents(
                 controller.oxygenProgressBar,
                 controller.oxygenLabel,
                 controller.temperatureProgressBar,
@@ -48,11 +48,11 @@ public class GameScreenInitializer {
 
         GameScreenManager gameScreen = new GameScreenManager(
                 controller, hexBoardDrawer,
-                statusComp, actionPanel, controls
+                statusComponents, actionPanel, controls
         );
 
         initializeUIComponents(controller, actionManager, actionPanel, controls);
-        setupBindings(controller, statusComp, actionPanel, controls);
+        setupBindings(controller, statusComponents, actionPanel, controls);
         setupResponsiveFonts(controller.gameBoardPane);
 
         return gameScreen;

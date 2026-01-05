@@ -51,7 +51,7 @@ public class GameManager implements Serializable {
     }
 
     public List<Corporation> getCorporationOffer() {
-        return deckService.getCorporationOffer();
+        return deckService.getInitialCorporations();
     }
 
     public List<Card> drawCards(int count) {
@@ -67,7 +67,7 @@ public class GameManager implements Serializable {
         }
     }
 
-    public Player getCurrentPlayerForDraft() {
+    public Player getCurrentDraftPlayer() {
         if (cardDraftPlayerIndex >= players.size()) {
             return null;
         }
@@ -75,7 +75,7 @@ public class GameManager implements Serializable {
         return players.get(cardDraftPlayerIndex);
     }
 
-    public boolean advanceDraftPlayer() {
+    public boolean hasMoreDraftPlayers() {
         cardDraftPlayerIndex++;
         return cardDraftPlayerIndex < players.size();
 
@@ -102,8 +102,7 @@ public class GameManager implements Serializable {
         log.info("Starting Generation {}. Phase: {}", generation, currentPhase);
     }
 
-    private void nextPlayer() {
-
+    private void advanceToNextPlayer() {
         if (passedPlayers.size() < players.size()) {
             do {
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
@@ -121,7 +120,7 @@ public class GameManager implements Serializable {
         if (passedPlayers.size() >= players.size()) {
             return true;
         } else {
-            nextPlayer();
+            advanceToNextPlayer();
             return false;
         }
     }

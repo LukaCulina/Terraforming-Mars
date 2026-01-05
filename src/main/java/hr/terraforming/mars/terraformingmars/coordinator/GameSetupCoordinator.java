@@ -23,7 +23,7 @@ public record GameSetupCoordinator(GameScreenController controller) {
         setupGame(gameState, false);
     }
 
-    private void setupGame(GameState gameState, boolean shouldStartGame) {
+    private void setupGame(GameState gameState, boolean isNewGame) {
         controller.setGameManager(gameState.gameManager());
         controller.setGameBoard(gameState.gameBoard());
 
@@ -42,7 +42,7 @@ public record GameSetupCoordinator(GameScreenController controller) {
 
         controller.getNetworkCoordinator().setupClientListeners();
 
-        if (shouldStartGame) {
+        if (isNewGame) {
             startGame();
         }
 

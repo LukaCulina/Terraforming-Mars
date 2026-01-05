@@ -100,10 +100,10 @@ public class PlayerMessageHandler {
 
     private void handleFinalGreeneryOffer(FinalGreeneryOfferMessage msg, GameState lastGameState) {
         Platform.runLater(() -> {
-            String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+            String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
-            if (!myName.equals(msg.playerName())) {
-                log.debug("Ignoring FinalGreeneryOffer for {}, I am {}", msg.playerName(), myName);
+            if (!myPlayerName.equals(msg.playerName())) {
+                log.debug("Ignoring FinalGreeneryOffer for {}, I am {}", msg.playerName(), myPlayerName);
                 return;
             }
 
@@ -112,11 +112,11 @@ public class PlayerMessageHandler {
                 return;
             }
 
-            GameManager gm = lastGameState.gameManager();
-            Player me = gm.getPlayerByName(myName);
+            GameManager gameManager = lastGameState.gameManager();
+            Player currentPlayer = gameManager.getPlayerByName(myPlayerName);
 
-            if (me == null) {
-                log.error("Cannot find player {} in GameManager", myName);
+            if (currentPlayer == null) {
+                log.error("Cannot find player {} in GameManager", myPlayerName);
                 return;
             }
 
@@ -126,8 +126,8 @@ public class PlayerMessageHandler {
                 return;
             }
 
-            log.debug("Client received FinalGreeneryOffer, opening modal for {}", myName);
-            showFinalGreeneryModal(me, gm, controller, myName);
+            log.debug("Client received FinalGreeneryOffer, opening modal for {}", myPlayerName);
+            showFinalGreeneryModal(currentPlayer, gameManager, controller, myPlayerName);
         });
     }
 

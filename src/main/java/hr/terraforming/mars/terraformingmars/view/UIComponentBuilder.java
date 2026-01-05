@@ -18,56 +18,57 @@ public record UIComponentBuilder(GameScreenController controller, ActionManager 
 
     public void createPlayerButtons(HBox playerListBar) {
         playerListBar.getChildren().clear();
+
         for (Player player : gameManager.getPlayers()) {
-            Button btn = new Button(player.getName());
-            btn.getStyleClass().add("player-select-button");
-            btn.setOnAction(_ -> controller.showPlayerBoard(player));
-            playerListBar.getChildren().add(btn);
+            Button playerButton = new Button(player.getName());
+            playerButton.getStyleClass().add("player-select-button");
+            playerButton.setOnAction(_ -> controller.showPlayerBoard(player));
+            playerListBar.getChildren().add(playerButton);
         }
     }
 
-    public void createMilestoneButtons(VBox milestonesBox) {
-        milestonesBox.getChildren().clear();
-        Label milestonesLabel = new Label("Milestones");
-        milestonesLabel.getStyleClass().add("project-milestone");
-        milestonesBox.getChildren().add(milestonesLabel);
+    public void createMilestoneButtons(VBox milestoneBox) {
+        milestoneBox.getChildren().clear();
+        Label milestoneLabel = new Label("Milestones");
+        milestoneLabel.getStyleClass().add("project-milestone");
+        milestoneBox.getChildren().add(milestoneLabel);
 
         for (Milestone milestone : Milestone.values()) {
-            Button btn = new Button(milestone.getName());
-            btn.prefWidthProperty().bind(milestonesBox.widthProperty().multiply(0.5));
-            btn.getStyleClass().add("milestone-button");
-            btn.setUserData(milestone);
-            btn.setOnAction(_ -> actionManager.handleClaimMilestone(milestone));
+            Button milestoneButton = new Button(milestone.getName());
+            milestoneButton.prefWidthProperty().bind(milestoneBox.widthProperty().multiply(0.5));
+            milestoneButton.getStyleClass().add("milestone-button");
+            milestoneButton.setUserData(milestone);
+            milestoneButton.setOnAction(_ -> actionManager.handleClaimMilestone(milestone));
 
             Tooltip tooltip = new Tooltip(milestone.getDescription() + "\n(Price: 8 MC)");
             tooltip.getStyleClass().add("tooltip");
-            btn.setTooltip(tooltip);
+            milestoneButton.setTooltip(tooltip);
 
-            milestonesBox.getChildren().add(btn);
+            milestoneBox.getChildren().add(milestoneButton);
         }
     }
 
-    public void createStandardProjectButtons(VBox standardProjectsBox) {
-        standardProjectsBox.getChildren().clear();
-        Label projectsLabel = new Label("Standard \nProjects ");
-        projectsLabel.getStyleClass().add("project-milestone");
-        standardProjectsBox.getChildren().add(projectsLabel);
+    public void createStandardProjectButtons(VBox standardProjectBox) {
+        standardProjectBox.getChildren().clear();
+        Label projectLabel = new Label("Standard \nProjects ");
+        projectLabel.getStyleClass().add("project-milestone");
+        standardProjectBox.getChildren().add(projectLabel);
 
         for (StandardProject project : StandardProject.values()) {
-            Button btn = new Button(project.getName());
-            btn.prefWidthProperty().bind(standardProjectsBox.widthProperty().multiply(0.8));
-            btn.getStyleClass().add("project-button");
-            btn.setUserData(project);
+            Button projectButton = new Button(project.getName());
+            projectButton.prefWidthProperty().bind(standardProjectBox.widthProperty().multiply(0.8));
+            projectButton.getStyleClass().add("project-button");
+            projectButton.setUserData(project);
 
             Text icon = new Text(project.getIcon());
             icon.getStyleClass().add("icon");
-            btn.setGraphic(icon);
+            projectButton.setGraphic(icon);
             Tooltip tooltip = new Tooltip(project.getDescription() + "\n(Price: " + project.getCost() + " MC)");
             tooltip.getStyleClass().add("tooltip");
-            btn.setTooltip(tooltip);
+            projectButton.setTooltip(tooltip);
 
-            btn.setOnAction(e -> actionManager.handleStandardProject((StandardProject) ((Button) e.getSource()).getUserData()));
-            standardProjectsBox.getChildren().add(btn);
+            projectButton.setOnAction(e -> actionManager.handleStandardProject((StandardProject) ((Button) e.getSource()).getUserData()));
+            standardProjectBox.getChildren().add(projectButton);
         }
     }
 }

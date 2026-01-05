@@ -69,7 +69,6 @@ public class PlayerBoardController {
         boolean isMyPlayer = config.getPlayerType() == PlayerType.LOCAL
                 || player.getName().equals(config.getMyPlayerName());
 
-        // ✅ UVIJEK postavi visibility - ne ovisi o if/else granama
         showHandButton.setVisible(isMyPlayer);
         showPlayedButton.setVisible(isMyPlayer);
 
@@ -174,7 +173,7 @@ public class PlayerBoardController {
         Label countLabel = new Label(String.valueOf(player.countTags(tag)));
         countLabel.getStyleClass().add("tag-text-label");
 
-        Region tagNode = CardViewBuilder.createTagNode(tag);
+        Region tagNode = CardViewBuilder.createTagIcon(tag);
 
         String tagName = tag.name().substring(0, 1).toUpperCase() + tag.name().substring(1).toLowerCase();
         Label nameLabel = new Label(tagName);

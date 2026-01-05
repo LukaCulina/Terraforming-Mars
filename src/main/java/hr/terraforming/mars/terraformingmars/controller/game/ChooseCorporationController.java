@@ -24,7 +24,7 @@ public class ChooseCorporationController {
     private GameManager gameManager;
     private List<Corporation> availableCorporations;
     private Corporation selectedCorporation;
-    private VBox selectedCard;
+    private VBox selectedCorporationCard;
 
     public void setCorporationOptions(Player player, List<Corporation> offer, GameManager gameManager) {
         this.gameManager = gameManager;
@@ -58,7 +58,7 @@ public class ChooseCorporationController {
 
         availableCorporations = offer;
         selectedCorporation = null;
-        selectedCard = null;
+        selectedCorporationCard = null;
 
         populateCorporationBoxes();
         updateConfirmButton();
@@ -71,6 +71,7 @@ public class ChooseCorporationController {
 
     private void populateCorporationBoxes() {
         corporationButtonsContainer.getChildren().clear();
+
         for (Corporation corp : availableCorporations) {
             VBox corpCard = CorporationViewBuilder.createCorporationNode(corp);
 
@@ -81,11 +82,11 @@ public class ChooseCorporationController {
     }
 
     private void selectCorporationCard(Corporation corp, VBox card) {
-        if (selectedCard != null) {
-            selectedCard.getStyleClass().remove("card-view-selected");
+        if (selectedCorporationCard != null) {
+            selectedCorporationCard.getStyleClass().remove("card-view-selected");
         }
 
-        selectedCard = card;
+        selectedCorporationCard = card;
         selectedCorporation = corp;
 
         card.getStyleClass().add("card-view-selected");
@@ -105,24 +106,29 @@ public class ChooseCorporationController {
         switch (playerType) {
             case PlayerType.HOST -> {
                 NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
+
                 if (broadcaster != null) {
                     broadcaster.broadcast();
                 }
+
                 showWaitingForPlayer();
             }
             case PlayerType.CLIENT -> {
                 GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
+
                 if (client != null) {
                     client.sendCorporationChoice(selectedCorporation.name());
                 }
+
                 showWaitingForPlayer();
             }
             default -> {
 
                 if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {
-                    boolean allChosen = gameManager.getPlayers().stream()
+                    boolean allPlayersChoseCorporation = gameManager.getPlayers().stream()
                             .allMatch(p -> p.getCorporation() != null);
-                    if (allChosen) {
+
+                    if (allPlayersChoseCorporation) {
                         ScreenNavigator.showInitialCardDraftScreen(gameManager);
                     } else {
                         ScreenNavigator.showChooseCorporationScreen(gameManager);

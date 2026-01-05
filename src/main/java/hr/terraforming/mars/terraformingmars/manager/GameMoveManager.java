@@ -107,7 +107,7 @@ public record GameMoveManager(ActionManager actionManager) {
             List<String> soldCardNames = Arrays.asList(move.details().split(","));
 
             player.getHand().removeIf(card -> soldCardNames.contains(card.getName()));
-            player.spendMC(-soldCardNames.size());
+            player.canSpendMC(-soldCardNames.size());
 
             actionManager.performAction();
         }

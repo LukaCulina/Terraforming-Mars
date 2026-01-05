@@ -15,6 +15,9 @@ public class ExecutionManager {
     private final ActionManager actionManager;
     private final GameFlowManager gameFlowManager;
 
+    private static final int MILESTONE_COST = 8;
+    private static final int CONVERSION_COST = 8;
+
     public ExecutionManager(GameScreenController controller, ActionManager actionManager, GameFlowManager gameFlowManager) {
         this.controller = controller;
         this.actionManager = actionManager;
@@ -86,10 +89,9 @@ public class ExecutionManager {
 
     public void handleClaimMilestone(Milestone milestone) {
         Player currentPlayer = getGameManager().getCurrentPlayer();
-        final int MILESTONE_COST = 8;
 
-        if (getGameBoard().claimMilestone(milestone, currentPlayer)) {
-            currentPlayer.spendMC(MILESTONE_COST);
+        if (getGameBoard().canClaimMilestone(milestone, currentPlayer)) {
+            currentPlayer.canSpendMC(MILESTONE_COST);
             actionManager.performAction();
             GameMove move = new GameMove(currentPlayer.getName(), ActionType.CLAIM_MILESTONE, milestone.name(),
                     "claimed milestone: " + milestone.name(), LocalDateTime.now());
@@ -117,7 +119,7 @@ public class ExecutionManager {
             if (isLocalPlayerMove(currentPlayer)) {
                 controller.getPlacementManager().enterPlacementModeForProject(project, move);
             } else {
-                currentPlayer.spendMC(finalCost);
+                currentPlayer.canSpendMC(finalCost);
             }
         } else {
             if (project == StandardProject.SELL_PATENTS) {
@@ -129,7 +131,7 @@ public class ExecutionManager {
                     actionManager.handleSellPatents();
                 }
             } else {
-                currentPlayer.spendMC(finalCost);
+                currentPlayer.canSpendMC(finalCost);
                 project.execute(currentPlayer, getGameBoard());
                 actionManager.performAction();
                 actionManager.saveMove(move);
@@ -140,15 +142,16 @@ public class ExecutionManager {
     public void handleConvertHeat() {
         Player currentPlayer = getGameManager().getCurrentPlayer();
 
-        if (currentPlayer.resourceProperty(ResourceType.HEAT).get() < 8) {
+        if (currentPlayer.resourceProperty(ResourceType.HEAT).get() < CONVERSION_COST) {
             log.warn("{} failed to convert heat: insufficient resources.", currentPlayer.getName());
             return;
         }
 
         currentPlayer.resourceProperty(ResourceType.HEAT).set(
-                currentPlayer.resourceProperty(ResourceType.HEAT).get() - 8
+                currentPlayer.resourceProperty(ResourceType.HEAT).get() - CONVERSION_COST
         );
-        getGameBoard().increaseTemperature();
+
+        getGameBoard().canIncreaseTemperature();
         currentPlayer.increaseTR(1);
         actionManager.performAction();
 

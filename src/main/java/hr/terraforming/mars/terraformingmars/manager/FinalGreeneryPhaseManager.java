@@ -132,7 +132,7 @@ public class FinalGreeneryPhaseManager {
 
         Player currentPlayer = gameManager.getPlayers().get(currentPlayerIndex);
 
-        gameManager.advanceDraftPlayer();
+        gameManager.hasMoreDraftPlayers();
 
         var config = ApplicationConfiguration.getInstance();
         if (config.getPlayerType() == PlayerType.HOST) {

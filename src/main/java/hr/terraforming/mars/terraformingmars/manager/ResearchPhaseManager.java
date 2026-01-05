@@ -94,13 +94,13 @@ public class ResearchPhaseManager {
         }
 
         int cost = boughtCards.size() * 3;
-        if (currentPlayer.spendMC(cost)) {
+        if (currentPlayer.canSpendMC(cost)) {
             currentPlayer.getHand().addAll(boughtCards);
         }
 
         String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
         if (currentPlayer.getName().equals(myPlayerName)) {
-            gameManager.advanceDraftPlayer();
+            gameManager.hasMoreDraftPlayers();
         }
 
         researchPlayerIndex++;

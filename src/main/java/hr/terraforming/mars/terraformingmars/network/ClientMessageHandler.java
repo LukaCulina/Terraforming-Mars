@@ -45,10 +45,10 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
         }
         broadcaster.run();
 
-        boolean allChosen = gameManager.getPlayers().stream()
+        boolean allPlayersChoseCorporations = gameManager.getPlayers().stream()
                 .allMatch(player -> player.getCorporation() != null);
 
-        if (allChosen) {
+        if (allPlayersChoseCorporations) {
             log.debug("All of the players have chosen corporations. Distributing initial cards...");
         }
     }
@@ -73,13 +73,13 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
             return;
         }
 
-        player.spendMC(cost);
+        player.canSpendMC(cost);
         player.getHand().addAll(boughtCards);
 
         synchronized (gameManager) {
-            boolean morePlayers = gameManager.advanceDraftPlayer();
+            boolean morePlayersToChoose = gameManager.hasMoreDraftPlayers();
 
-            if (!morePlayers) {
+            if (!morePlayersToChoose) {
                 if (gameManager.getGeneration() == 0) {
                     GameMoveUtils.saveInitialSetupMove(gameManager);
                     gameManager.startGame();

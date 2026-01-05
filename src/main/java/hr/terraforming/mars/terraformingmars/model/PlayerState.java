@@ -91,10 +91,10 @@ public class PlayerState implements Serializable {
     }
 
     private int calculateCorporationDiscount(Corporation corporation, Card card) {
-        String corpName = corporation.name();
+        String corporationName = corporation.name();
         List<TagType> tags = card.getTags();
 
-        return switch (corpName) {
+        return switch (corporationName) {
             case "Credicor" -> 1;
             case "Mining Guild" -> tags.contains(TagType.BUILDING) ? 2 : 0;
             case "Phobolog" -> tags.contains(TagType.SPACE) ? 4 : 0;

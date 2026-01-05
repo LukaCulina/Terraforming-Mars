@@ -65,7 +65,7 @@ public class Player implements Serializable {
 
     public void addMC(int amount) { mcProperty().set(getMC() + amount); }
 
-    public boolean spendMC(int amount) {
+    public boolean canSpendMC(int amount) {
         if (getMC() >= amount) {
             mcProperty().set(getMC() - amount);
             return true;
@@ -106,7 +106,7 @@ public class Player implements Serializable {
     public void playCard(Card card, GameManager gameManager) {
         if (canPlayCard(card)) {
             int finalCost = state.getCardCost(card, corporation);
-            spendMC(finalCost);
+            canSpendMC(finalCost);
             getHand().remove(card);
             getPlayed().add(card);
             card.play(this, gameManager);

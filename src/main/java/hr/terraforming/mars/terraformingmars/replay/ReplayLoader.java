@@ -83,7 +83,7 @@ public class ReplayLoader {
 
         List<Card> boughtCards = new ArrayList<>(newHand);
         boughtCards.removeAll(oldHand);
-        player.spendMC(boughtCards.size() * 3);
+        player.canSpendMC(boughtCards.size() * 3);
 
         player.getHand().clear();
         player.getHand().addAll(newHand);

@@ -70,7 +70,7 @@ public class PlayerGameStateCoordinator implements GameStateListener {
     }
 
     private void handleCardDraftPhase(GameState state) {
-        Player currentPlayerForDraft = state.gameManager().getCurrentPlayerForDraft();
+        Player currentPlayerForDraft = state.gameManager().getCurrentDraftPlayer();
 
         if (currentPlayerForDraft == null) {
             currentPhase = GameplayPhase.PLAYING;

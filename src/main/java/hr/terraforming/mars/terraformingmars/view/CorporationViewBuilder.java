@@ -18,12 +18,12 @@ public class CorporationViewBuilder {
     }
 
     public static VBox createCorporationNode(Corporation corp) {
-        VBox card = new VBox();
-        card.getStyleClass().add("corporation-card");
-        card.setAlignment(Pos.TOP_CENTER);
-        card.setPadding(new Insets(20));
-        card.setPrefSize(320, 450);
-        card.setMaxSize(320, 450);
+        VBox corporationCard = new VBox();
+        corporationCard.getStyleClass().add("corporation-card");
+        corporationCard.setAlignment(Pos.TOP_CENTER);
+        corporationCard.setPadding(new Insets(20));
+        corporationCard.setPrefSize(320, 450);
+        corporationCard.setMaxSize(320, 450);
 
         VBox contentWrapper = new VBox(15);
         contentWrapper.setAlignment(Pos.TOP_CENTER);
@@ -69,9 +69,9 @@ public class CorporationViewBuilder {
         contentWrapper.getChildren().addAll(nameLabel, resourcesSection, abilitySection);
 
         VBox.setVgrow(contentWrapper, Priority.ALWAYS);
-        card.getChildren().addAll(contentWrapper);
+        corporationCard.getChildren().addAll(contentWrapper);
 
-        return card;
+        return corporationCard;
     }
 
     private static String getResourceIcon(ResourceType type) {
