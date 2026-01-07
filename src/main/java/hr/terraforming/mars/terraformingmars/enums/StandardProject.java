@@ -11,7 +11,7 @@ public enum StandardProject {
     SELL_PATENTS("Sell patents", "💰", "Sell cards from hand for 1 MC per card.", 0, null,(_, _) -> {
     }),
 
-    POWER_PLANT("Power Plant", "⚡", "Increase energy production by 1.", 11, null,(player, _) ->
+    POWER_PLANT("Power Plant", "⚡ ", "Increase energy production by 1.", 11, null,(player, _) ->
         player.increaseProduction(ResourceType.ENERGY, 1)
     ),
 

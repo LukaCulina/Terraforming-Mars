@@ -12,6 +12,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public record UIComponentBuilder(GameScreenController controller, ActionManager actionManager,
                                  GameManager gameManager) {
@@ -42,6 +43,7 @@ public record UIComponentBuilder(GameScreenController controller, ActionManager 
 
             Tooltip tooltip = new Tooltip(milestone.getDescription() + "\n(Price: 8 MC)");
             tooltip.getStyleClass().add("tooltip");
+            tooltip.setShowDelay(Duration.millis(300));
             milestoneButton.setTooltip(tooltip);
 
             milestoneBox.getChildren().add(milestoneButton);
@@ -65,6 +67,7 @@ public record UIComponentBuilder(GameScreenController controller, ActionManager 
             projectButton.setGraphic(icon);
             Tooltip tooltip = new Tooltip(project.getDescription() + "\n(Price: " + project.getCost() + " MC)");
             tooltip.getStyleClass().add("tooltip");
+            tooltip.setShowDelay(Duration.millis(300));
             projectButton.setTooltip(tooltip);
 
             projectButton.setOnAction(e -> actionManager.handleStandardProject((StandardProject) ((Button) e.getSource()).getUserData()));

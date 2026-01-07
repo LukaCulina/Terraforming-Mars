@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.controller.game;
 
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
+import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SellPatentsController {
 
+    @FXML private VBox sellPatentsScreen;
     @FXML private TilePane cardsForSalePane;
     @FXML private Label infoLabel;
     @FXML private Button confirmButton;
@@ -32,6 +34,21 @@ public class SellPatentsController {
     private final Set<Card> selectedCards = new HashSet<>();
     private Consumer<List<Card>> onSaleComplete;
     private static final String SELECTED_CARD_STYLE = "card-view-selected";
+
+    @FXML
+    private void initialize() {
+        GameScreenResizer.attachFontResizeListeners(sellPatentsScreen, this::updateFontSizes);
+    }
+
+    private void updateFontSizes() {
+        GameScreenResizer.updateFonts(
+                sellPatentsScreen,
+                new GameScreenResizer.FontMapping(".choose-label", 0.05),
+                new GameScreenResizer.FontMapping(".info-label", 0.04),
+                new GameScreenResizer.FontMapping(".confirm-button", 0.03),
+                new GameScreenResizer.FontMapping(".cancel-sale", 0.03)
+        );
+    }
 
     public void initData(Player player, Consumer<List<Card>> onSaleComplete) {
         this.player = player;
@@ -46,7 +63,7 @@ public class SellPatentsController {
         CardViewBuilder.setupCardTilePane(cardsForSalePane, 2, 4);
 
         for (Card card : player.getHand()) {
-            VBox cardNode = CardViewBuilder.createCardNode(card);
+            VBox cardNode = CardViewBuilder.createCardNode(card, cardsForSalePane);
             cardNode.setOnMouseClicked(_ -> toggleCardSelection(card, cardNode));
             cardsForSalePane.getChildren().add(cardNode);
         }
@@ -109,7 +126,7 @@ public class SellPatentsController {
         CardViewBuilder.setupCardTilePane(cardsForSalePane, 2, 4);
 
         for (Card card : handBeforeSale) {
-            VBox cardNode = CardViewBuilder.createCardNode(card);
+            VBox cardNode = CardViewBuilder.createCardNode(card, cardsForSalePane);
             cardNode.setMouseTransparent(true);
 
             if (soldCardNames.contains(card.getName())) {

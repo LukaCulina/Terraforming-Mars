@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.enums;
 
 public enum ActionType {
     INITIAL_SETUP,
+    PLAYER_ORDER,
     PLAY_CARD,
     PLACE_TILE,
     CLAIM_MILESTONE,

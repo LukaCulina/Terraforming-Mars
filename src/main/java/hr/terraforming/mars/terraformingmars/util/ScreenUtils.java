@@ -34,7 +34,7 @@ public class ScreenUtils {
 
     private static final int LOADING_PANE_SIZE = 100;
     private static final int TRANSITION_DURATION = 200;
-    private static final double INITIAL_DELAY_SECONDS = 0.5;
+    private static final double INITIAL_DELAY_SECONDS = 0.3;
 
     public static void setConfig(ResourceConfig resourceConfig) {
         if (config != null) {

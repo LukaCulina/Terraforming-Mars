@@ -80,7 +80,11 @@ public class GameFlowManager {
         getGameManager().startNewGeneration();
         getGameManager().resetDraftPhase();
 
-        controller.setViewedPlayer(getGameManager().getCurrentPlayer());
+        if (getGameManager().getGeneration() > 1) {
+            executePlayerOrderPhase();
+        }
+
+        controller.setViewedPlayer(getGameManager().getFirstPlayer());
         controller.updateAllUI();
 
         var config = ApplicationConfiguration.getInstance();
@@ -103,6 +107,25 @@ public class GameFlowManager {
             }
             default -> log.warn("Unknown or null PlayerType in startNewGeneration(): {}", playerType);
         }
+    }
+
+    private void executePlayerOrderPhase() {
+        Player previousFirstPlayer = getGameManager().getFirstPlayer();
+        getGameManager().rotateFirstPlayer();
+        Player newFirstPlayer = getGameManager().getFirstPlayer();
+
+        log.info("First player changed: {} → {}",
+                previousFirstPlayer.getName(),
+                newFirstPlayer.getName());
+
+        GameMove playerOrderMove = new GameMove(
+                "System",
+                ActionType.PLAYER_ORDER,
+                newFirstPlayer.getName(),
+                "First player is now " + newFirstPlayer.getName(),
+                LocalDateTime.now()
+        );
+        XmlUtils.appendGameMove(playerOrderMove);
     }
 
     public void finishResearchPhase() {

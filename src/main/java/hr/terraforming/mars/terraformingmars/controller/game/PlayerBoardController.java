@@ -120,7 +120,7 @@ public class PlayerBoardController {
         CardViewBuilder.setupCardTilePane(cardsDisplayArea, 3, 10);
 
         cardsToShow.forEach(card -> {
-            VBox cardNode = CardViewBuilder.createCardNode(card);
+            VBox cardNode = CardViewBuilder.createCardNode(card, cardsDisplayArea);
 
             boolean isActive = isShowingHand && player.canPlayCard(card);
 

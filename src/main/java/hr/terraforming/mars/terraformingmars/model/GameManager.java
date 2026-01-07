@@ -24,10 +24,12 @@ public class GameManager implements Serializable {
     private int cardDraftPlayerIndex = 0;
     @Getter private int actionsTakenThisTurn = 0;
     private final DeckService deckService;
+    @Getter private Player firstPlayer;
 
     public GameManager(List<Player> players, GameBoard gameBoard) {
         this.players = new ArrayList<>(players);
         this.deckService = new DeckService();
+        this.firstPlayer = players.isEmpty() ? null : players.getFirst();
         relink(gameBoard);
     }
 
@@ -139,8 +141,13 @@ public class GameManager implements Serializable {
 
     public void beginActionPhase() {
         this.currentPhase = GamePhase.ACTIONS;
-        this.currentPlayerIndex = 0;
-        this.actionsTakenThisTurn = 0;
+        if (firstPlayer != null) {
+            this.currentPlayerIndex = players.indexOf(firstPlayer);
+            log.info("Action phase beginning. Starting player: {}", getCurrentPlayer().getName());
+        } else {
+            this.currentPlayerIndex = 0;
+            log.warn("firstPlayer is null, defaulting to index 0");
+        }        this.actionsTakenThisTurn = 0;
     }
 
     public Player getCurrentPlayer() { return players.get(currentPlayerIndex); }
@@ -186,5 +193,18 @@ public class GameManager implements Serializable {
                     log.warn("Player '{}' not found!", playerName);
                     return null;
                 });
+    }
+
+    public void rotateFirstPlayer() {
+        if (players.isEmpty()) {
+            log.warn("Cannot rotate first player - no players in game!");
+            return;
+        }
+
+        int currentIndex = players.indexOf(firstPlayer);
+        int nextIndex = (currentIndex + 1) % players.size();
+        this.firstPlayer = players.get(nextIndex);
+
+        log.info("First player rotated to: {}", firstPlayer.getName());
     }
 }

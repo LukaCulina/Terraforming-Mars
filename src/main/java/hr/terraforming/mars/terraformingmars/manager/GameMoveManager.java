@@ -22,7 +22,7 @@ public record GameMoveManager(ActionManager actionManager) {
         return actionManager.getController().getGameBoard();
     }
 
-    private GameFlowManager gameFlow() {
+    private GameFlowManager getGameFlowManager() {
         return actionManager.getGameFlowManager();
     }
 
@@ -116,7 +116,7 @@ public record GameMoveManager(ActionManager actionManager) {
     private void handleFinishFinalGreenery(GameMove move) {
         log.info("Processing FINISH_FINAL_GREENERY from {}", move.playerName());
 
-        FinalGreeneryPhaseManager finalGreeneryMgr = gameFlow().getFinalGreeneryManager();
+        FinalGreeneryPhaseManager finalGreeneryMgr = getGameFlowManager().getFinalGreeneryManager();
 
         if (finalGreeneryMgr != null) {
             finalGreeneryMgr.finishForCurrentPlayer();
