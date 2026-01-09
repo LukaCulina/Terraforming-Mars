@@ -93,7 +93,7 @@ public record GameSetupCoordinator(GameScreenController controller) {
                 gameScreenManager.getHexBoardDrawer()
         );
 
-        controller.getGameBoard().setOnGlobalParametersChanged(controller::updateAllUI);
+        controller.getGameBoard().setOnGlobalParametersChanged(controller::refreshGameScreen);
 
         controller.setReplayManager(new ReplayManager(controller));
     }
@@ -157,7 +157,7 @@ public record GameSetupCoordinator(GameScreenController controller) {
                 controller.getHexBoardPane().getScene().heightProperty().subtract(28)
         ));
 
-        Platform.runLater(controller::updateAllUI);
+        Platform.runLater(controller::refreshGameScreen);
         controller.startMoveHistory();
         controller.updatePlayerHighlightForCurrentPlayer();
     }

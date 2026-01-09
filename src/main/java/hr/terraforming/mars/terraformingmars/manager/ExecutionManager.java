@@ -68,7 +68,7 @@ public class ExecutionManager {
             }
         } else {
             controller.setViewedPlayer(getGameManager().getCurrentPlayer());
-            controller.updateAllUI();
+            controller.refreshGameScreen();
         }
     }
 

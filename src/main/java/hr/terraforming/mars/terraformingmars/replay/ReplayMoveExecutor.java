@@ -78,7 +78,7 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
             case OPEN_PRODUCTION_PHASE_MODAL -> {
                 Platform.runLater(() -> {
                     int generation = Integer.parseInt(move.details());
-                    List<ProductionReport> summaries = ProductionReportService.generateSummaries(gameManager);
+                    List<ProductionReport> summaries = ProductionReportService.generateReports(gameManager);
 
                     ScreenUtils.showAsModal(
                             controller.getSceneWindow(),
@@ -101,14 +101,14 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
             handlePlayerMove(move, gameManager);
         }
 
-        controller.updateAllUI();
+        controller.refreshGameScreen();
     }
 
     private void handleSystemMove(GameMove move, GameManager gameManager) {
         if (move.actionType() == ActionType.RESEARCH_COMPLETE) {
             gameManager.doProduction();
             gameManager.startNewGeneration();
-            loader.updatePlayerHandsFromDetails(gameManager, move.details());
+            loader.setupState(gameManager, move.details());
             controller.setViewedPlayer(gameManager.getCurrentPlayer());
         }
     }

@@ -44,7 +44,7 @@ public class GameFlowManager {
 
         getGameManager().doProduction();
 
-        controller.updateAllUI();
+        controller.refreshGameScreen();
 
         if (getGameBoard().isFinalGeneration()) {
             log.info("This was the last generation. Starting final greenery conversion phase.");
@@ -81,7 +81,7 @@ public class GameFlowManager {
         }
 
         controller.setViewedPlayer(getGameManager().getFirstPlayer());
-        controller.updateAllUI();
+        controller.refreshGameScreen();
 
         var config = ApplicationConfiguration.getInstance();
         var playerType = config.getPlayerType();
@@ -131,7 +131,7 @@ public class GameFlowManager {
 
         getGameManager().beginActionPhase();
 
-        controller.updateAllUI();
+        controller.refreshGameScreen();
 
         var config = ApplicationConfiguration.getInstance();
 

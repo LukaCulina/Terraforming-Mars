@@ -24,8 +24,7 @@ public class FinalGreeneryCoordinator {
         int cost = player.getGreeneryCost();
         int greeneryCount = plants / cost;
 
-        log.info("Starting Final Greenery placement for {}: {} plants → {} greenery",
-                player.getName(), plants, greeneryCount);
+        log.info("Starting Final Greenery placement for {}", player.getName());
 
         currentPlayer = player;
         remainingGreeneryCount = greeneryCount;

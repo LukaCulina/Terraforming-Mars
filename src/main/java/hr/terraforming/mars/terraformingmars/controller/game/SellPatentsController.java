@@ -50,7 +50,7 @@ public class SellPatentsController {
         );
     }
 
-    public void initData(Player player, Consumer<List<Card>> onSaleComplete) {
+    public void setupForSale(Player player, Consumer<List<Card>> onSaleComplete) {
         this.player = player;
         this.onSaleComplete = onSaleComplete;
         populateCards();

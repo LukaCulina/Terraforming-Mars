@@ -14,53 +14,53 @@ public class ProductionReportService {
         throw new IllegalStateException("Utility class");
     }
 
-    public static List<ProductionReport> generateSummaries(GameManager gameManager) {
+    public static List<ProductionReport> generateReports(GameManager gameManager) {
         List<ProductionReport> summaries = new ArrayList<>();
 
         for (Player player : gameManager.getPlayers()) {
-            ProductionReport summary = createSummaryForPlayer(player);
-            summaries.add(summary);
+            ProductionReport report = createReportForPlayer(player);
+            summaries.add(report);
         }
 
         return summaries;
     }
 
-    public static ProductionReport createSummaryForPlayer(Player player) {
-        ProductionReport summary = new ProductionReport();
+    public static ProductionReport createReportForPlayer(Player player) {
+        ProductionReport report = new ProductionReport();
 
-        summary.setPlayerName(player.getName());
-        summary.setCorporationName(
+        report.setPlayerName(player.getName());
+        report.setCorporationName(
                 player.getCorporation() != null
                         ? player.getCorporation().name()
                         : "No Corporation"
         );
 
-        summary.setMegaCreditsBefore(player.getMC());
-        summary.setEnergyBefore(player.resourceProperty(ResourceType.ENERGY).get());
-        summary.setHeatBefore(player.resourceProperty(ResourceType.HEAT).get());
-        summary.setPlantsBefore(player.resourceProperty(ResourceType.PLANTS).get());
+        report.setMegaCreditsBefore(player.getMC());
+        report.setEnergyBefore(player.resourceProperty(ResourceType.ENERGY).get());
+        report.setHeatBefore(player.resourceProperty(ResourceType.HEAT).get());
+        report.setPlantsBefore(player.resourceProperty(ResourceType.PLANTS).get());
 
-        summary.setMegaCreditsProduction(
+        report.setMegaCreditsProduction(
                 player.getTR() + player.productionProperty(ResourceType.MEGA_CREDITS).get()
         );
-        summary.setEnergyProduction(player.productionProperty(ResourceType.ENERGY).get());
-        summary.setHeatProduction(player.productionProperty(ResourceType.HEAT).get());
-        summary.setPlantsProduction(player.productionProperty(ResourceType.PLANTS).get());
+        report.setEnergyProduction(player.productionProperty(ResourceType.ENERGY).get());
+        report.setHeatProduction(player.productionProperty(ResourceType.HEAT).get());
+        report.setPlantsProduction(player.productionProperty(ResourceType.PLANTS).get());
 
         int energyBefore = player.resourceProperty(ResourceType.ENERGY).get();
-        summary.setEnergyConvertedToHeat(energyBefore);
+        report.setEnergyConvertedToHeat(energyBefore);
 
-        summary.setMegaCreditsAfter(
-                summary.getMegaCreditsBefore() + summary.getMegaCreditsProduction()
+        report.setMegaCreditsAfter(
+                report.getMegaCreditsBefore() + report.getMegaCreditsProduction()
         );
-        summary.setEnergyAfter(summary.getEnergyProduction());
-        summary.setHeatAfter(
-                summary.getHeatBefore() + summary.getHeatProduction() + energyBefore
+        report.setEnergyAfter(report.getEnergyProduction());
+        report.setHeatAfter(
+                report.getHeatBefore() + report.getHeatProduction() + energyBefore
         );
-        summary.setPlantsAfter(
-                summary.getPlantsBefore() + summary.getPlantsProduction()
+        report.setPlantsAfter(
+                report.getPlantsBefore() + report.getPlantsProduction()
         );
 
-        return summary;
+        return report;
     }
 }

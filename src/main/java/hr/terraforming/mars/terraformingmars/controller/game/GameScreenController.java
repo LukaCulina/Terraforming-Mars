@@ -98,7 +98,7 @@ public class GameScreenController {
             gameBoard.setOxygenLevel(GameBoard.MAX_OXYGEN);
             gameBoard.setOceansPlaced(GameBoard.MAX_OCEANS);
             log.info("🎯 DEBUG: All parameters set to MAX - Final Generation triggered!");
-            updateAllUI();
+            refreshGameScreen();
             broadcastIfHost();
         }
     }
@@ -132,8 +132,8 @@ public class GameScreenController {
         }
     }
 
-    public void updateAllUI() {
-        gameScreenCoordinator.updateAllUI(viewedPlayer, gameManager, placementManager,
+    public void refreshGameScreen() {
+        gameScreenCoordinator.refreshGameScreen(viewedPlayer, gameManager, placementManager,
                 currentPlayerBoardController, actionManager, gameScreenManager);
     }
 
@@ -151,7 +151,7 @@ public class GameScreenController {
 
     public void showPlayerBoard(Player player) {
         viewedPlayer = player;
-        updateAllUI();
+        refreshGameScreen();
     }
 
     public Window getSceneWindow() {
@@ -159,7 +159,7 @@ public class GameScreenController {
     }
 
     public void drawBoard() {
-        updateAllUI();
+        refreshGameScreen();
     }
 
     public void setCancelButtonVisible(boolean visible) {
@@ -199,7 +199,7 @@ public class GameScreenController {
         if (loadedState != null) {
             setupCoordinator.setupLoadedGame(loadedState);
             viewedPlayer = gameManager.getCurrentPlayer();
-            updateAllUI();
+            refreshGameScreen();
             DialogUtils.showDialog(Alert.AlertType.INFORMATION, "Load Game Successful!", "The game has been successfully loaded!");
         }
     }

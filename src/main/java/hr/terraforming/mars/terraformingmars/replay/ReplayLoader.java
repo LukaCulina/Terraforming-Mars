@@ -8,6 +8,7 @@ import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import javafx.scene.control.Alert;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,8 @@ import java.util.Map;
 
 public class ReplayLoader {
 
-    private static final Type REPLAY_DATA_TYPE = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
+    private static final Type REPLAY_DATA_TYPE = new TypeToken<Map<String, Map<String, Object>>>() {
+    }.getType();
     private static final Gson GSON = new Gson();
 
     public List<GameMove> loadMoves() {
@@ -29,18 +31,14 @@ public class ReplayLoader {
                 .orElse(null);
 
         if (initialSetupMove != null) {
-            setupStateFromDetails(gameManager, initialSetupMove.details());
+            setupState(gameManager, initialSetupMove.details());
             moves.remove(initialSetupMove);
         } else {
             new Alert(Alert.AlertType.WARNING, "Replay file is missing initial setup data! Cards will not be shown.").show();
         }
     }
 
-    public void updatePlayerHandsFromDetails(GameManager gameManager, String jsonDetails) {
-        setupStateFromDetails(gameManager, jsonDetails);
-    }
-
-    private void setupStateFromDetails(GameManager gameManager, String jsonDetails) {
+    public void setupState(GameManager gameManager, String jsonDetails) {
         Map<String, Map<String, Object>> dataMap = GSON.fromJson(jsonDetails, REPLAY_DATA_TYPE);
 
         for (Player player : gameManager.getPlayers()) {

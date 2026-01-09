@@ -60,7 +60,7 @@ public class ActionManager {
         PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
 
         if (playerType == PlayerType.LOCAL || playerType == PlayerType.HOST) {
-            controller.updateAllUI();
+            controller.refreshGameScreen();
         }
 
         if (getGameManager().getActionsTakenThisTurn() >= 2) {
@@ -143,7 +143,7 @@ public class ActionManager {
                 "SellPatents.fxml",
                 "Sell Patents",
                 0.5, 0.7,
-                (SellPatentsController c) -> c.initData(getGameManager().getCurrentPlayer(), onSaleCompleteAction)
+                (SellPatentsController c) -> c.setupForSale(getGameManager().getCurrentPlayer(), onSaleCompleteAction)
         );
     }
 }

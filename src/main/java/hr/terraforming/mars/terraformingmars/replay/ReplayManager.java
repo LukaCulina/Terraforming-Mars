@@ -34,7 +34,7 @@ public class ReplayManager {
         controller.getGameManager().getPlayers().forEach(Player::resetForNewGame);
 
         GameBoard newReplayBoard = new GameBoard();
-        newReplayBoard.setOnGlobalParametersChanged(controller::updateAllUI);
+        newReplayBoard.setOnGlobalParametersChanged(controller::refreshGameScreen);
 
         controller.setGameBoard(newReplayBoard);
         controller.getGameManager().resetForNewGame(newReplayBoard);
@@ -44,7 +44,7 @@ public class ReplayManager {
         }
 
         controller.setViewedPlayer(controller.getGameManager().getCurrentPlayer());
-        controller.updateAllUI();
+        controller.refreshGameScreen();
     }
 
 
@@ -69,7 +69,7 @@ public class ReplayManager {
 
         prepareForReplay();
         loader.setupInitialState(replayMoves, controller.getGameManager());
-        controller.updateAllUI();
+        controller.refreshGameScreen();
 
         AtomicInteger moveIndex = new AtomicInteger(0);
 
@@ -77,7 +77,7 @@ public class ReplayManager {
             if (moveIndex.get() < replayMoves.size()) {
                 GameMove move = replayMoves.get(moveIndex.getAndIncrement());
                 actionHandler.executeReplayMove(move);
-                controller.updateAllUI();
+                controller.refreshGameScreen();
             }
         }));
 

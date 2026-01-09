@@ -17,9 +17,9 @@ import java.util.List;
 
 public class GameScreenCoordinator {
 
-    public void updateAllUI(Player viewedPlayer, GameManager gameManager, PlacementManager placementManager,
-                            PlayerBoardController playerBoardController, ActionManager actionManager,
-                            GameScreenManager gameScreenManager) {
+    public void refreshGameScreen(Player viewedPlayer, GameManager gameManager, PlacementManager placementManager,
+                                  PlayerBoardController playerBoardController, ActionManager actionManager,
+                                  GameScreenManager gameScreenManager) {
 
         if (gameManager == null || viewedPlayer == null || gameScreenManager == null) return;
 

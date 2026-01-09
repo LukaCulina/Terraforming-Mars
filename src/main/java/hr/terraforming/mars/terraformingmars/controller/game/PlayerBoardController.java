@@ -66,8 +66,7 @@ public class PlayerBoardController {
         updatePlayerInfo();
 
         ApplicationConfiguration config = ApplicationConfiguration.getInstance();
-        boolean isMyPlayer = config.getPlayerType() == PlayerType.LOCAL
-                || player.getName().equals(config.getMyPlayerName());
+        boolean isMyPlayer = config.getPlayerType() == PlayerType.LOCAL || player.getName().equals(config.getMyPlayerName());
 
         showHandButton.setVisible(isMyPlayer);
         showPlayedButton.setVisible(isMyPlayer);

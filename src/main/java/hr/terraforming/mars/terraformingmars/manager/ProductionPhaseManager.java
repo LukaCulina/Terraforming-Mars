@@ -36,7 +36,7 @@ public class ProductionPhaseManager {
     public void showProductionPhaseScreen() {
         log.info("Starting Production Phase for Generation {}", controller.getGameManager().getGeneration());
 
-        List<ProductionReport> summaries = ProductionReportService.generateSummaries(
+        List<ProductionReport> summaries = ProductionReportService.generateReports(
                 controller.getGameManager()
         );
         int generation = controller.getGameManager().getGeneration();

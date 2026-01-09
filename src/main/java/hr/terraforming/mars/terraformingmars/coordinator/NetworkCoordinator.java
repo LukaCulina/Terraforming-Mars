@@ -21,7 +21,7 @@ public record NetworkCoordinator(GameScreenController controller) {
         Platform.runLater(() -> {
             updateViewedPlayer();
             updateGameControls();
-            controller.updateAllUI();
+            controller.refreshGameScreen();
             updatePlayerHighlight();
         });
     }
