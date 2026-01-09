@@ -105,9 +105,8 @@ public class ClientHandler implements Runnable {
             clientOutput.reset();
             clientOutput.flush();
         } catch (IOException e) {
-            throw new NetworkException("Failed to send GameState to " + playerName, e);
-        } finally {
             cleanup();
+            throw new NetworkException("Failed to send GameState to " + playerName, e);
         }
     }
 
@@ -119,9 +118,8 @@ public class ClientHandler implements Runnable {
             clientOutput.flush();
             log.debug("Sent object of type {} to {}", message.getClass().getSimpleName(), playerName);
         } catch (IOException e) {
-            throw new NetworkException("Failed to send " + message.getClass().getSimpleName() + " to " + playerName, e);
-        } finally {
             cleanup();
+            throw new NetworkException("Failed to send " + message.getClass().getSimpleName() + " to " + playerName, e);
         }
     }
 

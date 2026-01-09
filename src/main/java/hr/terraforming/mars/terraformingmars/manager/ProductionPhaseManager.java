@@ -95,7 +95,7 @@ public class ProductionPhaseManager {
                 myName,
                 ActionType.FINISH_PRODUCTION_PHASE,
                 "",
-                "",
+                "started a new generation",
                 LocalDateTime.now()
         );
         actionManager.saveMove(continueMove);
