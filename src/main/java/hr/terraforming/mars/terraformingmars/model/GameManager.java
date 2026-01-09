@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.model;
 
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
+import hr.terraforming.mars.terraformingmars.exception.GameStateException;
 import hr.terraforming.mars.terraformingmars.manager.TurnManager;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -153,10 +154,9 @@ public class GameManager implements Serializable {
         return players.stream()
                 .filter(p -> p.getName().equals(playerName))
                 .findFirst()
-                .orElseGet(() -> {
-                    log.warn("Player '{}' not found!", playerName);
-                    return null;
-                });
+                .orElseThrow(() -> new GameStateException(
+                        "Player '" + playerName + "' not found"
+                ));
     }
 
     public void setCurrentPlayerByName(String playerName) {

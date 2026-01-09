@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.exception.NetworkException;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.*;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ public class GameClientThread implements Runnable {
 
     private void handleConnectionError(Exception e) {
         if (running) {
-            log.error("Client error", e);
+            throw new NetworkException("Failed to connect to server at " + hostname + ":" + port, e);
         } else {
             log.info("Client disconnected");
         }
@@ -106,9 +107,11 @@ public class GameClientThread implements Runnable {
                 if (onSuccess != null) {
                     onSuccess.run();
                 }
+            } else {
+                throw new NetworkException("Cannot send message: server output stream is null");
             }
         } catch (IOException e) {
-            log.error("Failed to send message: {}", message.getClass().getSimpleName(), e);
+            throw new NetworkException("Failed to send " + message.getClass().getSimpleName() + " to server", e);
         }
     }
 
@@ -126,7 +129,7 @@ public class GameClientThread implements Runnable {
                 clientSocket.close();
             }
         } catch (IOException e) {
-            log.error("Error closing client clientSocket", e);
+            throw new NetworkException("Error closing client socket", e);
         }
     }
 

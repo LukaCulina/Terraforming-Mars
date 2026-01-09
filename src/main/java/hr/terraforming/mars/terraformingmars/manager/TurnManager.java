@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.manager;
 
+import hr.terraforming.mars.terraformingmars.exception.GameStateException;
 import hr.terraforming.mars.terraformingmars.model.Player;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +86,7 @@ public class TurnManager implements Serializable {
                 return;
             }
         }
-        log.warn("Player '{}' not found", playerName);
+        throw new GameStateException("Cannot set current player: player '" + playerName + "' not found");
     }
 
     public void beginActionPhase() {

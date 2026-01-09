@@ -1,5 +1,7 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.exception.ConfigurationException;
+import hr.terraforming.mars.terraformingmars.exception.NetworkException;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationKey;
 import hr.terraforming.mars.terraformingmars.jndi.ConfigurationReader;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
@@ -38,10 +40,17 @@ public class GameServerThread implements Runnable {
 
     @Override
     public void run() {
+        int port;
+
         try {
-            int port = ConfigurationReader.getIntegerValue(ConfigurationKey.SERVER_PORT);
+            port = ConfigurationReader.getIntegerValue(ConfigurationKey.SERVER_PORT);
+        } catch (Exception e) {
+            throw new ConfigurationException("Failed to read server port from configuration", e);
+        }
+
+        try {
             serverSocket = new ServerSocket(port);
-            log.info("Server started on port {}, waiting for {} players...", port, maxPlayers - 1);
+            log.info("Server started on port {}, waiting for {} players", port, maxPlayers - 1);
 
             while (running && connectedClients.size() < maxPlayers - 1) {
                 Socket clientSocket = serverSocket.accept();
@@ -66,7 +75,7 @@ public class GameServerThread implements Runnable {
 
         } catch (IOException e) {
             if (running) {
-                log.error("Server error", e);
+                throw new NetworkException("Failed to start server on port " + port, e);
             } else {
                 log.info("Server stopped");
             }
@@ -154,7 +163,7 @@ public class GameServerThread implements Runnable {
             localListeners.clear();
             cardDistributor = null;
         } catch (IOException e) {
-            log.error("Error shutting down server", e);
+            throw new NetworkException("Failed to shutdown server cleanly", e);
         }
     }
 }

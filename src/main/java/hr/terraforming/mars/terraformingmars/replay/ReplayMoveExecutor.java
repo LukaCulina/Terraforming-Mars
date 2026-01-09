@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.replay;
 
 import hr.terraforming.mars.terraformingmars.controller.game.*;
 import hr.terraforming.mars.terraformingmars.enums.*;
+import hr.terraforming.mars.terraformingmars.exception.GameStateException;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.*;
@@ -17,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public record ReplayActionHandler(GameScreenController controller, ReplayLoader loader) {
+public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader loader) {
 
     void executeReplayMove(GameMove move) {
         GameManager gameManager = controller.getGameManager();
@@ -75,7 +76,20 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
                 return;
             }
             case OPEN_PRODUCTION_PHASE_MODAL -> {
-                Platform.runLater(() -> showProductionPhaseInReplay(move, gameManager));
+                Platform.runLater(() -> {
+                    int generation = Integer.parseInt(move.details());
+                    List<ProductionReport> summaries = ProductionReportService.generateSummaries(gameManager);
+
+                    ScreenUtils.showAsModal(
+                            controller.getSceneWindow(),
+                            "ProductionPhase.fxml",
+                            "Production Phase - Generation " + generation + " (Replay)",
+                            0.7, 0.8,
+                            (ProductionPhaseController c) -> c.replayShowProductionSummary(summaries, generation)
+                    );
+
+                    log.info("Production Phase modal shown in replay for Generation {}", generation);
+                });
                 return;
             }
             default -> { /*Nothing happens*/ }
@@ -101,15 +115,12 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
 
     private void handlePlayerMove(GameMove move, GameManager gameManager) {
         Player player = gameManager.getPlayerByName(move.playerName());
-
         if (player == null) {
-            log.error("Replay Error: Player {} not found.", move.playerName());
-            return;
+            throw new GameStateException("Replay error: Player '" + move.playerName() + "' not found in game");
         }
 
         gameManager.setCurrentPlayerByName(player.getName());
         controller.setViewedPlayer(player);
-
         controller.updateLastMoveLabel(move);
 
         switch (move.actionType()) {
@@ -156,15 +167,19 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
             player.canSpendMC(8);
             controller.getGameBoard().canClaimMilestone(milestone, player);
         } catch (IllegalArgumentException e) {
-            log.error("Replay Error: Invalid Milestone name '{}' in game move.", move.details(), e);
+            throw new GameStateException("Replay error: Invalid milestone name '" + move.details() + "'", e);
         }
     }
 
     private void processUseStandardProject(GameMove move, Player player) {
-        StandardProject project = StandardProject.valueOf(move.details());
-        int finalCost = CostService.getFinalProjectCost(project, player);
-        player.canSpendMC(finalCost);
-        project.execute(player, controller.getGameBoard());
+        try {
+            StandardProject project = StandardProject.valueOf(move.details());
+            int finalCost = CostService.getFinalProjectCost(project, player);
+            player.canSpendMC(finalCost);
+            project.execute(player, controller.getGameBoard());
+        } catch (IllegalArgumentException e) {
+            log.error("Replay Error: Invalid StandardProject name '{}' in game move.", move.details(), e);
+        }
     }
 
     private void processConvertHeat(Player player) {
@@ -175,34 +190,11 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
     }
 
     private void processSellPatents(GameMove move, Player player) {
-        try {
-            String[] soldCardNames = move.details().split(", ");
-            player.addMC(soldCardNames.length);
-        } catch (NumberFormatException _) {
-            log.warn("Could not parse number of sold patents from details: {}", move.details());
-        }
+        String[] soldCardNames = move.details().split(", ");
+        player.addMC(soldCardNames.length);
     }
 
     public void clearLastMoveLabel() {
         controller.updateLastMoveLabel(null);
-    }
-
-    private void showProductionPhaseInReplay(GameMove move, GameManager gameManager) {
-        try {
-            int generation = Integer.parseInt(move.details());
-            List<ProductionReport> summaries = ProductionReportService.generateSummaries(gameManager);
-
-            ScreenUtils.showAsModal(
-                    controller.getSceneWindow(),
-                    "ProductionPhase.fxml",
-                    "Production Phase - Generation " + generation + " (Replay)",
-                    0.5, 0.6,
-                    (ProductionPhaseController c) -> c.replayShowProductionSummary(summaries, generation)
-            );
-
-            log.info("Production Phase modal shown in replay for Generation {}", generation);
-        } catch (Exception e) {
-            log.error("Failed to show Production Phase modal in replay", e);
-        }
     }
 }

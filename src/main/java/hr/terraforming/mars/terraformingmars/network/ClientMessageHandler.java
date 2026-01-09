@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.network;
 
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
+import hr.terraforming.mars.terraformingmars.exception.GameStateException;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
@@ -35,8 +36,7 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
         Corporation corp = CorporationFactory.getCorporationByName(msg.corporationName());
 
         if (corp == null) {
-            log.warn("Unknown corporation choice: {}", msg.corporationName());
-            return;
+            throw new GameStateException("Unknown corporation choice: " + msg.corporationName() + "' does not exist");
         }
 
         Player p = gameManager.getPlayerByName(playerName);
@@ -57,8 +57,7 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
         Player player = gameManager.getPlayerByName(playerName);
 
         if (player == null) {
-            log.error("Unknown player sent card choice: {}", playerName);
-            return;
+            throw new GameStateException("Unknown player '" + playerName + "' sent card choice");
         }
 
         List<Card> boughtCards = msg.cardNames().stream()
@@ -69,8 +68,7 @@ public record ClientMessageHandler(GameManager gameManager, ActionManager action
         int cost = boughtCards.size() * 3;
 
         if (player.getMC() < cost) {
-            log.warn("Player {} tried to buy cards without enough MC!", playerName);
-            return;
+            throw new GameStateException("Player '" + playerName + "' tried to buy cards without enough MC");
         }
 
         player.canSpendMC(cost);

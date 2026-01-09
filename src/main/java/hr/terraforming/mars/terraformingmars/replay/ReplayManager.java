@@ -21,13 +21,13 @@ public class ReplayManager {
 
     private final GameScreenController controller;
     private final ReplayLoader loader;
-    private final ReplayActionHandler actionHandler;
+    private final ReplayMoveExecutor actionHandler;
     private Timeline replayTimeline;
 
     public ReplayManager(GameScreenController controller) {
         this.controller = controller;
         this.loader = new ReplayLoader();
-        this.actionHandler = new ReplayActionHandler(controller, loader);
+        this.actionHandler = new ReplayMoveExecutor(controller, loader);
     }
 
     public void prepareForReplay() {

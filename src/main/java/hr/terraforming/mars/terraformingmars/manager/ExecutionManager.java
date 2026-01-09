@@ -2,6 +2,7 @@ package hr.terraforming.mars.terraformingmars.manager;
 
 import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.*;
+import hr.terraforming.mars.terraformingmars.exception.GameStateException;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class ExecutionManager {
             if (playerType == PlayerType.HOST || playerType == PlayerType.LOCAL) {
                 gameFlowManager.startProductionPhase();
             } else {
-                log.info("CLIENT: All players passed, waiting for server to change phase.");
+                log.info("All players passed, waiting for server to change phase.");
             }
         } else {
             controller.setViewedPlayer(getGameManager().getCurrentPlayer());
@@ -75,9 +76,9 @@ public class ExecutionManager {
         Player currentPlayer = getGameManager().getCurrentPlayer();
 
         if (!currentPlayer.canPlayCard(card)) {
-            log.warn("Player {} cannot play card '{}'. Requirements not met or insufficient funds.",
-                    currentPlayer.getName(), card.getName());
-            return;
+            throw new GameStateException(
+                    "Player '" + currentPlayer.getName() + "' cannot play card '" + card.getName() + "': requirements not met or insufficient MegaCredits"
+            );
         }
 
         GameMove move = new GameMove(currentPlayer.getName(), ActionType.PLAY_CARD, card.getName()
@@ -116,9 +117,10 @@ public class ExecutionManager {
         int finalCost = CostService.getFinalProjectCost(project, currentPlayer);
 
         if (currentPlayer.getMC() < finalCost) {
-            log.warn("{} failed to use standard project '{}': insufficient MC (has {}, needs {}).",
-                    currentPlayer.getName(), project.getName(), currentPlayer.getMC(), project.getCost());
-            return;
+            throw new GameStateException(
+                    "Player '" + currentPlayer.getName() + "' cannot use standard project '" + project.getName() + "': insufficient MC (need " + finalCost
+                            + ", have " + currentPlayer.getMC() + ")"
+            );
         }
 
         GameMove move = new GameMove(getGameManager().getCurrentPlayer().getName(),
@@ -133,8 +135,7 @@ public class ExecutionManager {
         } else {
             if (project == StandardProject.SELL_PATENTS) {
                 if (currentPlayer.getHand().isEmpty()) {
-                    log.warn("{} tried to sell patents but has no cards in hand.", currentPlayer.getName());
-                    return;
+                    throw new GameStateException(currentPlayer.getName() + " tried to sell patents but has no cards in hand.");
                 }
                 if (isLocalPlayerMove(currentPlayer)) {
                     actionManager.handleSellPatents();
@@ -152,8 +153,7 @@ public class ExecutionManager {
         Player currentPlayer = getGameManager().getCurrentPlayer();
 
         if (currentPlayer.resourceProperty(ResourceType.HEAT).get() < CONVERSION_COST) {
-            log.warn("{} failed to convert heat: insufficient resources.", currentPlayer.getName());
-            return;
+            throw new GameStateException("Player '" + currentPlayer.getName() + "' cannot convert heat: insufficient resources.");
         }
 
         currentPlayer.resourceProperty(ResourceType.HEAT).set(
@@ -179,8 +179,7 @@ public class ExecutionManager {
         int requiredPlants = currentPlayer.getGreeneryCost();
 
         if (currentPlayer.resourceProperty(ResourceType.PLANTS).get() < requiredPlants) {
-            log.warn("{} failed to convert plants: insufficient resources.", currentPlayer.getName());
-            return;
+            throw new GameStateException("Player '" + currentPlayer.getName() + "' cannot convert plants: insufficient resources.");
         }
 
         GameMove convertPlantsMove = new GameMove(

@@ -1,5 +1,6 @@
 package hr.terraforming.mars.terraformingmars.network;
 
+import hr.terraforming.mars.terraformingmars.exception.NetworkException;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.CardChoiceMessage;
@@ -58,9 +59,9 @@ public class ClientHandler implements Runnable {
 
         } catch (IOException | ClassNotFoundException e) {
             if (isServerRunning) {
-                log.error("Client handler error", e);
+                throw new NetworkException("Client handler connection error", e);
             } else {
-                log.info("Client disconnected gracefully");
+                log.info("Client disconnected");
             }
         } finally {
             cleanup();
@@ -104,7 +105,8 @@ public class ClientHandler implements Runnable {
             clientOutput.reset();
             clientOutput.flush();
         } catch (IOException e) {
-            log.error("Failed to send game state", e);
+            throw new NetworkException("Failed to send GameState to " + playerName, e);
+        } finally {
             cleanup();
         }
     }
@@ -117,7 +119,8 @@ public class ClientHandler implements Runnable {
             clientOutput.flush();
             log.debug("Sent object of type {} to {}", message.getClass().getSimpleName(), playerName);
         } catch (IOException e) {
-            log.error("Failed to send object to {}", playerName, e);
+            throw new NetworkException("Failed to send " + message.getClass().getSimpleName() + " to " + playerName, e);
+        } finally {
             cleanup();
         }
     }
@@ -134,7 +137,7 @@ public class ClientHandler implements Runnable {
             if (clientOutput != null) clientOutput.close();
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException e) {
-            log.error("Error closing client resources", e);
+            throw new NetworkException("Error closing client resources for " + playerName, e);
         }
     }
 }
