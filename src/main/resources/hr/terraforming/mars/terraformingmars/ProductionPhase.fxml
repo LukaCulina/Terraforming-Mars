@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="hr.terraforming.mars.terraformingmars.controller.game.ProductionPhaseController"
+      fx:id="productionPhaseScreen" styleClass="choose-window" alignment="CENTER" spacing="20">
+
+    <Label fx:id="titleLabel"
+           styleClass="main-title"/>
+
+    <ScrollPane fitToWidth="true"
+                styleClass="transparent-scroll-pane"
+                VBox.vgrow="ALWAYS">
+        <VBox fx:id="summariesContainer"
+              spacing="15"/>
+    </ScrollPane>
+
+    <Button fx:id="continueButton"
+            text="Continue"
+            styleClass="confirm-button"
+            onAction="#onContinue"
+            />
+</VBox>

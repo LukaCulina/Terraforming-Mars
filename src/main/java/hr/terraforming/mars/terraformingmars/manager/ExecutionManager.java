@@ -40,14 +40,23 @@ public class ExecutionManager {
         return player.getName().equals(myName);
     }
 
-    public void handlePassTurn() {
+    public void handlePassTurn(boolean isAutoPass) {
         if (getGameManager().getCurrentPhase() != GamePhase.ACTIONS) return;
 
-        String currentTurnName = getGameManager().getCurrentPlayer().getName();
-        GameMove move = new GameMove(currentTurnName, ActionType.PASS_TURN, "","passed their turn", LocalDateTime.now());
-
+        String currentPlayerName = getGameManager().getCurrentPlayer().getName();
         boolean allPlayersPassed = getGameManager().passTurn();
+
+        ActionType actionType = isAutoPass ? ActionType.AUTO_PASS : ActionType.PASS_TURN;
+        String message = isAutoPass ? "auto-passed after 2 actions" : "passed their turn";
+        GameMove move = new GameMove(currentPlayerName, actionType, "", message, LocalDateTime.now()
+        );
         actionManager.saveMove(move);
+
+        if (!isAutoPass) {
+            log.info("{} manually passed turn", currentPlayerName);
+        } else {
+            log.debug("{} auto-passed after 2 actions", currentPlayerName);
+        }
 
         if (allPlayersPassed) {
             PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();

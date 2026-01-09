@@ -20,18 +20,18 @@ import java.util.List;
 @Slf4j
 public class GameOverController {
 
-    @FXML private VBox gameOver;
+    @FXML private VBox gameOverScreen;
     @FXML private Label winnerLabel;
     @FXML private GridPane scoresGrid;
 
     @FXML
     public void initialize() {
-        GameScreenResizer.attachFontResizeListeners(gameOver, this::updateFontSizes);
+        GameScreenResizer.attachFontResizeListeners(gameOverScreen, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
         GameScreenResizer.updateFonts(
-                gameOver,
+                gameOverScreen,
                 new GameScreenResizer.FontMapping(".main-title", 0.05),
                 new GameScreenResizer.FontMapping(".choose-label", 0.035),
                 new GameScreenResizer.FontMapping(".header-label", 0.03),

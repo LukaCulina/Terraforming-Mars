@@ -163,7 +163,7 @@
   },
   {
     "name": "Io Mining Industries",
-    "cost": 41,
+    "cost": 7,
     "tags": ["SPACE", "JOVIAN"],
     "description": "Increase MC production by 1 for each Jovian tag you have.",
     "victoryPoints": 2,
@@ -174,7 +174,7 @@
   },
   {
     "name": "Deimos Down",
-    "cost": 31,
+    "cost": 20,
     "tags": ["SPACE"],
     "description": "Increase temperature by 1 step and gain 4 steel immediately.",
     "victoryPoints": 0,

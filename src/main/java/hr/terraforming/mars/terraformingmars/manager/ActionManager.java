@@ -29,6 +29,12 @@ public class ActionManager {
         this.gameFlowManager = gameFlowManager;
         this.gameMoveManager = new GameMoveManager( this);
         this.executionManager = new ExecutionManager(controller, this, gameFlowManager);
+        ProductionPhaseManager productionPhaseManager = new ProductionPhaseManager(
+                controller,
+                gameFlowManager,
+                this
+        );
+        gameFlowManager.setProductionPhaseManager(productionPhaseManager);
     }
 
     private GameManager getGameManager() {
@@ -40,10 +46,10 @@ public class ActionManager {
     }
 
     public void saveMove(GameMove move) {
-        XmlUtils.appendGameMove(move);
-
-        new Thread(new SaveNewGameMoveThread(move)).start();
-        Platform.runLater(() -> controller.updateLastMoveLabel(move));
+        if (move.actionType() != ActionType.AUTO_PASS) {
+            XmlUtils.appendGameMove(move);
+            new Thread(new SaveNewGameMoveThread(move)).start();
+        }
 
         controller.onLocalPlayerMove(move);
     }
@@ -66,8 +72,7 @@ public class ActionManager {
                     } catch (InterruptedException _) {
                         Thread.currentThread().interrupt();
                     }
-                    handlePassTurn();
-                });
+                    executionManager.handlePassTurn(true);                });
             } else {
                 log.info("Skipping auto-pass - phase: {}", getGameManager().getCurrentPhase());
             }
@@ -76,7 +81,7 @@ public class ActionManager {
 
 
     public void handlePassTurn() {
-        executionManager.handlePassTurn();
+        executionManager.handlePassTurn(false);
     }
 
     public void handlePlayCard(Card card) {

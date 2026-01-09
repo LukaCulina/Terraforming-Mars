@@ -82,7 +82,7 @@ public class GameMoveUtils {
     }
 
     public static Timeline createLastMoveTimeline(Label lastMoveLabel) {
-        Timeline lastMoveTimeline = new Timeline(new KeyFrame(Duration.seconds(2), _ -> {
+        Timeline lastMoveTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), _ -> {
             GetLastGameMoveThread thread = new GetLastGameMoveThread(lastMoveLabel);
             Thread t = new Thread(thread);
             t.setDaemon(true);
@@ -90,6 +90,33 @@ public class GameMoveUtils {
         }));
         lastMoveTimeline.setCycleCount(Animation.INDEFINITE);
         return lastMoveTimeline;
+    }
+
+    public static void updateLastMoveLabel(Label label, GameMove move) {
+        if (label == null) {
+            log.warn("Label is null, cannot update!");
+            return;
+        }
+
+        if (move != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(move.playerName()).append(" ");
+            sb.append(move.message());
+
+            if (move.row() != null) {
+                sb.append(" at (")
+                        .append(move.row())
+                        .append(", ")
+                        .append(move.col())
+                        .append(")");
+            }
+
+            label.setText(sb.toString());
+            log.debug("Last move label updated: {}", sb);
+        } else {
+            label.setText("");
+            log.debug("Last move label cleared");
+        }
     }
 
     public static void saveInitialSetupMove(GameManager gameManager) {

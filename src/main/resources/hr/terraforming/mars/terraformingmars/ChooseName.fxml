@@ -16,7 +16,7 @@
     <VBox spacing="15" alignment="CENTER" maxWidth="400">
         <Label text="Your Name:" styleClass="input-label"/>
         <TextField fx:id="nameInput"
-                   promptText="Enter your name (e.g., Luka)"
+                   promptText="Enter your name"
                    styleClass="text-input"
                    prefWidth="300"/>
     </VBox>

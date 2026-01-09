@@ -209,16 +209,6 @@ public class GameScreenController {
     }
 
     public void updateLastMoveLabel(GameMove lastGameMove) {
-        if (lastGameMove != null) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(lastGameMove.playerName()).append(" ");
-            sb.append(lastGameMove.message());
-            if (lastGameMove.row() != null) {
-                sb.append(" at (").append(lastGameMove.row()).append(", ").append(lastGameMove.col()).append(")");
-            }
-            lastMoveLabel.setText(sb.toString());
-        } else {
-            lastMoveLabel.setText("No moves recorded yet.");
-        }
+        GameMoveUtils.updateLastMoveLabel(lastMoveLabel, lastGameMove);
     }
 }

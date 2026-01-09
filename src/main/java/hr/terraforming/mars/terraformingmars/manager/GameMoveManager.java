@@ -68,7 +68,7 @@ public record GameMoveManager(ActionManager actionManager) {
 
             case CONVERT_PLANTS -> actionManager.handleConvertPlants();
 
-            case PASS_TURN -> actionManager.handlePassTurn();
+            case PASS_TURN, AUTO_PASS -> actionManager.handlePassTurn();
 
             case RESEARCH_COMPLETE -> log.debug("Processing RESEARCH_COMPLETE move");
 
@@ -77,6 +77,14 @@ public record GameMoveManager(ActionManager actionManager) {
             case OPEN_SELL_PATENTS_MODAL -> log.debug("Network: {} opened sell patents modal", move.playerName());
 
             case FINISH_FINAL_GREENERY -> handleFinishFinalGreenery(move);
+
+            case FINISH_PRODUCTION_PHASE -> {
+                PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
+                if (playerType == PlayerType.HOST) {
+                    getGameFlowManager().getProductionPhaseManager()
+                            .onPlayerContinue(move.playerName());
+                }
+            }
 
             default -> log.warn("Unhandled action type: {}", move.actionType());
         }

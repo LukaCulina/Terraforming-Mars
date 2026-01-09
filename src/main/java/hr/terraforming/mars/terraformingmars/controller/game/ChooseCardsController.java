@@ -164,8 +164,8 @@ public class ChooseCardsController {
         }
     }
 
-    public void replayShowChosenCards(List<String> boughtCardNames) {
-        chooseCardsLabel.setText("Replay: Player bought " + boughtCardNames.size() + " card(s)");
+    public void replayShowChosenCards(List<String> boughtCardNames, String playerName) {
+        chooseCardsLabel.setText(playerName + " bought " + boughtCardNames.size() + " card(s)");
         remainingMCLabel.setText("");
 
         cardsTile.getChildren().clear();

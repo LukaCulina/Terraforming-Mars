@@ -11,7 +11,7 @@ import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class WaitingScreenController {
+public class WaitingController {
     @FXML
     private Label statusLabel;
 

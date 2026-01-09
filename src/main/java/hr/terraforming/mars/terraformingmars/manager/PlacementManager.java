@@ -22,11 +22,9 @@ public class PlacementManager {
     private final FinalGreeneryCoordinator finalGreeneryCoordinator;
 
     private PlacementMode placementMode = PlacementMode.NONE;
-
     private StandardProject projectToPlace = null;
     private Card cardToPlace = null;
-    @Getter
-    private TileType tileTypeToPlace = null;
+    @Getter private TileType tileTypeToPlace = null;
     private Player finalGreeneryPlayer = null;
     private Runnable onPlacementCompleteCallback = null;
 
@@ -116,11 +114,18 @@ public class PlacementManager {
             actionManager.saveMove(moveInProgress);
         }
 
+        String message = switch (tileTypeToPlace) {
+            case GREENERY -> "placed a greenery tile";
+            case OCEAN -> "placed an ocean tile";
+            case CITY -> "placed a city tile";
+            default -> "placed a tile";
+        };
+
         GameMove placeTileMove = new GameMove(
                 owner.getName(),
                 ActionType.PLACE_TILE,
                 tileTypeToPlace.name(),
-                "placed " + tileTypeToPlace.name(),
+                message,
                 tile.getRow(),
                 tile.getCol(),
                 tileTypeToPlace,

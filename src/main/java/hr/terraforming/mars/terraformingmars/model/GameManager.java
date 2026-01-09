@@ -1,6 +1,7 @@
 package hr.terraforming.mars.terraformingmars.model;
 
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
+import hr.terraforming.mars.terraformingmars.manager.TurnManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,26 +17,80 @@ import lombok.extern.slf4j.Slf4j;
 public class GameManager implements Serializable {
 
     private final List<Player> players;
-    private int currentPlayerIndex = 0;
-    @Setter @Getter private GamePhase currentPhase;
-    @Getter private int generation = 0;
-    private final List<Player> passedPlayers = new ArrayList<>();
-    private transient GameBoard board;
-    private int cardDraftPlayerIndex = 0;
-    @Getter private int actionsTakenThisTurn = 0;
+    private final TurnManager turnManager;
     private final DeckService deckService;
-    @Getter private Player firstPlayer;
+    private transient GameBoard board;
+
+    private int cardDraftPlayerIndex = 0;
+
+    @Getter
+    private int generation = 0;
+
+    @Setter @Getter
+    private GamePhase currentPhase;
 
     public GameManager(List<Player> players, GameBoard gameBoard) {
         this.players = new ArrayList<>(players);
+        this.turnManager = new TurnManager(players);
         this.deckService = new DeckService();
-        this.firstPlayer = players.isEmpty() ? null : players.getFirst();
         relink(gameBoard);
+    }
+
+    public void startGame() {
+        currentPhase = GamePhase.ACTIONS;
+        generation = 1;
+        turnManager.reset();
+        log.info("Starting Generation {}. Phase: {}", generation, currentPhase);
+    }
+
+    public void startNewGeneration() {
+        generation++;
+        currentPhase = GamePhase.RESEARCH;
+        turnManager.reset();
+    }
+
+    public void beginActionPhase() {
+        currentPhase = GamePhase.ACTIONS;
+        turnManager.beginActionPhase();
+    }
+
+    public void doProduction() {
+        ProductionService.executeProduction(players);
+    }
+
+    public boolean passTurn() {
+        return turnManager.passTurn();
+    }
+
+    public void incrementActionsTaken() {
+        turnManager.incrementActionsTaken();
+    }
+
+    public int getActionsTakenThisTurn() {
+        return turnManager.getActionsTakenThisTurn();
+    }
+
+    public void rotateFirstPlayer() {
+        turnManager.rotateFirstPlayer();
+    }
+
+    public void resetForNewGame(GameBoard newBoard) {
+        board = newBoard;
+
+        for (Player p : players) {
+            p.setBoard(newBoard);
+        }
+
+        generation = 1;
+        currentPhase = GamePhase.ACTIONS;
+        cardDraftPlayerIndex = 0;
+        turnManager.reset();
+        deckService.reset();
     }
 
     public void relink(GameBoard gameBoard) {
         this.board = gameBoard;
-        for (Player p : this.players) {
+        for (Player p : players) {
             p.setBoard(gameBoard);
         }
     }
@@ -62,11 +117,7 @@ public class GameManager implements Serializable {
 
     public void assignCorporationAndAdvance(Corporation chosenCorp) {
         getCurrentPlayer().setCorporation(chosenCorp);
-        this.currentPlayerIndex++;
-
-        if (currentPlayerIndex >= players.size()) {
-            this.currentPlayerIndex = 0;
-        }
+        turnManager.advanceCorporationDraft();
     }
 
     public Player getCurrentDraftPlayer() {
@@ -80,109 +131,22 @@ public class GameManager implements Serializable {
     public boolean hasMoreDraftPlayers() {
         cardDraftPlayerIndex++;
         return cardDraftPlayerIndex < players.size();
-
     }
 
     public void resetDraftPhase() {
-        this.cardDraftPlayerIndex = 0;
+        cardDraftPlayerIndex = 0;
     }
 
-    public void incrementActionsTaken() {
-        this.actionsTakenThisTurn++;
+    public Player getCurrentPlayer() {
+        return turnManager.getCurrentPlayer();
     }
 
-    public void resetActionsTaken() {
-        this.actionsTakenThisTurn = 0;
+    public Player getFirstPlayer() {
+        return turnManager.getFirstPlayer();
     }
 
-    public void startGame() {
-        this.currentPhase = GamePhase.ACTIONS;
-        this.generation = 1;
-        this.currentPlayerIndex = 0;
-        this.passedPlayers.clear();
-        resetActionsTaken();
-        log.info("Starting Generation {}. Phase: {}", generation, currentPhase);
-    }
-
-    private void advanceToNextPlayer() {
-        if (passedPlayers.size() < players.size()) {
-            do {
-                currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-            } while (passedPlayers.contains(getCurrentPlayer()));
-        }
-    }
-
-    public boolean passTurn() {
-        Player p = getCurrentPlayer();
-        if (!passedPlayers.contains(p)) {
-            passedPlayers.add(p);
-            log.info("{} has passed.", p.getName());
-        }
-        resetActionsTaken();
-        if (passedPlayers.size() >= players.size()) {
-            return true;
-        } else {
-            advanceToNextPlayer();
-            return false;
-        }
-    }
-
-    public void doProduction() {
-        ProductionService.executeProduction(players);
-    }
-
-    public void startNewGeneration() {
-        generation++;
-        currentPhase = GamePhase.RESEARCH;
-        currentPlayerIndex = 0;
-        this.actionsTakenThisTurn = 0;
-        passedPlayers.clear();
-    }
-
-    public void beginActionPhase() {
-        this.currentPhase = GamePhase.ACTIONS;
-        if (firstPlayer != null) {
-            this.currentPlayerIndex = players.indexOf(firstPlayer);
-            log.info("Action phase beginning. Starting player: {}", getCurrentPlayer().getName());
-        } else {
-            this.currentPlayerIndex = 0;
-            log.warn("firstPlayer is null, defaulting to index 0");
-        }        this.actionsTakenThisTurn = 0;
-    }
-
-    public Player getCurrentPlayer() { return players.get(currentPlayerIndex); }
-
-    public List<Player> getPlayers() { return Collections.unmodifiableList(players); }
-
-    public GameBoard getGameBoard() { return board; }
-
-    public List<Player> calculateFinalScores() {
-        return ScoringService.calculateFinalScores(players);
-    }
-
-    public void resetForNewGame(GameBoard newBoard) {
-        this.board = newBoard;
-        for (Player p : this.players) {
-            p.setBoard(newBoard);
-        }
-
-        this.generation = 1;
-        this.currentPhase = GamePhase.ACTIONS;
-        this.currentPlayerIndex = 0;
-        this.actionsTakenThisTurn = 0;
-        this.passedPlayers.clear();
-        this.cardDraftPlayerIndex = 0;
-        deckService.reset();
-    }
-
-    public void setCurrentPlayerByName(String playerName) {
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getName().equals(playerName)) {
-                this.currentPlayerIndex = i;
-                return;
-            }
-        }
-        log.warn("Player '{}' not found", playerName);
+    public List<Player> getPlayers() {
+        return Collections.unmodifiableList(players);
     }
 
     public Player getPlayerByName(String playerName) {
@@ -195,16 +159,15 @@ public class GameManager implements Serializable {
                 });
     }
 
-    public void rotateFirstPlayer() {
-        if (players.isEmpty()) {
-            log.warn("Cannot rotate first player - no players in game!");
-            return;
-        }
+    public void setCurrentPlayerByName(String playerName) {
+        turnManager.setCurrentPlayerByName(playerName);
+    }
 
-        int currentIndex = players.indexOf(firstPlayer);
-        int nextIndex = (currentIndex + 1) % players.size();
-        this.firstPlayer = players.get(nextIndex);
+    public GameBoard getGameBoard() {
+        return board;
+    }
 
-        log.info("First player rotated to: {}", firstPlayer.getName());
+    public List<Player> calculateFinalScores() {
+        return ScoringService.calculateFinalScores(players);
     }
 }

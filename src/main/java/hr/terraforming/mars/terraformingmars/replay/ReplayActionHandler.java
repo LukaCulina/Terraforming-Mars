@@ -1,14 +1,13 @@
 package hr.terraforming.mars.terraformingmars.replay;
 
-import hr.terraforming.mars.terraformingmars.controller.game.ChooseCardsController;
-import hr.terraforming.mars.terraformingmars.controller.game.FinalGreeneryController;
-import hr.terraforming.mars.terraformingmars.controller.game.SellPatentsController;
-import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
+import hr.terraforming.mars.terraformingmars.controller.game.*;
 import hr.terraforming.mars.terraformingmars.enums.*;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.model.GameManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.service.CostService;
+import hr.terraforming.mars.terraformingmars.model.ProductionReport;
+import hr.terraforming.mars.terraformingmars.service.ProductionReportService;
 import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +26,14 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
             case OPEN_CHOOSE_CARDS_MODAL -> {
                 Platform.runLater(() -> {
                     List<String> cardNames = Arrays.asList(move.details().split(", "));
+                    String playerName = move.playerName();
 
                     ScreenUtils.showAsModal(
                             controller.getSceneWindow(),
                             "ChooseCards.fxml",
                             "Research (Replay)",
                             0.7, 0.8,
-                            (ChooseCardsController c) -> c.replayShowChosenCards(cardNames)
+                            (ChooseCardsController c) -> c.replayShowChosenCards(cardNames, playerName)
                     );
                 });
                 return;
@@ -41,8 +41,8 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
             case OPEN_SELL_PATENTS_MODAL -> {
                 Platform.runLater(() -> {
                     List<String> soldCardNames = Arrays.asList(move.details().split(", "));
-
-                    Player playerForReplay = gameManager.getPlayerByName(move.playerName());
+                    String playerName = move.playerName();
+                    Player playerForReplay = gameManager.getPlayerByName(playerName);
 
                     if (playerForReplay != null) {
                         List<Card> handBeforeSale = new ArrayList<>(playerForReplay.getHand());
@@ -52,7 +52,7 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
                                 "SellPatents.fxml",
                                 "Sell Patents (Replay)",
                                 0.5, 0.7,
-                                (SellPatentsController c) -> c.replayShowSoldPatents(soldCardNames, handBeforeSale)
+                                (SellPatentsController c) -> c.replayShowSoldPatents(soldCardNames, handBeforeSale, playerName)
                         );
                     }
                 });
@@ -66,12 +66,16 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
                     int cost = Integer.parseInt(parts[2]);
                     ScreenUtils.showAsModal(
                             controller.getSceneWindow(),
-                            "FinalGreeneryScreen.fxml",
+                            "FinalGreenery.fxml",
                             "Final Greenery (Replay)",
                             0.4, 0.5,
                             (FinalGreeneryController c) -> c.replayShowFinalGreenery(playerName, plants, cost)
                     );
                 });
+                return;
+            }
+            case OPEN_PRODUCTION_PHASE_MODAL -> {
+                Platform.runLater(() -> showProductionPhaseInReplay(move, gameManager));
                 return;
             }
             default -> { /*Nothing happens*/ }
@@ -181,5 +185,24 @@ public record ReplayActionHandler(GameScreenController controller, ReplayLoader 
 
     public void clearLastMoveLabel() {
         controller.updateLastMoveLabel(null);
+    }
+
+    private void showProductionPhaseInReplay(GameMove move, GameManager gameManager) {
+        try {
+            int generation = Integer.parseInt(move.details());
+            List<ProductionReport> summaries = ProductionReportService.generateSummaries(gameManager);
+
+            ScreenUtils.showAsModal(
+                    controller.getSceneWindow(),
+                    "ProductionPhase.fxml",
+                    "Production Phase - Generation " + generation + " (Replay)",
+                    0.5, 0.6,
+                    (ProductionPhaseController c) -> c.replayShowProductionSummary(summaries, generation)
+            );
+
+            log.info("Production Phase modal shown in replay for Generation {}", generation);
+        } catch (Exception e) {
+            log.error("Failed to show Production Phase modal in replay", e);
+        }
     }
 }

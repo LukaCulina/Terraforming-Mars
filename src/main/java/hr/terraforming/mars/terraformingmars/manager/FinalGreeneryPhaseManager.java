@@ -115,7 +115,7 @@ public class FinalGreeneryPhaseManager {
     private void showModalForPlayer(Player player) {
         ScreenUtils.showAsModal(
                 ownerWindow,
-                "FinalGreeneryScreen.fxml",
+                "FinalGreenery.fxml",
                 "Final Greenery Conversion - " + player.getName(),
                 0.7, 0.6,
                 (FinalGreeneryController c) -> c.setupSinglePlayer(

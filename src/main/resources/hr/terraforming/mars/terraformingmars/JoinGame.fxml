@@ -19,7 +19,7 @@
         <VBox spacing="8">
             <Label text="Your Name:" styleClass="input-label"/>
             <TextField fx:id="playerNameInput"
-                       promptText="Enter your name (e.g., Player 2)"
+                       promptText="Enter your name"
                        styleClass="text-input"
                        prefWidth="300"/>
         </VBox>
@@ -27,7 +27,7 @@
         <VBox spacing="8">
             <Label text="Server IP Address:" styleClass="input-label"/>
             <TextField fx:id="serverIpInput"
-                       promptText="Enter server IP (e.g., 192.168.1.100)"
+                       promptText="Enter server IP"
                        text="localhost"
                        styleClass="text-input"
                        prefWidth="300"/>

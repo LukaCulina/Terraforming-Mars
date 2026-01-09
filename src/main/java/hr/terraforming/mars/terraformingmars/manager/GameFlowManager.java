@@ -10,6 +10,7 @@ import hr.terraforming.mars.terraformingmars.util.XmlUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -18,9 +19,11 @@ import java.util.Map;
 
 @Slf4j
 public class GameFlowManager {
+    private static final String SYSTEM = "System";
 
     private final GameScreenController controller;
     @Getter private FinalGreeneryPhaseManager finalGreeneryManager;
+    @Getter @Setter private ProductionPhaseManager productionPhaseManager;
 
     public GameFlowManager(GameScreenController controller) {
         this.controller = controller;
@@ -36,6 +39,8 @@ public class GameFlowManager {
 
     public void startProductionPhase() {
         log.info("All players have passed. Starting Production Phase.");
+        getGameManager().setCurrentPhase(GamePhase.PRODUCTION);
+        saveProductionPhaseForReplay(getGameManager().getGeneration());
 
         getGameManager().doProduction();
 
@@ -55,22 +60,13 @@ public class GameFlowManager {
             finalGreeneryManager.start();
         }
         else {
-            startNewGeneration();
-        }
-    }
-
-    private void finishGame() {
-        log.info("Final Greenery phase complete. Calculating final scores.");
-
-        List<Player> rankedPlayers = getGameManager().calculateFinalScores();
-
-        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
-
-        var config = ApplicationConfiguration.getInstance();
-
-        if (config.getPlayerType() == PlayerType.HOST && config.getBroadcaster() != null) {
-            config.getBroadcaster().broadcast();
-            log.info("HOST broadcasted final GameState after scoring");
+            if (productionPhaseManager != null) {
+                productionPhaseManager.reset();
+                productionPhaseManager.showProductionPhaseScreen();
+            } else {
+                log.error("ProductionPhaseManager is null! Skipping modal.");
+                startNewGeneration();
+            }
         }
     }
 
@@ -98,11 +94,7 @@ public class GameFlowManager {
             case CLIENT -> log.info("CLIENT: Waiting for research cards from host...");
             case LOCAL -> {
                 log.info("LOCAL: Starting local research phase manager.");
-                new ResearchPhaseManager(
-                        getGameManager(),
-                        controller.getSceneWindow(),
-                        controller,
-                        this::finishResearchPhase
+                new ResearchPhaseManager(getGameManager(), controller.getSceneWindow(), controller, this::finishResearchPhase
                 ).start();
             }
             default -> log.warn("Unknown or null PlayerType in startNewGeneration(): {}", playerType);
@@ -114,27 +106,26 @@ public class GameFlowManager {
         getGameManager().rotateFirstPlayer();
         Player newFirstPlayer = getGameManager().getFirstPlayer();
 
-        log.info("First player changed: {} → {}",
-                previousFirstPlayer.getName(),
-                newFirstPlayer.getName());
+        log.info("First player changed: {} → {}", previousFirstPlayer.getName(), newFirstPlayer.getName());
 
-        GameMove playerOrderMove = new GameMove(
-                "System",
-                ActionType.PLAYER_ORDER,
-                newFirstPlayer.getName(),
-                "First player is now " + newFirstPlayer.getName(),
-                LocalDateTime.now()
+        GameMove playerOrderMove = new GameMove(SYSTEM, ActionType.PLAYER_ORDER, newFirstPlayer.getName(),
+                "First player is now " + newFirstPlayer.getName(), LocalDateTime.now()
         );
         XmlUtils.appendGameMove(playerOrderMove);
     }
 
+    public void startResearchPhase() {
+        log.info("Production phase complete. Starting Research Phase.");
+        startNewGeneration();
+    }
+
     public void finishResearchPhase() {
         if (getGameManager().getCurrentPhase() == GamePhase.ACTIONS) {
-            log.warn("Already in ACTIONS phase, skipping duplicate beginActionPhase()");
+            log.warn("Already in Actions phase, skipping duplicate beginActionPhase()");
             return;
         }
 
-        saveResearchPhaseSnapshot(getGameManager());
+        saveResearchPhaseForReplay(getGameManager());
 
         log.info("Research phase complete. Starting Action Phase.");
 
@@ -154,7 +145,32 @@ public class GameFlowManager {
         }
     }
 
-    private void saveResearchPhaseSnapshot(GameManager gameManager) {
+    private void finishGame() {
+        log.info("Final Greenery phase complete. Calculating final scores.");
+
+        List<Player> rankedPlayers = getGameManager().calculateFinalScores();
+
+        Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
+
+        var config = ApplicationConfiguration.getInstance();
+
+        if (config.getPlayerType() == PlayerType.HOST && config.getBroadcaster() != null) {
+            config.getBroadcaster().broadcast();
+            log.info("HOST broadcasted final GameState after scoring");
+        }
+    }
+
+
+    private void saveProductionPhaseForReplay(int generation) {
+        GameMove productionMove = new GameMove(SYSTEM, ActionType.OPEN_PRODUCTION_PHASE_MODAL, String.valueOf(generation),
+                "Production Phase - Generation " + generation, LocalDateTime.now()
+        );
+
+        XmlUtils.appendGameMove(productionMove);
+        log.debug("Production Phase saved for replay.");
+    }
+
+    private void saveResearchPhaseForReplay(GameManager gameManager) {
         Map<String, Object> researchData = new HashMap<>();
 
         for (Player player : gameManager.getPlayers()) {
@@ -165,11 +181,7 @@ public class GameFlowManager {
 
         String jsonDetails = new com.google.gson.Gson().toJson(researchData);
 
-        GameMove researchMove = new GameMove(
-                "System",
-                ActionType.RESEARCH_COMPLETE,
-                jsonDetails,
-                LocalDateTime.now()
+        GameMove researchMove = new GameMove(SYSTEM, ActionType.RESEARCH_COMPLETE, jsonDetails, LocalDateTime.now()
         );
 
         XmlUtils.appendGameMove(researchMove);

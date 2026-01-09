@@ -7,7 +7,7 @@
 <?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hr.terraforming.mars.terraformingmars.controller.game.GameOverController"
-      fx:id="gameOver" styleClass="choose-window" alignment="CENTER" spacing="20">
+      fx:id="gameOverScreen" styleClass="choose-window" alignment="CENTER" spacing="20">
 
     <Label text="GAME OVER" styleClass="main-title"/>
     <Label fx:id="winnerLabel" styleClass="choose-label"/>

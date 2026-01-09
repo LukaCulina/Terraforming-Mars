@@ -6,6 +6,7 @@ import hr.terraforming.mars.terraformingmars.controller.game.GameScreenControlle
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.factory.CardFactory;
 import hr.terraforming.mars.terraformingmars.factory.CorporationFactory;
+import hr.terraforming.mars.terraformingmars.manager.GameFlowManager;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.message.*;
 import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
@@ -30,6 +31,8 @@ public class PlayerMessageHandler {
             handleCorporationOffer(msg, lastGameState);
         } else if (message instanceof CardOfferMessage msg) {
             handleCardOffer(msg, lastGameState);
+        } else if (message instanceof ProductionPhaseMessage msg) {
+            handleProductionPhaseMessage(msg, lastGameState);
         } else if (message instanceof FinalGreeneryOfferMessage msg) {
             handleFinalGreeneryOffer(msg, lastGameState);
         } else if (message instanceof GameOverMessage) {
@@ -98,6 +101,31 @@ public class PlayerMessageHandler {
         );
     }
 
+    private void handleProductionPhaseMessage(ProductionPhaseMessage msg, GameState lastGameState) {
+        Platform.runLater(() -> {
+            log.info("CLIENT: Received ProductionPhaseMessage");
+
+            if (lastGameState == null) {
+                log.error("Cannot show Production Phase - lastGameState is null");
+                return;
+            }
+
+            var controller = ApplicationConfiguration.getInstance().getActiveGameController();
+            if (controller == null) {
+                log.error("Cannot show Production Phase - controller is null");
+                return;
+            }
+
+            GameFlowManager gameFlowManager = controller.getActionManager().getGameFlowManager();
+            if (gameFlowManager.getProductionPhaseManager() != null) {
+                gameFlowManager.getProductionPhaseManager()
+                        .handleProductionPhaseMessage(msg);
+            } else {
+                log.error("ProductionPhaseManager is null!");
+            }
+        });
+    }
+
     private void handleFinalGreeneryOffer(FinalGreeneryOfferMessage msg, GameState lastGameState) {
         Platform.runLater(() -> {
             String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
@@ -135,7 +163,7 @@ public class PlayerMessageHandler {
                                         GameScreenController controller, String playerName) {
         ScreenUtils.showAsModal(
                 controller.getSceneWindow(),
-                "FinalGreeneryScreen.fxml",
+                "FinalGreenery.fxml",
                 "Final Greenery Conversion",
                 0.4, 0.5,
                 (FinalGreeneryController c) -> c.setupSinglePlayer(

@@ -36,4 +36,5 @@ module hr.terraforming.mars.terraformingmars {
     opens hr.terraforming.mars.terraformingmars.controller.setup to javafx.fxml;
     opens hr.terraforming.mars.terraformingmars.controller.game to javafx.fxml;
     exports hr.terraforming.mars.terraformingmars.controller.game;
+    exports hr.terraforming.mars.terraformingmars.network.message;
 }

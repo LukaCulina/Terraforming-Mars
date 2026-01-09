@@ -75,9 +75,9 @@ public class ScreenNavigator {
     public static void showWaitingForPlayersScreen(GameManager gameManager, int expectedPlayerCount) {
         ScreenUtils.showAsScreen(
                 mainStage,
-                "WaitingScreen.fxml",
+                "Waiting.fxml",
                 "Waiting for Players",
-                (WaitingScreenController controller) -> controller.setup(gameManager, expectedPlayerCount)
+                (WaitingController controller) -> controller.setup(gameManager, expectedPlayerCount)
         );
     }
 

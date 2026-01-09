@@ -116,8 +116,8 @@ public class SellPatentsController {
         }
     }
 
-    public void replayShowSoldPatents(List<String> soldCardNames, List<Card> handBeforeSale) {
-        infoLabel.setText("Replay: Sold " + soldCardNames.size() + " card(s)");
+    public void replayShowSoldPatents(List<String> soldCardNames, List<Card> handBeforeSale, String playerName) {
+        infoLabel.setText(playerName + " sold " + soldCardNames.size() + " card(s)");
         confirmButton.setVisible(false);
         cancelButton.setVisible(false);
 
