@@ -115,7 +115,8 @@ public class GameScreenManager {
                         Player owner = claimed.get(milestone);
                         btn.setText(milestone.getName() + " (" + owner.getName() + ")");
                         btn.setDisable(true);
-                        btn.setStyle("-fx-background-color: #555;");
+                        btn.getStyleClass().add("project-milestone-claimed");
+
                     } else {
                         boolean canAfford = currentPlayer.getMC() >= 8;
                         boolean requirementMet = milestone.canClaim(currentPlayer);

@@ -30,8 +30,8 @@ public class ProductionPhaseController {
         GameScreenResizer.updateFonts(
                 productionPhaseScreen,
                 new GameScreenResizer.FontMapping(".main-title", 0.05),
-                new GameScreenResizer.FontMapping(".player-header", 0.04),
-                new GameScreenResizer.FontMapping(".resource-change-label", 0.035)
+                new GameScreenResizer.FontMapping(".player-header", 0.03),
+                new GameScreenResizer.FontMapping(".resource-change-label", 0.025)
         );
     }
 
