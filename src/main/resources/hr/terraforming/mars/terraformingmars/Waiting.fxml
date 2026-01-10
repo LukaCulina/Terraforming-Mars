@@ -19,8 +19,7 @@
                text="Waiting for all players to join..."
                styleClass="status-label"/>
 
-        <Label fx:id="playerCountLabel"
-               styleClass="status-label"/>
+        <Label fx:id="playerCountLabel" styleClass="status-label"/>
     </VBox>
 
     <ProgressIndicator/>

@@ -6,19 +6,14 @@
       fx:controller="hr.terraforming.mars.terraformingmars.controller.game.ProductionPhaseController"
       fx:id="productionPhaseScreen" styleClass="choose-window" alignment="CENTER" spacing="20">
 
-    <Label fx:id="titleLabel"
-           styleClass="main-title"/>
+    <Label fx:id="titleLabel" styleClass="main-title"/>
 
-    <ScrollPane fitToWidth="true"
-                styleClass="transparent-scroll-pane"
-                VBox.vgrow="ALWAYS">
-        <VBox fx:id="summariesContainer"
-              spacing="15"/>
+    <ScrollPane fitToWidth="true" styleClass="transparent-scroll-pane" VBox.vgrow="ALWAYS">
+        <VBox fx:id="summariesContainer" spacing="15"/>
     </ScrollPane>
 
     <Button fx:id="continueButton"
             text="Continue"
             styleClass="confirm-button"
-            onAction="#onContinue"
-            />
+            onAction="#onContinue"/>
 </VBox>
