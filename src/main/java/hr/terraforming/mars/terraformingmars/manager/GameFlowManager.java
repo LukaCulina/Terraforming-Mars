@@ -22,8 +22,10 @@ public class GameFlowManager {
     private static final String SYSTEM = "System";
 
     private final GameScreenController controller;
-    @Getter private FinalGreeneryPhaseManager finalGreeneryManager;
-    @Getter @Setter private ProductionPhaseManager productionPhaseManager;
+    @Getter
+    private FinalGreeneryPhaseManager finalGreeneryManager;
+    @Getter @Setter
+    private ProductionPhaseManager productionPhaseManager;
 
     public GameFlowManager(GameScreenController controller) {
         this.controller = controller;

@@ -24,8 +24,9 @@ public class ClientHandler implements Runnable {
     private ObjectInputStream clientInput;
     private volatile boolean isClientReady = false;
     private volatile boolean isServerRunning = true;
-    @Getter private String playerName;
-    private ClientMessageHandler messageHandler;
+    @Getter
+    private String playerName;
+    private ServerMessageHandler messageHandler;
     private final CompletableFuture<Void> readyFuture = new CompletableFuture<>();
 
     public ClientHandler(Socket socket, GameManager gameManager, ActionManager actionManager) {
@@ -35,7 +36,7 @@ public class ClientHandler implements Runnable {
     }
 
     public void setActionManager(ActionManager actionManager) {
-       messageHandler = new ClientMessageHandler(
+       messageHandler = new ServerMessageHandler(
                 gameManager,
                 actionManager,
                 this::broadcastIfAvailable

@@ -24,7 +24,8 @@ public class PlacementManager {
     private PlacementMode placementMode = PlacementMode.NONE;
     private StandardProject projectToPlace = null;
     private Card cardToPlace = null;
-    @Getter private TileType tileTypeToPlace = null;
+    @Getter
+    private TileType tileTypeToPlace = null;
     private Player finalGreeneryPlayer = null;
     private Runnable onPlacementCompleteCallback = null;
 
@@ -105,7 +106,6 @@ public class PlacementManager {
         }
 
         recordMoves(selectedTile, placementOwner);
-
         finishPlacement(wasFinalGreenery);
     }
 

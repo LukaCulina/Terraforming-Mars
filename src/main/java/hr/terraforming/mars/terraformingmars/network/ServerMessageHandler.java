@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public record ClientMessageHandler(GameManager gameManager, ActionManager actionManager, Runnable broadcaster) {
+public record ServerMessageHandler(GameManager gameManager, ActionManager actionManager, Runnable broadcaster) {
 
     public String handlePlayerName(PlayerNameMessage msg) {
         String playerName = msg.playerName();

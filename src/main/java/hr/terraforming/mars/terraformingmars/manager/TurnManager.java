@@ -14,8 +14,10 @@ public class TurnManager implements Serializable {
     private final List<Player> players;
     private int currentPlayerIndex = 0;
     private final List<Player> passedPlayers = new ArrayList<>();
-    @Getter private Player firstPlayer;
-    @Getter private int actionsTakenThisTurn = 0;
+    @Getter
+    private Player firstPlayer;
+    @Getter
+    private int actionsTakenThisTurn = 0;
 
     public TurnManager(List<Player> players) {
         this.players = players;

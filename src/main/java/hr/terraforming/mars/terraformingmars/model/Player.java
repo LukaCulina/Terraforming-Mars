@@ -16,8 +16,7 @@ import java.util.Map;
 @Slf4j
 public class Player implements Serializable {
 
-    @Setter
-    @Getter
+    @Getter @Setter
     private String name;
     @Getter
     private final int playerNumber;

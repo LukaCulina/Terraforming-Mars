@@ -11,14 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-public class PlayerGameStateCoordinator implements GameStateListener {
+public class ClientGameCoordinator implements GameStateListener {
 
     private GameplayPhase currentPhase = GameplayPhase.JOINING;
     private final GameClientThread client;
     private boolean nameSent = false;
     private static final AtomicInteger callCount = new AtomicInteger(0);
 
-    public PlayerGameStateCoordinator(GameClientThread client) {
+    public ClientGameCoordinator(GameClientThread client) {
         this.client = client;
     }
 

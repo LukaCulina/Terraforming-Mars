@@ -25,10 +25,17 @@ import java.util.function.Consumer;
 @Slf4j
 public class ChooseCardsController {
 
-    @FXML private TilePane cardsTile;
-    @FXML private Label remainingMCLabel;
-    @FXML private Label chooseCardsLabel;
-    @FXML private Button confirmButton;
+    @FXML
+    private TilePane cardsTile;
+
+    @FXML
+    private Label remainingMCLabel;
+
+    @FXML
+    private Label chooseCardsLabel;
+
+    @FXML
+    private Button confirmButton;
 
     private static final int CARD_PURCHASE_COST = 3;
     private static final String SELECTED_CARD_CLASS = "card-view-selected";

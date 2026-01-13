@@ -9,7 +9,7 @@ import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class HostGameStateCoordinator implements GameStateListener {
+public class HostGameCoordinator implements GameStateListener {
 
     private GameplayPhase currentPhase = GameplayPhase.JOINING;
 

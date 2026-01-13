@@ -11,6 +11,8 @@ import javafx.application.Platform;
 import javafx.stage.Window;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -18,9 +20,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ActionManager {
 
-    @Getter private final GameScreenController controller;
-    @Getter private final GameFlowManager gameFlowManager;
-    @Getter private final GameMoveManager gameMoveManager;
+    @Getter
+    private final GameScreenController controller;
+    @Getter
+    private final GameFlowManager gameFlowManager;
+    @Getter
+    private final GameMoveManager gameMoveManager;
     private final ExecutionManager executionManager;
 
     public ActionManager(GameScreenController controller,
@@ -119,7 +124,7 @@ public class ActionManager {
                     getGameManager().getCurrentPlayer().getName(),
                     ActionType.OPEN_SELL_PATENTS_MODAL,
                     cardNames,
-                    java.time.LocalDateTime.now()
+                    LocalDateTime.now()
             );
 
             saveMove(showModal);
@@ -129,7 +134,7 @@ public class ActionManager {
                     ActionType.SELL_PATENTS,
                     cardNames,
                     message,
-                    java.time.LocalDateTime.now()
+                    LocalDateTime.now()
             );
 
             performAction();

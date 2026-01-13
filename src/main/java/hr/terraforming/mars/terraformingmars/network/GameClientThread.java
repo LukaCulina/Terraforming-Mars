@@ -22,12 +22,12 @@ public class GameClientThread implements Runnable {
     private final List<GameStateListener> listeners = new ArrayList<>();
     private volatile boolean running = true;
     private GameState lastGameState;
-    private final PlayerMessageHandler messageDispatcher;
+    private final ClientMessageDispatcher messageDispatcher;
 
     public GameClientThread(String hostname, int port) {
         this.hostname = hostname;
         this.port = port;
-        this.messageDispatcher = new PlayerMessageHandler(this, listeners);
+        this.messageDispatcher = new ClientMessageDispatcher(this, listeners);
     }
 
     @Override

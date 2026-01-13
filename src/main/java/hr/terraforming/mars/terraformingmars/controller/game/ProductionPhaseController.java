@@ -15,11 +15,20 @@ import java.util.List;
 
 public class ProductionPhaseController {
 
-    @FXML private VBox productionPhaseScreen;
-    @FXML private Label titleLabel;
-    @FXML private VBox summariesContainer;
-    @FXML private Button continueButton;
-    @Setter private Runnable onContinueAction;
+    @FXML
+    private VBox productionPhaseScreen;
+
+    @FXML
+    private Label titleLabel;
+
+    @FXML
+    private VBox summariesContainer;
+
+    @FXML
+    private Button continueButton;
+
+    @Setter
+    private Runnable onContinueAction;
 
     @FXML
     public void initialize() {

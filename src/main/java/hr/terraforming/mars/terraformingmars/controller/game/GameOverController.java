@@ -20,9 +20,14 @@ import java.util.List;
 @Slf4j
 public class GameOverController {
 
-    @FXML private VBox gameOverScreen;
-    @FXML private Label winnerLabel;
-    @FXML private GridPane scoresGrid;
+    @FXML
+    private VBox gameOverScreen;
+
+    @FXML
+    private Label winnerLabel;
+
+    @FXML
+    private GridPane scoresGrid;
 
     @FXML
     public void initialize() {

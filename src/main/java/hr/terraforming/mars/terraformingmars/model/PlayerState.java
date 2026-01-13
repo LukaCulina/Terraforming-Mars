@@ -7,10 +7,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import lombok.Getter;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serial;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 public class PlayerState implements Serializable {
@@ -60,7 +57,7 @@ public class PlayerState implements Serializable {
     }
 
     @Serial
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out) throws IOException {
         trValue = tr.get();
         mcValue = mc.get();
         tilePointsValue = tilePoints.get();

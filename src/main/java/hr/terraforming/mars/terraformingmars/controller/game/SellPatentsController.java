@@ -24,11 +24,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SellPatentsController {
 
-    @FXML private VBox sellPatentsScreen;
-    @FXML private TilePane cardsForSalePane;
-    @FXML private Label infoLabel;
-    @FXML private Button confirmButton;
-    @FXML private Button cancelButton;
+    @FXML
+    private VBox sellPatentsScreen;
+
+    @FXML
+    private TilePane cardsForSalePane;
+
+    @FXML
+    private Label infoLabel;
+
+    @FXML
+    private Button confirmButton;
+
+    @FXML
+    private Button cancelButton;
 
     private Player player;
     private final Set<Card> selectedCards = new HashSet<>();

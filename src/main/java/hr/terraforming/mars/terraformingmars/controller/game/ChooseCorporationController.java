@@ -17,9 +17,14 @@ import java.util.List;
 @Slf4j
 public class ChooseCorporationController {
 
-    @FXML private HBox corporationButtonsContainer;
-    @FXML private Label chooseCorpLabel;
-    @FXML private Button confirmButton;
+    @FXML
+    private HBox corporationButtonsContainer;
+
+    @FXML
+    private Label chooseCorpLabel;
+
+    @FXML
+    private Button confirmButton;
 
     private GameManager gameManager;
     private List<Corporation> availableCorporations;

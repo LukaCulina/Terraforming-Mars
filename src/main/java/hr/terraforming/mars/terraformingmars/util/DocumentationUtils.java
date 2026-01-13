@@ -6,10 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -102,7 +99,7 @@ public final class DocumentationUtils {
         sb.append("<hr>");
     }
 
-    private static void appendAnnotations(StringBuilder sb, java.lang.reflect.AnnotatedElement element) {
+    private static void appendAnnotations(StringBuilder sb, AnnotatedElement element) {
         Annotation[] annotations = element.getDeclaredAnnotations();
         for (Annotation annotation : annotations) {
             sb.append("<span class='annotation'>@").append(annotation.annotationType().getSimpleName()).append("</span><br>");

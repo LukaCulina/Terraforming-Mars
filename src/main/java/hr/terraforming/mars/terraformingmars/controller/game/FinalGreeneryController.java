@@ -20,12 +20,23 @@ import java.util.List;
 @Slf4j
 public class FinalGreeneryController {
 
-    @FXML private VBox finalGreeneryScreen;
-    @FXML private Label playerNameLabel;
-    @FXML private Label plantsLabel;
-    @FXML private Label greeneryCostLabel;
-    @FXML private Button convertButton;
-    @FXML private Button finishButton;
+    @FXML
+    private VBox finalGreeneryScreen;
+
+    @FXML
+    private Label playerNameLabel;
+
+    @FXML
+    private Label plantsLabel;
+
+    @FXML
+    private Label greeneryCostLabel;
+
+    @FXML
+    private Button convertButton;
+
+    @FXML
+    private Button finishButton;
 
     private GameManager gameManager;
     private List<Player> players;

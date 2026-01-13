@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.stage.Window;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class ResearchPhaseManager {
                     ActionType.OPEN_CHOOSE_CARDS_MODAL,
                     cardNames,
                     message,
-                    java.time.LocalDateTime.now()
+                    LocalDateTime.now()
             );
             controller.getActionManager().saveMove(modalMove);
         }

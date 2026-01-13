@@ -12,17 +12,13 @@ import hr.terraforming.mars.terraformingmars.network.message.*;
 import hr.terraforming.mars.terraformingmars.util.ScreenUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
-public class PlayerMessageHandler {
-
-    private final GameClientThread client;
-    private final List<GameStateListener> listeners;
+public record ClientMessageDispatcher(GameClientThread client, List<GameStateListener> listeners) {
 
     public void dispatch(Object message, GameState lastGameState) {
         if (message instanceof GameState state) {
@@ -179,7 +175,7 @@ public class PlayerMessageHandler {
                 playerName,
                 ActionType.FINISH_FINAL_GREENERY,
                 "Final Greenery Complete",
-                java.time.LocalDateTime.now()
+                LocalDateTime.now()
         );
         client.sendMove(completionMove);
         log.debug("Client sent Final Greenery completion move to HOST");
