@@ -163,6 +163,7 @@ public class FinalGreeneryController {
             stage.close();
         } else if (playerNameLabel != null && playerNameLabel.getScene() != null) {
             Stage windowToClose = (Stage) playerNameLabel.getScene().getWindow();
+
             if (windowToClose != null) {
                 windowToClose.close();
             }

@@ -44,6 +44,7 @@ public class ChooseNameController {
         startServerInBackground(gameManager, gameBoard);
 
         int playerCount = ApplicationConfiguration.getInstance().getPlayerCount();
+
         ScreenNavigator.showWaitingForPlayersScreen(gameManager, playerCount);
     }
 
@@ -66,6 +67,7 @@ public class ChooseNameController {
                         null,
                         playerCount
                 );
+
                 NetworkBroadcaster broadcaster = new NetworkBroadcaster(gameManager, gameBoard);
                 ApplicationConfiguration.getInstance().setBroadcaster(broadcaster);
 

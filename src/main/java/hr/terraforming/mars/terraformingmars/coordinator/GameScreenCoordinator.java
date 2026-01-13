@@ -24,6 +24,7 @@ public class GameScreenCoordinator {
         if (gameManager == null || viewedPlayer == null || gameScreenManager == null) return;
 
         String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
         boolean isMyTurn = gameManager.getCurrentPlayer().getName().equals(myName);
 
         if (ApplicationConfiguration.getInstance().getPlayerType() == PlayerType.LOCAL) {

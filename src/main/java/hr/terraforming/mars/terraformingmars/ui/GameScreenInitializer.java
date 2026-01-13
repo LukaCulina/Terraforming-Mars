@@ -16,8 +16,7 @@ public class GameScreenInitializer {
         throw new IllegalStateException("Utility class");
     }
 
-    public static GameScreenManager initializeUI(GameScreenController controller,
-                                                 ActionManager actionManager) {
+    public static GameScreenManager initializeUI(GameScreenController controller, ActionManager actionManager) {
 
         HexBoardDrawer hexBoardDrawer = new HexBoardDrawer(
                 controller.getHexBoardPane(),
@@ -36,7 +35,8 @@ public class GameScreenInitializer {
         );
 
         ActionPanelComponents actionPanel = new ActionPanelComponents(
-                controller.milestonesBox, controller.standardProjectsBox
+                controller.milestonesBox,
+                controller.standardProjectsBox
         );
 
         PlayerControlComponents controls = new PlayerControlComponents(
@@ -47,8 +47,11 @@ public class GameScreenInitializer {
         );
 
         GameScreenManager gameScreen = new GameScreenManager(
-                controller, hexBoardDrawer,
-                statusComponents, actionPanel, controls
+                controller,
+                hexBoardDrawer,
+                statusComponents,
+                actionPanel,
+                controls
         );
 
         initializeUIComponents(controller, actionManager, actionPanel, controls);
@@ -58,10 +61,8 @@ public class GameScreenInitializer {
         return gameScreen;
     }
 
-    private static void initializeUIComponents(GameScreenController controller,
-                                               ActionManager actionManager,
-                                               ActionPanelComponents actionPanels,
-                                               PlayerControlComponents playerControls) {
+    private static void initializeUIComponents(GameScreenController controller, ActionManager actionManager,
+                                               ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
         UIComponentBuilder componentBuilder = new UIComponentBuilder(
                 controller, actionManager, controller.getGameManager()
         );

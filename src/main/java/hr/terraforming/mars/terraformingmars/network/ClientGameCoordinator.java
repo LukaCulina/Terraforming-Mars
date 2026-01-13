@@ -25,6 +25,7 @@ public class ClientGameCoordinator implements GameStateListener {
     @Override
     public void onGameStateReceived(GameState state) {
         int callId = callCount.incrementAndGet();
+
         log.debug("CALL #{} from THREAD: {}", callId, Thread.currentThread().getName());
 
         Platform.runLater(() -> {
@@ -81,6 +82,7 @@ public class ClientGameCoordinator implements GameStateListener {
 
     private void handlePlayingPhase(GameState state) {
         var controller = ApplicationConfiguration.getInstance().getActiveGameController();
+
         if (controller != null) {
             controller.updateFromNetwork(state);
         } else {

@@ -134,6 +134,7 @@ public class ChooseCardsController {
 
         if (playerType == PlayerType.CLIENT) {
             var client = config.getGameClient();
+
             if (client != null) {
                 client.sendCardChoice(boughtCards);
             }
@@ -166,6 +167,7 @@ public class ChooseCardsController {
 
     private void closeWindow() {
         Stage stage = (Stage) cardsTile.getScene().getWindow();
+
         if (stage != null) {
             stage.close();
         }

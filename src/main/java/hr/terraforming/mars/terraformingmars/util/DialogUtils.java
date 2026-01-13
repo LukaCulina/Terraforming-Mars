@@ -8,8 +8,7 @@ public class DialogUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static void showDialog(Alert.AlertType alertType,
-                                  String title, String message) {
+    public static void showDialog(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);

@@ -22,6 +22,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
     public void distributeInitialCorporations() {
         log.debug("Host distributing corporations to all players...");
+
         gameManager.shuffleCorporations();
 
         for (Player player : gameManager.getPlayers()) {
@@ -37,6 +38,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
     public void distributeInitialCards() {
         log.debug("Host distributing initial project cards...");
+
         gameManager.shuffleCards();
 
         for (Player player : gameManager.getPlayers()) {
@@ -52,6 +54,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
     public void distributeResearchCards() {
         log.debug("Host distributing Research Phase cards...");
+
         for (Player player : gameManager.getPlayers()) {
             List<Card> offer = gameManager.drawCards(RESEARCH_CARD_COUNT);
 
@@ -76,7 +79,9 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
     private void handleHostConfirmation(Player player, List<Card> boughtCards) {
         log.debug("Host confirming research cards. Count: {}", boughtCards.size());
+
         int cost = boughtCards.size() * CARD_COST;
+
         if (player.getMC() >= cost) {
             player.canSpendMC(cost);
             player.getHand().addAll(boughtCards);
@@ -84,6 +89,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
         synchronized (gameManager) {
             boolean morePlayersToChoose = gameManager.hasMoreDraftPlayers();
+
             if (!morePlayersToChoose) {
                 log.info("Host finished last. Triggering next phase (ACTIONS).");
                 if (actionManager != null && actionManager.getGameFlowManager() != null) {

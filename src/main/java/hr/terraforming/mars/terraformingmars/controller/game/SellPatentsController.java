@@ -86,6 +86,7 @@ public class SellPatentsController {
             selectedCards.add(card);
             cardNode.getStyleClass().add(SELECTED_CARD_STYLE);
         }
+
         updateInfoLabel();
     }
 
@@ -105,6 +106,7 @@ public class SellPatentsController {
             player.addMC(cardsSoldCount);
 
             log.info("{} sold {} patent(s) for {} MC.", player.getName(), selectedCards.size(), selectedCards.size());
+
             if (onSaleComplete != null) {
                 onSaleComplete.accept(new ArrayList<>(selectedCards));
             }
@@ -120,6 +122,7 @@ public class SellPatentsController {
 
     private void closeWindow() {
         Stage stage = (Stage) cardsForSalePane.getScene().getWindow();
+
         if (stage != null) {
             stage.close();
         }

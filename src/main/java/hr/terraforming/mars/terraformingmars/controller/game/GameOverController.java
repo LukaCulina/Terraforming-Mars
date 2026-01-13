@@ -76,6 +76,7 @@ public class GameOverController {
         Label label = new Label(text);
         label.getStyleClass().add("header-label");
         label.setMaxWidth(Double.MAX_VALUE);
+
         return label;
     }
 
@@ -83,6 +84,7 @@ public class GameOverController {
         Label label = new Label(text);
         label.getStyleClass().add("normal-label");
         label.setMaxWidth(Double.MAX_VALUE);
+
         return label;
     }
 

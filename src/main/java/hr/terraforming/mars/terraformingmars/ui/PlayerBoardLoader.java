@@ -20,7 +20,9 @@ public class PlayerBoardLoader {
             FXMLLoader loader = new FXMLLoader(
                     PlayerBoardLoader.class.getResource("/hr/terraforming/mars/terraformingmars/PlayerBoard.fxml")
             );
+
             Node boardNode = loader.load();
+
             PlayerBoardController controller = loader.getController();
 
             container.getChildren().setAll(boardNode);

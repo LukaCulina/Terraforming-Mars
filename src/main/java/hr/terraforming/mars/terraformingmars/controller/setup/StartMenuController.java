@@ -19,6 +19,7 @@ public class StartMenuController {
     @FXML
     private void startNewGame() {
         log.info("Starting new game");
+
         gameStateService.clearGameData();
         ScreenNavigator.showChooseModeScreen();
     }
@@ -26,10 +27,12 @@ public class StartMenuController {
     @FXML
     private void loadSavedGame() {
         log.info("Loading saved game");
+
         GameState loadedState = gameStateService.loadGame();
 
         if (loadedState != null) {
             var result = ScreenUtils.loadFxml("GameScreen.fxml");
+
             GameScreenController controller = (GameScreenController) result.controller();
             Scene mainGameScene = ScreenUtils.createScene(result.root());
 
@@ -39,10 +42,12 @@ public class StartMenuController {
             ScreenNavigator.getMainStage().setTitle("Terraforming Mars - Loaded Game");
 
             Platform.runLater(() ->
-                    DialogUtils.showDialog(Alert.AlertType.INFORMATION, "Load Game Successful!", "The game has been successfully loaded!")
+                    DialogUtils.showDialog(Alert.AlertType.INFORMATION, "Load Game Successful!",
+                            "The game has been successfully loaded!")
             );
         } else {
-            DialogUtils.showDialog(Alert.AlertType.ERROR, "Load Game Failed!", "Failed to load game. No saved game found.");
+            DialogUtils.showDialog(Alert.AlertType.ERROR, "Load Game Failed!",
+                    "Failed to load game. No saved game found.");
         }
     }
 }

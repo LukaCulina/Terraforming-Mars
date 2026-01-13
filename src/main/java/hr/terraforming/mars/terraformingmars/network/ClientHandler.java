@@ -81,6 +81,7 @@ public class ClientHandler implements Runnable {
 
     private void broadcastIfAvailable() {
         NetworkBroadcaster broadcaster = ApplicationConfiguration.getInstance().getBroadcaster();
+
         if (broadcaster != null) {
             broadcaster.broadcast();
         }
@@ -113,6 +114,7 @@ public class ClientHandler implements Runnable {
 
     public synchronized void sendObject(Object message) {
         if (!isClientReady) return;
+
         try {
             clientOutput.writeObject(message);
             clientOutput.reset();

@@ -92,6 +92,7 @@ public class ProductionPhaseController {
         if (onContinueAction != null) {
             onContinueAction.run();
         }
+
         ((Stage) titleLabel.getScene().getWindow()).close();
     }
 }

@@ -57,6 +57,7 @@ public class GameClientThread implements Runnable {
         if (message instanceof GameState state) {
             lastGameState = state;
         }
+
         messageDispatcher.dispatch(message, lastGameState);
     }
 
@@ -137,6 +138,7 @@ public class GameClientThread implements Runnable {
         synchronized (listeners) {
             listeners.clear();
         }
+
         lastGameState = null;
         serverOutput = null;
     }

@@ -48,8 +48,8 @@ public class HostGameCoordinator implements GameStateListener {
     }
 
     private void handleCardDraft(GameState state) {
-
         Player currentPlayer = state.gameManager().getCurrentDraftPlayer();
+
         if (currentPlayer == null) {
             log.info("Card Draft completed, starting game");
             currentPhase = GameplayPhase.PLAYING;
@@ -59,6 +59,7 @@ public class HostGameCoordinator implements GameStateListener {
 
     private void handlePlayingPhase(GameState state) {
         var controller = ApplicationConfiguration.getInstance().getActiveGameController();
+
         if (controller != null) {
             controller.updateFromNetwork(state);
         } else {

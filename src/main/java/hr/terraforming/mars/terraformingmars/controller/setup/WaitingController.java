@@ -47,6 +47,7 @@ public class WaitingController {
 
     private void checkIfAllPlayersJoined() {
         int joinedCount = 0;
+
         for (var player : gameManager.getPlayers()) {
             if (!player.getName().startsWith("Player ")) {
                 joinedCount++;
@@ -65,6 +66,7 @@ public class WaitingController {
     public void cleanup() {
         if (pollingTimeline != null) {
             pollingTimeline.stop();
+
             log.info("Polling timeline stopped");
         }
     }

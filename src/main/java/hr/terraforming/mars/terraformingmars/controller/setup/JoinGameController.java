@@ -57,6 +57,7 @@ public class JoinGameController {
         }
 
         int port;
+
         try {
             port = Integer.parseInt(portText);
         } catch (NumberFormatException _) {

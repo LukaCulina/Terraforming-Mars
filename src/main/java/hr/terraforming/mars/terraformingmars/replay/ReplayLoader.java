@@ -43,6 +43,7 @@ public class ReplayLoader {
 
         for (Player player : gameManager.getPlayers()) {
             Map<String, Object> playerData = dataMap.get(player.getName());
+
             if (playerData == null) {
                 continue;
             }
@@ -57,11 +58,14 @@ public class ReplayLoader {
             return;
         }
 
-        String corpName = (String) playerData.get("corporation");
-        Corporation corp = CorporationFactory.getCorporationByName(corpName);
-        if (corp != null) {
-            player.setCorporation(corp);
+        String corporationName = (String) playerData.get("corporation");
+
+        Corporation corporation = CorporationFactory.getCorporationByName(corporationName);
+
+        if (corporation != null) {
+            player.setCorporation(corporation);
         }
+
         player.resetForNewGame();
     }
 

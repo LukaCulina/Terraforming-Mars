@@ -11,13 +11,14 @@ public final class CostService {
     }
 
     public static int getFinalProjectCost(StandardProject project, Player player) {
-        Corporation corp = player.getCorporation();
+        Corporation corporation = player.getCorporation();
+
         int finalCost = project.getCost();
 
-        if (corp != null) {
-            if (corp.name().equals("Tharsis Republic") && project == StandardProject.CITY) {
+        if (corporation != null) {
+            if (corporation.name().equals("Tharsis Republic") && project == StandardProject.CITY) {
                 finalCost -= 4;
-            } else if (corp.name().equals("Thorgate") && project == StandardProject.POWER_PLANT) {
+            } else if (corporation.name().equals("Thorgate") && project == StandardProject.POWER_PLANT) {
                 finalCost -= 3;
             }
         }

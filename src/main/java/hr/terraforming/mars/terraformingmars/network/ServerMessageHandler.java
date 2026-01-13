@@ -22,9 +22,9 @@ public record ServerMessageHandler(GameManager gameManager, ActionManager action
     public String handlePlayerName(PlayerNameMessage msg) {
         String playerName = msg.playerName();
 
-        for (Player p : gameManager.getPlayers()) {
-            if (p.getName().startsWith("Player ")) {
-                p.setName(playerName);
+        for (Player player : gameManager.getPlayers()) {
+            if (player.getName().startsWith("Player ")) {
+                player.setName(playerName);
                 broadcaster.run();
                 break;
             }
@@ -33,16 +33,18 @@ public record ServerMessageHandler(GameManager gameManager, ActionManager action
     }
 
     public void handleCorporationChoice(String playerName, CorporationChoiceMessage msg) {
-        Corporation corp = CorporationFactory.getCorporationByName(msg.corporationName());
+        Corporation corporation = CorporationFactory.getCorporationByName(msg.corporationName());
 
-        if (corp == null) {
+        if (corporation == null) {
             throw new GameStateException("Unknown corporation choice: " + msg.corporationName() + "' does not exist");
         }
 
         Player p = gameManager.getPlayerByName(playerName);
+
         if (p != null) {
-            p.setCorporation(corp);
+            p.setCorporation(corporation);
         }
+
         broadcaster.run();
 
         boolean allPlayersChoseCorporations = gameManager.getPlayers().stream()

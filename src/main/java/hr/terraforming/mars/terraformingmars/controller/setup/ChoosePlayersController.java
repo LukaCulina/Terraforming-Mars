@@ -19,17 +19,17 @@ public class ChoosePlayersController {
 
     @FXML
     private void selectPlayers(ActionEvent event) {
-        Button btn = (Button) event.getSource();
+        Button button = (Button) event.getSource();
 
         try {
-            int numberOfPlayers = Integer.parseInt(btn.getText());
+            int numberOfPlayers = Integer.parseInt(button.getText());
 
             log.info("Number of players selected: {}", numberOfPlayers);
 
             createGame(numberOfPlayers);
 
         } catch (NumberFormatException e) {
-            log.error("Failed to parse number of players from button text: '{}'", btn.getText(), e);
+            log.error("Failed to parse number of players from button text: '{}'", button.getText(), e);
         }
     }
 

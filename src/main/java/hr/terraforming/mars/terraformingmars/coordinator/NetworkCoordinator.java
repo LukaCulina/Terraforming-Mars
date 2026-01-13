@@ -109,10 +109,10 @@ public record NetworkCoordinator(GameScreenController controller) {
 
         if (isMyTurn && isActionPhase) {
             controller.setGameControlsEnabled(true);
-            log.debug("Controls ENABLED for {}", myPlayerName);
+            log.debug("Controls enabled for {}", myPlayerName);
         } else {
             controller.setGameControlsEnabled(false);
-            log.debug("Controls DISABLED (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
+            log.debug("Controls disabled (MyTurn: {}, ActionPhase: {})", isMyTurn, isActionPhase);
         }
     }
 
