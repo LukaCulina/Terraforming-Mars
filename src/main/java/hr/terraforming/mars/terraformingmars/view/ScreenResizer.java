@@ -1,6 +1,5 @@
-package hr.terraforming.mars.terraformingmars.ui;
+package hr.terraforming.mars.terraformingmars.view;
 
-import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
 import javafx.animation.PauseTransition;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,9 +7,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-public class GameScreenResizer {
+public class ScreenResizer {
 
-    private GameScreenResizer() {
+    private ScreenResizer() {
         throw new IllegalStateException("Utility class");
     }
 

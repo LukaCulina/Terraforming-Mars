@@ -1,7 +1,7 @@
 package hr.terraforming.mars.terraformingmars.controller.game;
 
 import hr.terraforming.mars.terraformingmars.model.ProductionReport;
-import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
+import hr.terraforming.mars.terraformingmars.view.ScreenResizer;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,15 +32,15 @@ public class ProductionPhaseController {
 
     @FXML
     public void initialize() {
-        GameScreenResizer.attachFontResizeListeners(productionPhaseScreen, this::updateFontSizes);
+        ScreenResizer.attachFontResizeListeners(productionPhaseScreen, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
-        GameScreenResizer.updateFonts(
+        ScreenResizer.updateFonts(
                 productionPhaseScreen,
-                new GameScreenResizer.FontMapping(".main-title", 0.05),
-                new GameScreenResizer.FontMapping(".player-header", 0.03),
-                new GameScreenResizer.FontMapping(".resource-change-label", 0.025)
+                new ScreenResizer.FontMapping(".main-title", 0.05),
+                new ScreenResizer.FontMapping(".player-header", 0.03),
+                new ScreenResizer.FontMapping(".resource-change-label", 0.025)
         );
     }
 

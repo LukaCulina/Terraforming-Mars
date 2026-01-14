@@ -1,10 +1,8 @@
-package hr.terraforming.mars.terraformingmars.ui;
+package hr.terraforming.mars.terraformingmars.view;
 
 import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.manager.ActionManager;
 import hr.terraforming.mars.terraformingmars.manager.GameScreenManager;
-import hr.terraforming.mars.terraformingmars.view.HexBoardDrawer;
-import hr.terraforming.mars.terraformingmars.view.UIComponentBuilder;
 import hr.terraforming.mars.terraformingmars.view.component.ActionPanelComponents;
 import hr.terraforming.mars.terraformingmars.view.component.GlobalStatusComponents;
 import hr.terraforming.mars.terraformingmars.view.component.PlayerControlComponents;
@@ -16,7 +14,7 @@ public class GameScreenInitializer {
         throw new IllegalStateException("Utility class");
     }
 
-    public static GameScreenManager initializeUI(GameScreenController controller, ActionManager actionManager) {
+    public static GameScreenManager initialize(GameScreenController controller, ActionManager actionManager) {
 
         HexBoardDrawer hexBoardDrawer = new HexBoardDrawer(
                 controller.getHexBoardPane(),
@@ -54,16 +52,16 @@ public class GameScreenInitializer {
                 controls
         );
 
-        initializeUIComponents(controller, actionManager, actionPanel, controls);
-        setupBindings(controller, statusComponents, actionPanel, controls);
-        setupResponsiveFonts(controller.gameBoardPane);
+        initializeComponents(controller, actionManager, actionPanel, controls);
+        initializeBindings(controller, statusComponents, actionPanel, controls);
+        initializeResponsiveFonts(controller.gameBoardPane);
 
         return gameScreen;
     }
 
-    private static void initializeUIComponents(GameScreenController controller, ActionManager actionManager,
-                                               ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
-        UIComponentBuilder componentBuilder = new UIComponentBuilder(
+    private static void initializeComponents(GameScreenController controller, ActionManager actionManager,
+                                             ActionPanelComponents actionPanels, PlayerControlComponents playerControls) {
+        ViewBuilder componentBuilder = new ViewBuilder(
                 controller, actionManager, controller.getGameManager()
         );
         componentBuilder.createPlayerButtons(playerControls.playerListBar());
@@ -75,10 +73,10 @@ public class GameScreenInitializer {
         playerControls.convertPlantsButton().setOnAction(_ -> actionManager.handleConvertPlants());
     }
 
-    private static void setupBindings(GameScreenController controller,
-                                      GlobalStatusComponents globalStatus,
-                                      ActionPanelComponents actionPanels,
-                                      PlayerControlComponents playerControls) {
+    private static void initializeBindings(GameScreenController controller,
+                                           GlobalStatusComponents globalStatus,
+                                           ActionPanelComponents actionPanels,
+                                           PlayerControlComponents playerControls) {
         BorderPane gameBoardPane = controller.gameBoardPane;
         BorderPane playerInterface = controller.playerInterface;
         GridPane bottomGrid = controller.bottomGrid;
@@ -110,11 +108,11 @@ public class GameScreenInitializer {
                 .bind(globalStatus.oceansLabel().prefWidthProperty());
     }
 
-    private static void setupResponsiveFonts(BorderPane gameBoardPane) {
-        GameScreenResizer.attachFontResizeListeners(gameBoardPane, () ->
-                GameScreenResizer.updateFonts(gameBoardPane,
-                        new GameScreenResizer.FontMapping(".convert-button", 0.015),
-                        new GameScreenResizer.FontMapping(".project-milestone", 0.025)
+    private static void initializeResponsiveFonts(BorderPane gameBoardPane) {
+        ScreenResizer.attachFontResizeListeners(gameBoardPane, () ->
+                ScreenResizer.updateFonts(gameBoardPane,
+                        new ScreenResizer.FontMapping(".convert-button", 0.015),
+                        new ScreenResizer.FontMapping(".project-milestone", 0.025)
                 )
         );
     }

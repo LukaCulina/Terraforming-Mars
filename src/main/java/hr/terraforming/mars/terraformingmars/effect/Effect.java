@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.effects;
+package hr.terraforming.mars.terraformingmars.effect;
 
 import hr.terraforming.mars.terraformingmars.model.Player;
 import hr.terraforming.mars.terraformingmars.model.GameManager;

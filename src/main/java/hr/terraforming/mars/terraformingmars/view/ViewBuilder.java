@@ -14,8 +14,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-public record UIComponentBuilder(GameScreenController controller, ActionManager actionManager,
-                                 GameManager gameManager) {
+public record ViewBuilder(GameScreenController controller, ActionManager actionManager,
+                          GameManager gameManager) {
 
     public void createPlayerButtons(HBox playerListBar) {
         playerListBar.getChildren().clear();

@@ -1,4 +1,4 @@
-package hr.terraforming.mars.terraformingmars.ui;
+package hr.terraforming.mars.terraformingmars.view;
 
 import hr.terraforming.mars.terraformingmars.controller.game.PlayerBoardController;
 import hr.terraforming.mars.terraformingmars.exception.FxmlLoadException;

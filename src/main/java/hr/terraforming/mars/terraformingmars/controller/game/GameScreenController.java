@@ -3,7 +3,7 @@ package hr.terraforming.mars.terraformingmars.controller.game;
 import hr.terraforming.mars.terraformingmars.coordinator.*;
 import hr.terraforming.mars.terraformingmars.replay.ReplayManager;
 import hr.terraforming.mars.terraformingmars.service.GameStateService;
-import hr.terraforming.mars.terraformingmars.ui.PlayerBoardLoader;
+import hr.terraforming.mars.terraformingmars.view.PlayerBoardLoader;
 import hr.terraforming.mars.terraformingmars.util.*;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import hr.terraforming.mars.terraformingmars.manager.*;

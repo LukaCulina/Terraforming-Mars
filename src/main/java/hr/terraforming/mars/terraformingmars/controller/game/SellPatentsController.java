@@ -2,7 +2,7 @@ package hr.terraforming.mars.terraformingmars.controller.game;
 
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
+import hr.terraforming.mars.terraformingmars.view.ScreenResizer;
 import hr.terraforming.mars.terraformingmars.view.CardViewBuilder;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -46,16 +46,16 @@ public class SellPatentsController {
 
     @FXML
     private void initialize() {
-        GameScreenResizer.attachFontResizeListeners(sellPatentsScreen, this::updateFontSizes);
+        ScreenResizer.attachFontResizeListeners(sellPatentsScreen, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
-        GameScreenResizer.updateFonts(
+        ScreenResizer.updateFonts(
                 sellPatentsScreen,
-                new GameScreenResizer.FontMapping(".choose-label", 0.05),
-                new GameScreenResizer.FontMapping(".info-label", 0.04),
-                new GameScreenResizer.FontMapping(".confirm-button", 0.03),
-                new GameScreenResizer.FontMapping(".cancel-sale", 0.03)
+                new ScreenResizer.FontMapping(".choose-label", 0.05),
+                new ScreenResizer.FontMapping(".info-label", 0.04),
+                new ScreenResizer.FontMapping(".confirm-button", 0.03),
+                new ScreenResizer.FontMapping(".cancel-sale", 0.03)
         );
     }
 

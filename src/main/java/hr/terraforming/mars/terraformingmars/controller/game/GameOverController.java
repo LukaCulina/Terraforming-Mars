@@ -4,7 +4,7 @@ import hr.terraforming.mars.terraformingmars.manager.GameSessionManager;
 import hr.terraforming.mars.terraformingmars.model.ApplicationConfiguration;
 import hr.terraforming.mars.terraformingmars.model.Card;
 import hr.terraforming.mars.terraformingmars.model.Player;
-import hr.terraforming.mars.terraformingmars.ui.GameScreenResizer;
+import hr.terraforming.mars.terraformingmars.view.ScreenResizer;
 import hr.terraforming.mars.terraformingmars.util.DialogUtils;
 import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.scene.control.Alert;
@@ -31,17 +31,17 @@ public class GameOverController {
 
     @FXML
     public void initialize() {
-        GameScreenResizer.attachFontResizeListeners(gameOverScreen, this::updateFontSizes);
+        ScreenResizer.attachFontResizeListeners(gameOverScreen, this::updateFontSizes);
     }
 
     private void updateFontSizes() {
-        GameScreenResizer.updateFonts(
+        ScreenResizer.updateFonts(
                 gameOverScreen,
-                new GameScreenResizer.FontMapping(".main-title", 0.05),
-                new GameScreenResizer.FontMapping(".choose-label", 0.035),
-                new GameScreenResizer.FontMapping(".header-label", 0.03),
-                new GameScreenResizer.FontMapping(".normal-label", 0.025),
-                new GameScreenResizer.FontMapping(".confirm-button", 0.03)
+                new ScreenResizer.FontMapping(".main-title", 0.05),
+                new ScreenResizer.FontMapping(".choose-label", 0.035),
+                new ScreenResizer.FontMapping(".header-label", 0.03),
+                new ScreenResizer.FontMapping(".normal-label", 0.025),
+                new ScreenResizer.FontMapping(".confirm-button", 0.03)
         );
     }
 
