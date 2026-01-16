@@ -14,22 +14,22 @@ public class ProductionService {
     }
 
     public static void executeProduction(List<Player> players) {
-        for (Player p : players) {
-            int income = p.getTR() + p.productionProperty(ResourceType.MEGA_CREDITS).get();
-            p.addMC(income);
+        for (Player player : players) {
+            int income = player.getTR() + player.productionProperty(ResourceType.MEGA_CREDITS).get();
+            player.addMC(income);
 
-            int energy = p.resourceProperty(ResourceType.ENERGY).get();
-            p.addResource(ResourceType.HEAT, energy);
-            p.resourceProperty(ResourceType.ENERGY).set(0);
+            int energy = player.resourceProperty(ResourceType.ENERGY).get();
+            player.addResource(ResourceType.HEAT, energy);
+            player.resourceProperty(ResourceType.ENERGY).set(0);
 
-            p.getProductionMap().forEach((type, amount) -> {
+            player.getProductionMap().forEach((type, amount) -> {
                 if (type != ResourceType.MEGA_CREDITS) {
-                    p.addResource(type, amount.get());
+                    player.addResource(type, amount.get());
                 }
             });
 
             log.debug("{}: Produced {} MC, {} resources",
-                    p.getName(), income, p.getProductionMap().size());
+                    player.getName(), income, player.getProductionMap().size());
         }
     }
 }

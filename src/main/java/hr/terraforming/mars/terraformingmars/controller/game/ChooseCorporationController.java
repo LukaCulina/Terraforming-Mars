@@ -77,10 +77,10 @@ public class ChooseCorporationController {
     private void populateCorporationBoxes() {
         corporationButtonsContainer.getChildren().clear();
 
-        for (Corporation corp : availableCorporations) {
-            VBox corpCard = CorporationViewBuilder.createCorporationNode(corp);
+        for (Corporation corporation : availableCorporations) {
+            VBox corpCard = CorporationViewBuilder.createCorporationNode(corporation);
 
-            corpCard.setOnMouseClicked(_ -> selectCorporationCard(corp, corpCard));
+            corpCard.setOnMouseClicked(_ -> selectCorporationCard(corporation, corpCard));
 
             corporationButtonsContainer.getChildren().add(corpCard);
         }

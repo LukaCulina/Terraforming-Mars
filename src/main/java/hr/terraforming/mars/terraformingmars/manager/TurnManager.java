@@ -44,10 +44,10 @@ public class TurnManager implements Serializable {
     }
 
     public boolean passTurn() {
-        Player p = getCurrentPlayer();
+        Player currentPlayer = getCurrentPlayer();
 
-        if (!passedPlayers.contains(p)) {
-            passedPlayers.add(p);
+        if (!passedPlayers.contains(currentPlayer)) {
+            passedPlayers.add(currentPlayer);
         }
 
         resetActionsTaken();

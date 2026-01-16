@@ -15,8 +15,8 @@ public class ScoringService {
     }
 
     public static List<Player> calculateFinalScores(List<Player> players) {
-        for (Player p : players) {
-            p.calculateTilePoints();
+        for (Player player : players) {
+            player.calculateTilePoints();
         }
 
         List<Player> rankedPlayers = new ArrayList<>(players);
@@ -26,9 +26,9 @@ public class ScoringService {
         );
 
         for (int i = 0; i < rankedPlayers.size(); i++) {
-            Player p = rankedPlayers.get(i);
+            Player player = rankedPlayers.get(i);
             log.info("#{} - {} with {} points (MC: {})",
-                    i + 1, p.getName(), p.getFinalScore(), p.getMC());
+                    i + 1, player.getName(), player.getFinalScore(), player.getMC());
         }
 
         return rankedPlayers;

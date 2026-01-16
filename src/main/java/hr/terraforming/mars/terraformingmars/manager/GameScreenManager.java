@@ -20,7 +20,8 @@ import java.util.Map;
 
 public class GameScreenManager {
 
-    @Getter private final HexBoardDrawer hexBoardDrawer;
+    @Getter
+    private final HexBoardDrawer hexBoardDrawer;
     private final GameScreenController controller;
     private final GlobalStatusComponents globalStatus;
     private final ActionPanelComponents actionPanels;
@@ -81,12 +82,13 @@ public class GameScreenManager {
 
     private void updateStandardProjectButtonsState(boolean isPlacing) {
         Player currentPlayer = getGameManager().getCurrentPlayer();
+
         boolean isActionPhase = getGameManager().getCurrentPhase() == GamePhase.ACTIONS;
         boolean canPerformAction = getGameManager().getActionsTakenThisTurn() < 2;
 
         actionPanels.standardProjectsBox().getChildren().forEach(node -> {
-            if (node instanceof Button btn) {
-                StandardProject project = (StandardProject) btn.getUserData();
+            if (node instanceof Button button) {
+                StandardProject project = (StandardProject) button.getUserData();
                 if (project != null) {
                     boolean canAfford = currentPlayer.getMC() >= project.getCost();
                     boolean shouldDisable = isPlacing || !canAfford || !isActionPhase || !canPerformAction;
@@ -96,7 +98,7 @@ public class GameScreenManager {
                         boolean hasCardsInHand = !currentPlayer.getHand().isEmpty();
                         shouldDisable = shouldDisable || !hasCardsInHand;
                     }
-                    btn.setDisable(shouldDisable);
+                    button.setDisable(shouldDisable);
                 }
             }
         });
@@ -108,21 +110,21 @@ public class GameScreenManager {
         Map<Milestone, Player> claimed = getGameBoard().getClaimedMilestones();
 
         actionPanels.milestonesBox().getChildren().forEach(node -> {
-            if (node instanceof Button btn) {
-                Milestone milestone = (Milestone) btn.getUserData();
+            if (node instanceof Button button) {
+                Milestone milestone = (Milestone) button.getUserData();
                 if (milestone != null) {
                     if (claimed.containsKey(milestone)) {
                         Player owner = claimed.get(milestone);
-                        btn.setText(milestone.getName() + " (" + owner.getName() + ")");
-                        btn.setDisable(true);
-                        btn.getStyleClass().add("project-milestone-claimed");
+                        button.setText(milestone.getName() + " (" + owner.getName() + ")");
+                        button.setDisable(true);
+                        button.getStyleClass().add("project-milestone-claimed");
 
                     } else {
                         boolean canAfford = currentPlayer.getMC() >= 8;
                         boolean requirementMet = milestone.canClaim(currentPlayer);
-                        btn.setDisable(isPlacing || !isActionPhase || !canAfford || !requirementMet || claimed.size() >= GameBoard.MAX_MILESTONES);
-                        btn.setText(milestone.getName());
-                        btn.setStyle("");
+                        button.setDisable(isPlacing || !isActionPhase || !canAfford || !requirementMet || claimed.size() >= GameBoard.MAX_MILESTONES);
+                        button.setText(milestone.getName());
+                        button.setStyle("");
                     }
                 }
             }
@@ -131,16 +133,17 @@ public class GameScreenManager {
 
     private void updatePlayerButtonsHighlight(Player viewedPlayer) {
         Player currentPlayer = getGameManager().getCurrentPlayer();
+
         for (Node node : playerControls.playerListBar().getChildren()) {
-            if (node instanceof Button btn) {
-                String buttonPlayerName = btn.getText();
-                btn.getStyleClass().removeAll("player-button-active", "player-button-viewed");
+            if (node instanceof Button button) {
+                String buttonPlayerName = button.getText();
+                button.getStyleClass().removeAll("player-button-active", "player-button-viewed");
 
                 if (currentPlayer.getName().equals(buttonPlayerName)) {
-                    btn.getStyleClass().add("player-button-active");
+                    button.getStyleClass().add("player-button-active");
                 }
                 if (viewedPlayer != null && viewedPlayer.getName().equals(buttonPlayerName)) {
-                    btn.getStyleClass().add("player-button-viewed");
+                    button.getStyleClass().add("player-button-viewed");
                 }
             }
         }
@@ -148,6 +151,7 @@ public class GameScreenManager {
 
     private void updateConvertButtonsState(boolean isPlacing, boolean isMyTurn) {
         Player currentPlayer = getGameManager().getCurrentPlayer();
+
         boolean isActionPhase = getGameManager().getCurrentPhase() == GamePhase.ACTIONS;
         boolean canPerformAction = getGameManager().getActionsTakenThisTurn() < 2;
         boolean areControlsEnabled = isMyTurn && isActionPhase && canPerformAction && !isPlacing;

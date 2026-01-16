@@ -39,8 +39,8 @@ public class GameMoveUtils {
                 return;
             }
 
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(gameMoveList);
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file))) {
+            outputStream.writeObject(gameMoveList);
         } catch (IOException e) {
             log.error("Failed to save game moves to file '{}'", GAME_MOVE_HISTORY_FILE_NAME, e);
         }
@@ -61,8 +61,8 @@ public class GameMoveUtils {
             return new ArrayList<>();
         }
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            return (List<GameMove>) ois.readObject();
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file))) {
+            return (List<GameMove>) inputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             log.error("Error loading game moves: '{}'", e.getMessage());
             return new ArrayList<>();

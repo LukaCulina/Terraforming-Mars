@@ -61,8 +61,8 @@ public final class DocumentationUtils {
                         .sorted()
                         .forEach(path -> {
                             try {
-                                String fqcn = getFqcnFromPath(projectSrcPath, path);
-                                Class<?> clazz = Class.forName(fqcn);
+                                String className = getFullyQualifiedClassName(projectSrcPath, path);
+                                Class<?> clazz = Class.forName(className);
                                 appendClassDocumentation(docBuilder, clazz);
                             } catch (ClassNotFoundException e) {
                                 log.error("Could not find class for path: {}", path, e);
@@ -78,7 +78,7 @@ public final class DocumentationUtils {
         }
     }
 
-    private static String getFqcnFromPath(Path basePath, Path fullPath) {
+    private static String getFullyQualifiedClassName(Path basePath, Path fullPath) {
         String relativePath = basePath.relativize(fullPath).toString();
         return relativePath.replace(".java", "").replace(java.io.File.separatorChar, '.');
     }

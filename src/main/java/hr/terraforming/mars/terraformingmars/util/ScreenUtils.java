@@ -2,16 +2,19 @@ package hr.terraforming.mars.terraformingmars.util;
 
 import hr.terraforming.mars.terraformingmars.config.ResourceConfig;
 import hr.terraforming.mars.terraformingmars.exception.FxmlLoadException;
+import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -35,6 +38,8 @@ public class ScreenUtils {
     private static final int LOADING_PANE_SIZE = 100;
     private static final int TRANSITION_DURATION = 200;
     private static final double INITIAL_DELAY_SECONDS = 0.3;
+    private static final double BACKGROUND_BLUR_RADIUS = 8.0;
+    private static final int MODAL_FADE_DURATION = 150;
 
     public static void setConfig(ResourceConfig resourceConfig) {
         if (config != null) {
@@ -95,7 +100,6 @@ public class ScreenUtils {
             Consumer<T> controllerAction) {
 
         Runnable showModalTask = () -> {
-
             Stage loadingStage = createLoadingStage(owner);
             PauseTransition delay = new PauseTransition(Duration.millis(TRANSITION_DURATION));
             delay.setOnFinished(_ -> loadingStage.show());
@@ -121,7 +125,6 @@ public class ScreenUtils {
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.initOwner(owner);
                 stage.setResizable(true);
-
                 stage.setOnCloseRequest(Event::consume);
 
                 Scene scene = createScene(result.root());
@@ -131,9 +134,11 @@ public class ScreenUtils {
 
                 double centerX = owner.getX() + (owner.getWidth() - stage.getWidth()) / 2;
                 double centerY = owner.getY() + (owner.getHeight() - stage.getHeight()) / 2;
-
                 stage.setX(centerX);
                 stage.setY(centerY);
+
+                applyBackgroundBlur(owner, stage);
+                applyFadeAnimation(result.root(), stage);
 
                 stage.showAndWait();
             });
@@ -152,6 +157,26 @@ public class ScreenUtils {
         PauseTransition initialDelay = new PauseTransition(Duration.seconds(INITIAL_DELAY_SECONDS));
         initialDelay.setOnFinished(_ -> showModalTask.run());
         initialDelay.play();
+    }
+
+    private static void applyBackgroundBlur(Window owner, Stage modalStage) {
+        if (owner instanceof Stage ownerStage) {
+            Scene ownerScene = ownerStage.getScene();
+            if (ownerScene != null) {
+                Node ownerRoot = ownerScene.getRoot();
+                GaussianBlur blur = new GaussianBlur(BACKGROUND_BLUR_RADIUS);
+                ownerRoot.setEffect(blur);
+                modalStage.setOnHidden(_ -> ownerRoot.setEffect(null));
+            }
+        }
+    }
+
+    private static void applyFadeAnimation(Parent root, Stage stage) {
+        root.setOpacity(0);
+        FadeTransition fade = new FadeTransition(Duration.millis(MODAL_FADE_DURATION), root);
+        fade.setFromValue(0);
+        fade.setToValue(1.0);
+        stage.setOnShown(_ -> fade.play());
     }
 
     private static Stage createLoadingStage(Window owner) {

@@ -78,8 +78,8 @@ public class GameManager implements Serializable {
     public void resetForNewGame(GameBoard newBoard) {
         board = newBoard;
 
-        for (Player p : players) {
-            p.setBoard(newBoard);
+        for (Player player : players) {
+            player.setBoard(newBoard);
         }
 
         generation = 1;
@@ -91,8 +91,8 @@ public class GameManager implements Serializable {
 
     public void relink(GameBoard gameBoard) {
         this.board = gameBoard;
-        for (Player p : players) {
-            p.setBoard(gameBoard);
+        for (Player player : players) {
+            player.setBoard(gameBoard);
         }
     }
 

@@ -39,10 +39,10 @@ public record ServerMessageHandler(GameManager gameManager, ActionManager action
             throw new GameStateException("Unknown corporation choice: " + msg.corporationName() + "' does not exist");
         }
 
-        Player p = gameManager.getPlayerByName(playerName);
+        Player playerByName = gameManager.getPlayerByName(playerName);
 
-        if (p != null) {
-            p.setCorporation(corporation);
+        if (playerByName != null) {
+            playerByName.setCorporation(corporation);
         }
 
         broadcaster.run();
