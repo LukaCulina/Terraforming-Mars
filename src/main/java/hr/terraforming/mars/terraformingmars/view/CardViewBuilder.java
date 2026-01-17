@@ -17,7 +17,6 @@ public final class CardViewBuilder {
 
     private static final double BASE_CARD_WIDTH = 160.0;
     private static final double BASE_CARD_HEIGHT = 220.0;
-    private static final double MIN_SCALE = 0.65;
     private static final double MAX_SCALE = 1.0;
 
     public static void setupCardTilePane(TilePane tilePane, int minColumns, int maxColumns) {
@@ -118,9 +117,10 @@ public final class CardViewBuilder {
     private static double calculateOptimalScale(double containerWidth) {
         if (containerWidth <= 0) return MAX_SCALE;
 
-        if (containerWidth < 600) return MIN_SCALE;
+        if (containerWidth < 600) return 0.75;
         if (containerWidth < 800) return 0.85;
         if (containerWidth < 1000) return 0.95;
+
         return MAX_SCALE;
     }
 
