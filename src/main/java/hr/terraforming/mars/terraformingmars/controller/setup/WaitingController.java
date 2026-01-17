@@ -10,13 +10,18 @@ import javafx.scene.control.Label;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 @Slf4j
 public class WaitingController {
-    @FXML
-    private Label statusLabel;
 
     @FXML
     private Label playerCountLabel;
+
+    @FXML
+    private Label ipLabel;
+
     private GameManager gameManager;
     private int expectedPlayerCount;
     private Timeline pollingTimeline;
@@ -25,13 +30,21 @@ public class WaitingController {
         this.gameManager = gameManager;
         this.expectedPlayerCount = expectedPlayerCount;
 
-        updateStatus();
+        displayServerIp();
         startPolling();
     }
 
+    private void displayServerIp() {
+        try {
+            InetAddress localHost = InetAddress.getLocalHost();
+            String ip = localHost.getHostAddress();
 
-    private void updateStatus() {
-        statusLabel.setText("Waiting for all players to join...");
+            ipLabel.setText("Server Address: " + ip);
+            log.info("Server running on {}", ip);
+        } catch (UnknownHostException e) {
+            ipLabel.setText("Share this: localhost");
+            log.warn("Could not determine local IP, using localhost", e);
+        }
     }
 
     private void startPolling() {

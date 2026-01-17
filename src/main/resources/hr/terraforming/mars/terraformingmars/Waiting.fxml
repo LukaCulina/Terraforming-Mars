@@ -15,12 +15,14 @@
     <Label text="Waiting for Players" styleClass="start-title"/>
 
     <VBox spacing="15" alignment="CENTER">
-        <Label fx:id="statusLabel"
-               text="Waiting for all players to join..."
+        <Label text="Waiting for all players to join..."
                styleClass="status-label"/>
 
         <Label fx:id="playerCountLabel" styleClass="status-label"/>
     </VBox>
 
     <ProgressIndicator/>
+
+    <Label fx:id="ipLabel" styleClass="status-label"/>
+
 </VBox>
