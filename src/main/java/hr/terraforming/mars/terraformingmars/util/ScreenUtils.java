@@ -37,6 +37,8 @@ public class ScreenUtils {
 
     private static final int LOADING_PANE_SIZE = 100;
     private static final int TRANSITION_DURATION = 200;
+    private static final double WIDTH_PERCENT = 0.7;
+    private static final double HEIGHT_PERCENT = 0.8;
     private static final double INITIAL_DELAY_SECONDS = 0.3;
     private static final double BACKGROUND_BLUR_RADIUS = 8.0;
     private static final int MODAL_FADE_DURATION = 150;
@@ -95,8 +97,6 @@ public class ScreenUtils {
             Window owner,
             String fxmlFile,
             String title,
-            double widthPercentage,
-            double heightPercentage,
             Consumer<T> controllerAction) {
 
         Runnable showModalTask = () -> {
@@ -129,8 +129,8 @@ public class ScreenUtils {
 
                 Scene scene = createScene(result.root());
                 stage.setScene(scene);
-                stage.setWidth(owner.getWidth() * widthPercentage);
-                stage.setHeight(owner.getHeight() * heightPercentage);
+                stage.setWidth(owner.getWidth() * WIDTH_PERCENT);
+                stage.setHeight(owner.getHeight() * HEIGHT_PERCENT);
 
                 double centerX = owner.getX() + (owner.getWidth() - stage.getWidth()) / 2;
                 double centerY = owner.getY() + (owner.getHeight() - stage.getHeight()) / 2;

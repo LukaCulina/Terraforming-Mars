@@ -147,7 +147,6 @@ public class ActionManager {
                 owner,
                 "SellPatents.fxml",
                 "Sell Patents",
-                0.5, 0.7,
                 (SellPatentsController c) -> c.setupForSale(getGameManager().getCurrentPlayer(), onSaleCompleteAction)
         );
     }

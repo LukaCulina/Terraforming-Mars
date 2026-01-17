@@ -8,15 +8,12 @@ import hr.terraforming.mars.terraformingmars.view.ScreenNavigator;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Slf4j
 public class ClientGameCoordinator implements GameStateListener {
 
     private GameplayPhase currentPhase = GameplayPhase.JOINING;
     private final GameClientThread client;
     private boolean nameSent = false;
-    private static final AtomicInteger callCount = new AtomicInteger(0);
 
     public ClientGameCoordinator(GameClientThread client) {
         this.client = client;
@@ -24,13 +21,7 @@ public class ClientGameCoordinator implements GameStateListener {
 
     @Override
     public void onGameStateReceived(GameState state) {
-        int callId = callCount.incrementAndGet();
-
-        log.debug("CALL #{} from THREAD: {}", callId, Thread.currentThread().getName());
-
         Platform.runLater(() -> {
-            log.debug("PLATFORM CALL #{} - START", callId);
-
             String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
             switch (currentPhase) {
@@ -39,8 +30,6 @@ public class ClientGameCoordinator implements GameStateListener {
                 case CARD_DRAFT -> handleCardDraftPhase(state);
                 case PLAYING -> handlePlayingPhase(state);
             }
-            log.debug("PLATFORM CALL #{} - END", callId);
-
         });
     }
 
@@ -55,7 +44,7 @@ public class ClientGameCoordinator implements GameStateListener {
 
         if (allJoined) {
             currentPhase = GameplayPhase.CORPORATION_SELECTION;
-            log.debug("All of the players have joined the game");
+            log.info("All of the players have joined the game");
 
         }
     }
@@ -66,7 +55,7 @@ public class ClientGameCoordinator implements GameStateListener {
 
         if (allChosen) {
             currentPhase = GameplayPhase.CARD_DRAFT;
-            log.debug("All of the players have chosen their corporation");
+            log.info("All of the players have chosen their corporation");
         }
     }
 
@@ -75,7 +64,7 @@ public class ClientGameCoordinator implements GameStateListener {
 
         if (currentPlayerForDraft == null) {
             currentPhase = GameplayPhase.PLAYING;
-            log.debug("All of the players have chosen their cards");
+            log.info("All of the players have chosen their cards");
             ScreenNavigator.startGameWithChosenCards(state);
         }
     }
@@ -86,7 +75,7 @@ public class ClientGameCoordinator implements GameStateListener {
         if (controller != null) {
             controller.updateFromNetwork(state);
         } else {
-            log.warn("CLIENT: Received PLAYING phase state, but controller is not set!");
+            log.warn("Received game state update, but controller is not initialized yet");
         }
     }
 }

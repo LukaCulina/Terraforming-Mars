@@ -49,6 +49,7 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
     private void handleCorporationOffer(CorporationOfferMessage msg, GameState lastGameState) {
         Platform.runLater(() -> {
             String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
             if (!myName.equals(msg.playerName()) || lastGameState == null) {
                 return;
             }
@@ -67,6 +68,7 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
     private void handleCardOffer(CardOfferMessage msg, GameState lastGameState) {
         Platform.runLater(() -> {
             String myName = ApplicationConfiguration.getInstance().getMyPlayerName();
+
             if (!myName.equals(msg.playerName()) || lastGameState == null) {
                 return;
             }
@@ -77,6 +79,7 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
 
             GameManager gm = lastGameState.gameManager();
             Player me = gm.getPlayerByName(myName);
+
             boolean isResearch = gm.getGeneration() > 1 || offer.size() <= 4;
 
             if (isResearch) {
@@ -92,25 +95,24 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
                 ScreenNavigator.getMainStage(),
                 "ChooseCards.fxml",
                 "Research Phase",
-                0.7, 0.8,
                 (ChooseCardsController c) -> c.setup(player, offer, null, gm, true)
         );
     }
 
     private void handleProductionPhaseMessage(ProductionPhaseMessage msg, GameState lastGameState) {
         Platform.runLater(() -> {
-            log.info("CLIENT: Received ProductionPhaseMessage");
-
             if (lastGameState == null) {
                 log.error("Cannot show Production Phase - lastGameState is null");
                 return;
             }
+
 
             var controller = ApplicationConfiguration.getInstance().getActiveGameController();
             if (controller == null) {
                 log.error("Cannot show Production Phase - controller is null");
                 return;
             }
+
 
             GameFlowManager gameFlowManager = controller.getActionManager().getGameFlowManager();
             if (gameFlowManager.getProductionPhaseManager() != null) {
@@ -127,7 +129,6 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
             String myPlayerName = ApplicationConfiguration.getInstance().getMyPlayerName();
 
             if (!myPlayerName.equals(msg.playerName())) {
-                log.debug("Ignoring FinalGreeneryOffer for {}, I am {}", msg.playerName(), myPlayerName);
                 return;
             }
 
@@ -145,6 +146,7 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
             }
 
             var controller = ApplicationConfiguration.getInstance().getActiveGameController();
+
             if (controller == null) {
                 log.error("Cannot open Final Greenery - controller is null");
                 return;
@@ -161,7 +163,6 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
                 controller.getSceneWindow(),
                 "FinalGreenery.fxml",
                 "Final Greenery Conversion",
-                0.4, 0.5,
                 (FinalGreeneryController c) -> c.setupSinglePlayer(
                         player, gm, controller,
                         () -> sendFinalGreeneryCompletion(playerName)
@@ -171,6 +172,7 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
 
     private void sendFinalGreeneryCompletion(String playerName) {
         log.debug("Client {} finished Final Greenery", playerName);
+
         GameMove completionMove = new GameMove(
                 playerName,
                 ActionType.FINISH_FINAL_GREENERY,
@@ -178,13 +180,10 @@ public record ClientMessageDispatcher(GameClientThread client, List<GameStateLis
                 LocalDateTime.now()
         );
         client.sendMove(completionMove);
-        log.debug("Client sent Final Greenery completion move to HOST");
     }
 
     private void handleGameOver(GameState lastGameState) {
         Platform.runLater(() -> {
-            log.info("CLIENT received GameOver - showing results");
-
             if (lastGameState == null) {
                 log.error("No game state available for Game Over");
                 return;

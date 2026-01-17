@@ -20,7 +20,7 @@ public class WaitingController {
     private Label playerCountLabel;
 
     @FXML
-    private Label ipLabel;
+    private Label ipAddressLabel;
 
     private GameManager gameManager;
     private int expectedPlayerCount;
@@ -39,10 +39,8 @@ public class WaitingController {
             InetAddress localHost = InetAddress.getLocalHost();
             String ip = localHost.getHostAddress();
 
-            ipLabel.setText("Server Address: " + ip);
-            log.info("Server running on {}", ip);
+            ipAddressLabel.setText("Server Address: " + ip);
         } catch (UnknownHostException e) {
-            ipLabel.setText("Share this: localhost");
             log.warn("Could not determine local IP, using localhost", e);
         }
     }

@@ -70,7 +70,6 @@ public class ProductionPhaseManager {
                 owner,
                 "ProductionPhase.fxml",
                 "Production Phase - Generation " + generation,
-                0.7, 0.8,
                 (ProductionPhaseController c) -> {
                     c.loadProductionSummaries(summaries, generation);
                     c.setOnContinueAction(this::onContinueClicked);

@@ -33,7 +33,6 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
                             controller.getSceneWindow(),
                             "ChooseCards.fxml",
                             "Research (Replay)",
-                            0.7, 0.8,
                             (ChooseCardsController c) -> c.replayShowChosenCards(cardNames, playerName)
                     );
                 });
@@ -52,7 +51,6 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
                                 controller.getSceneWindow(),
                                 "SellPatents.fxml",
                                 "Sell Patents (Replay)",
-                                0.5, 0.7,
                                 (SellPatentsController c) -> c.replayShowSoldPatents(soldCardNames, handBeforeSale, playerName)
                         );
                     }
@@ -69,7 +67,6 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
                             controller.getSceneWindow(),
                             "FinalGreenery.fxml",
                             "Final Greenery (Replay)",
-                            0.4, 0.5,
                             (FinalGreeneryController c) -> c.replayShowFinalGreenery(playerName, plants, cost)
                     );
                 });
@@ -84,7 +81,6 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
                             controller.getSceneWindow(),
                             "ProductionPhase.fxml",
                             "Production Phase - Generation " + generation + " (Replay)",
-                            0.7, 0.8,
                             (ProductionPhaseController c) -> c.replayShowProductionSummary(summaries, generation)
                     );
 
@@ -115,6 +111,7 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
 
     private void handlePlayerMove(GameMove move, GameManager gameManager) {
         Player player = gameManager.getPlayerByName(move.playerName());
+
         if (player == null) {
             throw new GameStateException("Replay error: Player '" + move.playerName() + "' not found in game");
         }
@@ -144,6 +141,7 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
     private void processPlaceTile(GameMove move, Player player) {
         GameBoard gameBoard = controller.getGameBoard();
         Tile tileToPlaceOn = gameBoard.getTileAt(move.row(), move.col());
+
         if (tileToPlaceOn != null) {
             switch (move.tileType()) {
                 case OCEAN -> gameBoard.placeOcean(tileToPlaceOn, player);
@@ -184,6 +182,7 @@ public record ReplayMoveExecutor(GameScreenController controller, ReplayLoader l
 
     private void processConvertHeat(Player player) {
         player.addResource(ResourceType.HEAT, -8);
+
         if (controller.getGameBoard().canIncreaseTemperature()) {
             player.increaseTR(1);
         }

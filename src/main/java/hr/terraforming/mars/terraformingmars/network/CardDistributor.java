@@ -67,7 +67,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
 
             if (isCurrentPlayer(player)) {
                 Platform.runLater(() -> ScreenUtils.showAsModal(
-                        ScreenNavigator.getMainStage(), "ChooseCards.fxml", "Research Phase", 0.7, 0.8,
+                        ScreenNavigator.getMainStage(), "ChooseCards.fxml", "Research Phase",
                         (ChooseCardsController c) -> c.setup(player, offer, cards -> handleHostConfirmation(player, cards), gameManager, true)
                 ));
             } else {

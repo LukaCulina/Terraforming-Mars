@@ -90,12 +90,12 @@ public class GameFlowManager {
 
         switch (playerType) {
             case HOST -> {
-                log.info("HOST: Starting distributed research phase.");
+                log.info("Starting distributed research phase.");
                 config.getGameServer().distributeResearchCards();
             }
-            case CLIENT -> log.info("CLIENT: Waiting for research cards from host...");
+            case CLIENT -> log.info("Waiting for research cards from host");
             case LOCAL -> {
-                log.info("LOCAL: Starting local research phase manager.");
+                log.info("Starting local research phase manager.");
                 new ResearchPhaseManager(getGameManager(), controller.getSceneWindow(), controller, this::finishResearchPhase
                 ).start();
             }

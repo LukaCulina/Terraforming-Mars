@@ -23,6 +23,6 @@
 
     <ProgressIndicator/>
 
-    <Label fx:id="ipLabel" styleClass="status-label"/>
+    <Label fx:id="ipAddressLabel" styleClass="status-label"/>
 
 </VBox>
