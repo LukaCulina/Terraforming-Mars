@@ -82,7 +82,7 @@
     "name": "Ore Processor",
     "cost": 13,
     "tags": ["BUILDING"],
-    "description": "Requirement: Energy production >= 1. Effect: Decrease energy production by 1, increase steel production by 2.",
+    "description": "Requirement: Energy production >= 1.\nDecrease energy production by 1, increase steel production by 2.",
     "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": -1 },
@@ -96,7 +96,7 @@
     "name": "Fusion Power",
     "cost": 14,
     "tags": ["SCIENCE", "ENERGY"],
-    "description": "Requirement: You have at least 2 science tags. Effect: Increase energy production by 3.",
+    "description": "Requirement: You have at least 2 science tags.\nIncrease energy production by 3.",
     "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": 3 }
@@ -188,7 +188,7 @@
     "name": "Great Dam",
     "cost": 12,
     "tags": ["BUILDING", "ENERGY"],
-    "description": "Requirement: At least 4 oceans placed. Effect: Increase energy production by 2.",
+    "description": "Requirement: At least 4 oceans placed.\nIncrease energy production by 2.",
     "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": 2 }
@@ -282,7 +282,7 @@
     "name": "Windmill",
     "cost": 6,
     "tags": ["ENERGY", "BUILDING"],
-    "description": "Requirement: Oxygen at 4% or more. Effect: Increase your energy production by 1.",
+    "description": "Requirement: Oxygen at 4% or more.\nIncrease your energy production by 1.",
     "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": 1 }
@@ -485,7 +485,7 @@
     "name": "Symbiotic Fungus",
     "cost": 4,
     "tags": ["PLANT"],
-    "description": "Requirement: You must have a Plant tag. Effect: Gain 1 plant.",
+    "description": "Requirement: You must have a Plant tag.\nGain 1 plant.",
     "victoryPoints": 0,
     "effects": [
       { "type": "addResource", "resource": "PLANTS", "amount": 1 }
@@ -548,7 +548,7 @@
     "name": "Strip Mine",
     "cost": 11,
     "tags": ["BUILDING"],
-    "description": "Requirement: Oxygen <= 5%. Increase steel production by 2, but decrease your energy production by 1.",
+    "description": "Requirement: Oxygen <= 5%.\nIncrease steel production by 2, but decrease your energy production by 1.",
     "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "STEEL", "amount": 2 },
@@ -748,7 +748,7 @@
     "name": "Polar Research Outpost",
     "cost": 12,
     "tags": ["SCIENCE", "BUILDING"],
-    "description": "Requirement: At least 3 oceans placed. Effect: Draw 2 cards.",
+    "description": "Requirement: At least 3 oceans placed.\nDraw 2 cards.",
     "victoryPoints": 1,
     "effects": [
       { "type": "drawCards", "amount": 2 }
@@ -773,7 +773,7 @@
     "name": "Oceanic Farms",
     "cost": 17,
     "tags": ["PLANT", "EARTH"],
-    "description": "Requirement: At least 2 oceans placed. Effect: Increase your plant production by 2.",
+    "description": "Requirement: At least 2 oceans placed.\nIncrease your plant production by 2.",
     "victoryPoints": 1,
     "effects": [
       { "type": "increaseProduction", "resource": "PLANTS", "amount": 2 }
@@ -786,7 +786,7 @@
     "name": "Algae Bloom",
     "cost": 8,
     "tags": ["PLANT"],
-    "description": "Requirement: Oxygen at 5% or more. Effect: Increase your plant production by 1 and gain 2 plants.",
+    "description": "Requirement: Oxygen at 5% or more.\nIncrease your plant production by 1 and gain 2 plants.",
     "victoryPoints": 0,
     "effects": [
       { "type": "increaseProduction", "resource": "PLANTS", "amount": 1 },
@@ -873,7 +873,7 @@
     "name": "Experimental Reactor",
     "cost": 16,
     "tags": ["SCIENCE", "ENERGY"],
-    "description": "Requirement: At least 1 Energy production. Effect: Increase your energy production by 2 and your MC production by 1.",
+    "description": "Requirement: At least 1 Energy production.\nIncrease your energy production by 2 and your MC production by 1.",
     "victoryPoints": 1,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": 2 },
@@ -922,7 +922,7 @@
     "name": "Deep Core Mining",
     "cost": 20,
     "tags": ["BUILDING"],
-    "description": "Requirement: Oxygen at 3% or less. Effect: Increase your steel production by 3.",
+    "description": "Requirement: Oxygen at 3% or less.\nIncrease your steel production by 3.",
     "victoryPoints": 1,
     "effects": [
       { "type": "increaseProduction", "resource": "STEEL", "amount": 3 }
@@ -935,7 +935,7 @@
     "name": "Subsurface Reservoirs",
     "cost": 14,
     "tags": ["BUILDING"],
-    "description": "Requirement: Temperature at -10°C or warmer. Effect: Place 1 ocean tile.",
+    "description": "Requirement: Temperature at -10°C or warmer.\nPlace 1 ocean tile.",
     "victoryPoints": 0,
     "tileToPlace": "OCEAN",
     "effects": [],
@@ -1460,7 +1460,7 @@
     "name": "Tidal Power Station",
     "cost": 15,
     "tags": ["ENERGY", "BUILDING"],
-    "description": "Requirement: At least 1 ocean placed. Effect: Increase your energy production by 2.",
+    "description": "Requirement: At least 1 ocean placed.\nIncrease your energy production by 2.",
     "victoryPoints": 1,
     "effects": [
       { "type": "increaseProduction", "resource": "ENERGY", "amount": 2 }
@@ -1851,7 +1851,7 @@
     "name": "Oceanic Research Station",
     "cost": 17,
     "tags": ["SCIENCE", "BUILDING"],
-    "description": "Requirement: At least 2 oceans placed. Effect: Draw 3 cards.",
+    "description": "Requirement: At least 2 oceans placed.\nDraw 3 cards.",
     "victoryPoints": 1,
     "effects": [
       { "type": "drawCards", "amount": 3 }
@@ -1974,7 +1974,7 @@
     "name": "Oceanic Terraformers",
     "cost": 19,
     "tags": ["PLANT", "BUILDING"],
-    "description": "Requirement: At least 1 ocean placed. Effect: Increase your plant production by 2.",
+    "description": "Requirement: At least 1 ocean placed.\nIncrease your plant production by 2.",
     "victoryPoints": 2,
     "effects": [
       { "type": "increaseProduction", "resource": "PLANTS", "amount": 2 }

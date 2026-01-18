@@ -13,11 +13,10 @@
 
     <Label fx:id="chooseCardsLabel" styleClass="choose-label"/>
 
-    <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS"
-                styleClass="transparent-scroll-pane">
+    <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS" styleClass="transparent-scroll-pane">
         <TilePane fx:id="cardsTile" hgap="10" vgap="10" alignment="CENTER">
             <padding>
-                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+                <Insets bottom="15.0" left="35.0" right="35.0" top="15.0"/>
             </padding>
         </TilePane>
     </ScrollPane>

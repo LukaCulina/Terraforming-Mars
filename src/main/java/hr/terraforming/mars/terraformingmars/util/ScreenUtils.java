@@ -37,8 +37,8 @@ public class ScreenUtils {
 
     private static final int LOADING_PANE_SIZE = 100;
     private static final int TRANSITION_DURATION = 200;
-    private static final double WIDTH_PERCENT = 0.7;
-    private static final double HEIGHT_PERCENT = 0.8;
+    private static final double WIDTH_PERCENT = 0.65;
+    private static final double HEIGHT_PERCENT = 0.75;
     private static final double INITIAL_DELAY_SECONDS = 0.3;
     private static final double BACKGROUND_BLUR_RADIUS = 8.0;
     private static final int MODAL_FADE_DURATION = 150;
