@@ -25,21 +25,13 @@
         </padding>
     </GridPane>
 
-    <Button
-            text="Back to Main Menu"
-            onAction="#backToMainMenu"
-            styleClass="confirm-button">
-        <VBox.margin>
-            <Insets top="40"/>
-        </VBox.margin>
-    </Button>
+    <VBox spacing="40" alignment="CENTER">
+        <Button text="Main Menu"
+                onAction="#goToMainMenu"
+                styleClass="confirm-button"/>
 
-    <Button
-            text="Show replay"
-            onAction="#showReplay"
-            styleClass="confirm-button">
-        <VBox.margin>
-            <Insets top="40"/>
-        </VBox.margin>
-    </Button>
+        <Button text="Show replay"
+                onAction="#showReplay"
+                styleClass="confirm-button"/>
+    </VBox>
 </VBox>

@@ -529,6 +529,27 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
 }
 
+/* Production phase */
+.player-summary-box {
+    -fx-background-color: rgba(46, 58, 71, 0.95);
+    -fx-padding: 15;
+    -fx-background-radius: 10;
+    -fx-border-color: #4a4a4a;
+    -fx-border-radius: 10;
+    -fx-border-width: 2;
+    -fx-spacing: 8;
+}
+
+.player-header {
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFA500;
+}
+
+.resource-change-label {
+    -fx-text-fill: white;
+    -fx-padding: 2 0 2 10;
+}
+
 /* FinalGreenery */
 .info-label {
     -fx-font-size: 18px;
@@ -588,7 +609,7 @@
     -fx-alignment: CENTER;
 }
 
-/* Input styling */
+/* Input */
 .text-input {
     -fx-background-color: #2c2c2c;
     -fx-text-fill: white;
@@ -642,37 +663,4 @@
     -fx-padding: 10px 25px;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
-}
-
-/* Production phase */
-.production-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFA500;
-    -fx-padding: 0 0 15 0;
-}
-
-.summaries-container {
-    -fx-spacing: 15;
-    -fx-padding: 10;
-}
-
-.player-summary-box {
-    -fx-background-color: rgba(46, 58, 71, 0.95);
-    -fx-padding: 15;
-    -fx-background-radius: 10;
-    -fx-border-color: #4a4a4a;
-    -fx-border-radius: 10;
-    -fx-border-width: 2;
-    -fx-spacing: 8;
-}
-
-.player-header {
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFA500;
-}
-
-.resource-change-label {
-    -fx-text-fill: white;
-    -fx-padding: 2 0 2 10;
 }

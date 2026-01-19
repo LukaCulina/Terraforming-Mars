@@ -103,7 +103,7 @@ public class GameOverController {
     }
 
     @FXML
-    private void backToMainMenu() {
+    private void goToMainMenu() {
         log.info("Returning to Main Menu from Game Over screen");
 
         GameSessionManager.resetForNewGame();
