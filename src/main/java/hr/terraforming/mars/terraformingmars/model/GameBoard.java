@@ -177,7 +177,7 @@ public class GameBoard implements Serializable {
                 .orElse(null);
     }
 
-    // Debug setteri - dodaj ih u GameBoard klasu
+    // Služe samo za potrebu bržeg testiranja kraja igre
 
     public void setTemperature(int temp) {
         this.temperature = temp;

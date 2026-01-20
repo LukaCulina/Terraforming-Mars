@@ -72,7 +72,7 @@ public class ScreenNavigator {
         );
     }
 
-    public static void showWaitingForPlayersScreen(GameManager gameManager, int expectedPlayerCount) {
+    public static void showWaitingScreen(GameManager gameManager, int expectedPlayerCount) {
         ScreenUtils.showAsScreen(
                 mainStage,
                 "Waiting.fxml",
@@ -171,6 +171,7 @@ public class ScreenNavigator {
 
         mainStage.setScene(gameScene);
         mainStage.setTitle("Terraforming Mars - Replay");
+
         log.info("GameScreen displayed for replay");
     }
 }

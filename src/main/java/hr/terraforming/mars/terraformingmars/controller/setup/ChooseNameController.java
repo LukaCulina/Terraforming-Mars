@@ -41,11 +41,11 @@ public class ChooseNameController {
         Player player1 = gameManager.getPlayers().getFirst();
         player1.setName(name);
 
-        startServerInBackground(gameManager, gameBoard);
+        startServer(gameManager, gameBoard);
 
         int playerCount = ApplicationConfiguration.getInstance().getPlayerCount();
 
-        ScreenNavigator.showWaitingForPlayersScreen(gameManager, playerCount);
+        ScreenNavigator.showWaitingScreen(gameManager, playerCount);
     }
 
 
@@ -54,7 +54,7 @@ public class ChooseNameController {
         ScreenNavigator.showChoosePlayersScreen();
     }
 
-    private void startServerInBackground(GameManager gameManager, GameBoard gameBoard) {
+    private void startServer(GameManager gameManager, GameBoard gameBoard) {
         int playerCount = ApplicationConfiguration.getInstance().getPlayerCount();
 
         new Thread(() -> {

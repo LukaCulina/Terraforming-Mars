@@ -75,34 +75,6 @@ public class GameScreenController {
         addDebugButtons();
     }
 
-    private void addDebugButtons() {
-        HBox debugBox = new HBox(5);
-        debugBox.setStyle("-fx-padding: 5;");
-
-        Button triggerFinalBtn = new Button("🎯 Trigger Final Gen");
-        triggerFinalBtn.setOnAction(_ -> debugTriggerFinalGeneration());
-
-        debugBox.getChildren().add(triggerFinalBtn);
-
-
-        if (bottomGrid != null) {
-            bottomGrid.add(debugBox, 0, bottomGrid.getRowCount());
-        }
-    }
-
-
-    @FXML
-    private void debugTriggerFinalGeneration() {
-        if (gameBoard != null) {
-            gameBoard.setTemperature(GameBoard.MAX_TEMPERATURE);
-            gameBoard.setOxygenLevel(GameBoard.MAX_OXYGEN);
-            gameBoard.setOceansPlaced(GameBoard.MAX_OCEANS);
-            log.info("🎯 DEBUG: All parameters set to MAX - Final Generation triggered!");
-            refreshGameScreen();
-            broadcastIfHost();
-        }
-    }
-
     private void broadcastIfHost() {
         var config = ApplicationConfiguration.getInstance();
         if (config.getPlayerType() == hr.terraforming.mars.terraformingmars.enums.PlayerType.HOST) {
@@ -210,5 +182,33 @@ public class GameScreenController {
 
     public void updateLastMoveLabel(GameMove lastGameMove) {
         GameMoveUtils.updateLastMoveLabel(lastMoveLabel, lastGameMove);
+    }
+
+    // Testne metode koje omogućuju lagan dolazak do kraja igre
+
+    private void addDebugButtons() {
+        HBox debugBox = new HBox(5);
+        debugBox.setStyle("-fx-padding: 5;");
+
+        Button triggerFinalBtn = new Button("Trigger Final Generation");
+        triggerFinalBtn.setOnAction(_ -> debugTriggerFinalGeneration());
+
+        debugBox.getChildren().add(triggerFinalBtn);
+
+        if (bottomGrid != null) {
+            bottomGrid.add(debugBox, 0, bottomGrid.getRowCount());
+        }
+    }
+
+    @FXML
+    private void debugTriggerFinalGeneration() {
+        if (gameBoard != null) {
+            gameBoard.setTemperature(GameBoard.MAX_TEMPERATURE);
+            gameBoard.setOxygenLevel(GameBoard.MAX_OXYGEN);
+            gameBoard.setOceansPlaced(GameBoard.MAX_OCEANS);
+            log.info("All parameters set to MAXIMUM - Final Generation triggered!");
+            refreshGameScreen();
+            broadcastIfHost();
+        }
     }
 }
