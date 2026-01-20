@@ -59,8 +59,6 @@ public class ChooseNameController {
 
         new Thread(() -> {
             try {
-                log.info("Starting server on port 1234...");
-
                 GameServerThread gameServer = new GameServerThread(
                         gameManager,
                         gameBoard,

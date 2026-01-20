@@ -34,14 +34,14 @@ public record NetworkCoordinator(GameScreenController controller) {
 
             if (broadcaster != null) {
                 broadcaster.broadcast();
-                log.debug("HOST broadcasted game state");
+                log.debug("Host broadcasted game state");
             }
         } else if (playerType == PlayerType.CLIENT) {
             GameClientThread client = ApplicationConfiguration.getInstance().getGameClient();
 
             if (client != null) {
                 client.sendMove(move);
-                log.debug("CLIENT sent move: {}", move.details());
+                log.debug("Client sent game move: {}", move.details());
             }
         }
     }

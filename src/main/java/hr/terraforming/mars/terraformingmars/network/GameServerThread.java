@@ -130,7 +130,7 @@ public class GameServerThread implements Runnable {
     }
 
     public void broadcastGameState(GameState state) {
-        log.debug("Broadcasting to {} clients...", connectedClients.size());
+        log.debug("Broadcasting to {} clients.", connectedClients.size());
         for (ClientHandler client : connectedClients) {
             client.sendGameState(state);
         }

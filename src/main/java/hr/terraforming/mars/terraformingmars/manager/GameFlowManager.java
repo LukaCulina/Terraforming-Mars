@@ -3,7 +3,6 @@ package hr.terraforming.mars.terraformingmars.manager;
 import hr.terraforming.mars.terraformingmars.controller.game.GameScreenController;
 import hr.terraforming.mars.terraformingmars.enums.ActionType;
 import hr.terraforming.mars.terraformingmars.enums.GamePhase;
-import hr.terraforming.mars.terraformingmars.enums.PlayerType;
 import hr.terraforming.mars.terraformingmars.model.*;
 import hr.terraforming.mars.terraformingmars.network.NetworkBroadcaster;
 import hr.terraforming.mars.terraformingmars.util.XmlUtils;
@@ -153,13 +152,6 @@ public class GameFlowManager {
         List<Player> rankedPlayers = getGameManager().calculateFinalScores();
 
         Platform.runLater(() -> ScreenNavigator.showGameOverScreen(rankedPlayers));
-
-        var config = ApplicationConfiguration.getInstance();
-
-        if (config.getPlayerType() == PlayerType.HOST && config.getBroadcaster() != null) {
-            config.getBroadcaster().broadcast();
-            log.info("HOST broadcasted final GameState after scoring");
-        }
     }
 
 

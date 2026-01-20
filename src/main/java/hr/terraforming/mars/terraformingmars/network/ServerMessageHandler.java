@@ -51,7 +51,7 @@ public record ServerMessageHandler(GameManager gameManager, ActionManager action
                 .allMatch(player -> player.getCorporation() != null);
 
         if (allPlayersChoseCorporations) {
-            log.debug("All of the players have chosen corporations. Distributing initial cards...");
+            log.debug("All of the players have chosen corporations. Distributing initial cards.");
         }
     }
 

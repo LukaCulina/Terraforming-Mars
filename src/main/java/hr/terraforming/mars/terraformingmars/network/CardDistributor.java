@@ -21,7 +21,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
     private static final int CARD_COST = 3;
 
     public void distributeInitialCorporations() {
-        log.debug("Host distributing corporations to all players...");
+        log.debug("Host distributing corporations to all players.");
 
         gameManager.shuffleCorporations();
 
@@ -37,7 +37,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
     }
 
     public void distributeInitialCards() {
-        log.debug("Host distributing initial project cards...");
+        log.debug("Host distributing initial project cards.");
 
         gameManager.shuffleCards();
 
@@ -53,7 +53,7 @@ public record CardDistributor(GameManager gameManager, GameServerThread serverTh
     }
 
     public void distributeResearchCards() {
-        log.debug("Host distributing Research Phase cards...");
+        log.debug("Host distributing Research Phase cards.");
 
         for (Player player : gameManager.getPlayers()) {
             List<Card> offer = gameManager.drawCards(RESEARCH_CARD_COUNT);

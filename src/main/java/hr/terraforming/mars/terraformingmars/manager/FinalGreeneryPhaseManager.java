@@ -59,6 +59,7 @@ public class FinalGreeneryPhaseManager {
             List<Player> rankedPlayers = gameManager.calculateFinalScores();
 
             var server = ApplicationConfiguration.getInstance().getGameServer();
+
             if (server != null) {
                 GameBoard gameBoard = gameManager.getGameBoard();
                 server.broadcastGameState(new GameState(gameManager, gameBoard));
@@ -102,6 +103,7 @@ public class FinalGreeneryPhaseManager {
             showModalForPlayer(currentPlayer);
         } else {
             var server = ApplicationConfiguration.getInstance().getGameServer();
+
             if (server != null) {
                 log.debug("Host sending FinalGreeneryOffer to {}", currentPlayer.getName());
                 server.sendToPlayer(
@@ -134,8 +136,10 @@ public class FinalGreeneryPhaseManager {
         gameManager.hasMoreDraftPlayers();
 
         var config = ApplicationConfiguration.getInstance();
+
         if (config.getPlayerType() == PlayerType.HOST) {
             var broadcaster = config.getBroadcaster();
+
             if (broadcaster != null) {
                 log.debug("Host broadcasting after {} finished", currentPlayer.getName());
                 broadcaster.broadcast();

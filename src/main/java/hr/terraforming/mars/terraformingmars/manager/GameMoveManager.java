@@ -76,7 +76,7 @@ public record GameMoveManager(ActionManager actionManager) {
 
             case OPEN_SELL_PATENTS_MODAL -> log.debug("Network: {} opened sell patents modal", move.playerName());
 
-            case FINISH_FINAL_GREENERY -> handleFinishFinalGreenery(move);
+            case FINISH_FINAL_GREENERY -> handleFinishFinalGreenery();
 
             case FINISH_PRODUCTION_PHASE -> {
                 PlayerType playerType = ApplicationConfiguration.getInstance().getPlayerType();
@@ -121,9 +121,7 @@ public record GameMoveManager(ActionManager actionManager) {
         }
     }
 
-    private void handleFinishFinalGreenery(GameMove move) {
-        log.info("Processing FINISH_FINAL_GREENERY from {}", move.playerName());
-
+    private void handleFinishFinalGreenery() {
         FinalGreeneryPhaseManager finalGreeneryMgr = getGameFlowManager().getFinalGreeneryManager();
 
         if (finalGreeneryMgr != null) {
